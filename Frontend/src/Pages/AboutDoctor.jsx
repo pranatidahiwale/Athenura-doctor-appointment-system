@@ -18,6 +18,8 @@ import {
   ChevronDown,
   CalendarDays,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   ArrowRight,
   Phone,
   CheckCircle2,
@@ -167,6 +169,150 @@ const GlobalStyles = () => (
     .dap-nav {
       transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
     }
+
+    /* Premium micro-interactions */
+    .dap-section-glow {
+      position: relative;
+      isolation: isolate;
+    }
+    .dap-section-glow::before,
+    .dap-section-glow::after {
+      content: "";
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 999px;
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.32;
+    }
+    .dap-section-glow::before {
+      top: 8%;
+      left: -170px;
+      background: rgba(111,182,196,0.20);
+    }
+    .dap-section-glow::after {
+      right: -170px;
+      bottom: 8%;
+      background: rgba(31,111,102,0.14);
+    }
+
+    .dap-image-wrap {
+      position: relative;
+      transform: translateZ(0);
+    }
+    .dap-image-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.22) 48%, transparent 72%);
+      transform: translateX(-120%);
+      transition: transform 0.9s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+    .dap-image-wrap:hover::after {
+      transform: translateX(120%);
+    }
+
+    .dap-photo-frame {
+      box-shadow: 0 30px 70px -30px rgba(14,42,63,0.38), 0 8px 25px -12px rgba(31,111,102,0.22);
+      transition: transform 0.55s cubic-bezier(0.22,1,0.36,1), box-shadow 0.55s ease;
+    }
+    .dap-photo-frame:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 42px 85px -35px rgba(14,42,63,0.42), 0 14px 32px -12px rgba(31,111,102,0.28);
+    }
+
+    .dap-quote-card {
+      position: relative;
+      transform: translateZ(0);
+      transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s ease;
+    }
+    .dap-quote-card::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(111,182,196,0.13), transparent 45%, rgba(255,255,255,0.04));
+      pointer-events: none;
+    }
+    .dap-quote-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 28px 55px -28px rgba(14,42,63,0.55);
+    }
+
+    .dap-tag {
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .dap-tag:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -12px rgba(21,79,73,0.45);
+    }
+
+    .dap-read-more {
+      position: relative;
+      transition: color 0.25s ease, transform 0.25s ease;
+    }
+    .dap-read-more::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -5px;
+      height: 1.5px;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: currentColor;
+      transition: transform 0.3s ease;
+    }
+    .dap-read-more:hover { transform: translateX(3px); }
+    .dap-read-more:hover::after { transform: scaleX(1); }
+
+    .dap-section-kicker { animation: dapKickerPulse 3.5s ease-in-out infinite; }
+    @keyframes dapKickerPulse {
+      0%, 100% { transform: translateY(0); opacity: 0.92; }
+      50% { transform: translateY(-2px); opacity: 1; }
+    }
+
+    @media (max-width: 1023px) {
+      .dap-section-glow::before, .dap-section-glow::after {
+        width: 220px; height: 220px; filter: blur(55px);
+      }
+    }
+
+    .dap-carousel-arrow {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.82);
+      box-shadow: 0 8px 24px -16px rgba(14,42,63,0.45);
+      transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .dap-carousel-arrow:hover {
+      transform: translateY(-2px) scale(1.04);
+      background: #ffffff;
+      box-shadow: 0 12px 26px -14px rgba(14,42,63,0.35);
+    }
+
+    @media (max-width: 1023px) {
+      .dap-expertise-track { transform: none; }
+    }
+    @media (max-width: 639px) {
+      .dap-expertise-carousel-track { --dap-slide: calc(100% + 20px); }
+    }
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .dap-expertise-carousel-track { --dap-slide: calc(50% + 10px); }
+    }
+    @media (min-width: 1024px) {
+      .dap-expertise-carousel-track { --dap-slide: calc(25% + 15px); }
+    }
+
 
     @media (prefers-reduced-motion: reduce) {
       .dap-root *, .dap-root *::before, .dap-root *::after {
@@ -334,23 +480,65 @@ const expertiseAreas = [
   {
     icon: "heart",
     title: "Heart Failure Management",
-    description: "Comprehensive management and monitoring of heart failure and related cardiovascular conditions.",
+    description: "Comprehensive treatment plans, monitoring, and long-term support for patients living with heart failure.",
     tags: ["Monitoring", "Long-term Care"],
     variant: "dark",
   },
   {
     icon: "shield",
     title: "Preventive Cardiology",
-    description: "Advanced screening, lifestyle counseling, and preventive strategies to reduce cardiovascular risk.",
+    description: "Personalized cardiovascular risk assessment, lifestyle guidance, and prevention strategies for healthier hearts.",
     tags: ["Risk Analysis", "Lifestyle Coaching"],
     variant: "mint",
   },
   {
     icon: "monitor",
-    title: "Vascular Imaging",
-    description: "High-quality echocardiography and cardiac imaging for precise diagnosis and ongoing monitoring.",
+    title: "Cardiac Imaging",
+    description: "Advanced diagnostic imaging including echocardiography and cardiac imaging for accurate clinical assessment.",
     tags: ["Echocardiography", "Cardiac MRI"],
     variant: "default",
+  },
+  {
+    icon: "heartPulse",
+    title: "Hypertension Care",
+    description: "Evidence-based evaluation and personalized blood-pressure management with regular monitoring and follow-up.",
+    tags: ["BP Management", "Monitoring"],
+    variant: "mint",
+  },
+  {
+    icon: "clock",
+    title: "24/7 Emergency Cardiac Support",
+    description: "Rapid cardiovascular assessment and coordinated care for urgent cardiac symptoms and complications.",
+    tags: ["Urgent Care", "Rapid Assessment"],
+    variant: "dark",
+  },
+  {
+    icon: "stethoscope",
+    title: "Arrhythmia Management",
+    description: "Diagnosis and treatment planning for irregular heart rhythms, palpitations, and related cardiac conditions.",
+    tags: ["ECG", "Rhythm Care"],
+    variant: "default",
+  },
+  {
+    icon: "shieldCheck",
+    title: "Coronary Artery Disease",
+    description: "Comprehensive evaluation and personalized management for coronary artery disease and cardiovascular risk.",
+    tags: ["CAD Care", "Risk Reduction"],
+    variant: "mint",
+  },
+  {
+    icon: "users",
+    title: "Cardiac Rehabilitation",
+    description: "Structured recovery and lifestyle support designed to help patients safely return to active daily living.",
+    tags: ["Recovery", "Lifestyle"],
+    variant: "default",
+  },
+  {
+    icon: "building",
+    title: "Structural Heart Care",
+    description: "Specialized assessment and treatment planning for structural heart conditions using modern clinical techniques.",
+    tags: ["Valve Care", "Advanced Treatment"],
+    variant: "dark",
   },
 ];
 
@@ -523,50 +711,162 @@ const Biography = () => {
   const [firstPara, ...restParas] = biography.paragraphs;
 
   return (
-    <section className="py-20 sm:py-28 px-6 sm:px-10" style={{ backgroundColor: TOKENS.paper }} aria-label="Doctor biography">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        <Reveal className="lg:col-span-5">
-          <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl">
-            <img src={DOCTOR_PHOTO} alt={`${doctor.name} in his clinic`} className="w-full h-[380px] object-cover" />
-          </div>
+    <section
+      className="dap-section-glow relative overflow-hidden py-20 sm:py-28 px-6 sm:px-10"
+      style={{ backgroundColor: TOKENS.paper }}
+      aria-label="Doctor biography"
+    >
+      <div className="max-w-6xl mx-auto">
+        {/* Balanced media/content columns prevent the large empty area shown in the previous layout. */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          <Reveal className="lg:col-span-5">
+            <div className="lg:sticky lg:top-24">
+              <div className="relative max-w-xl mx-auto lg:mx-0">
+                <motion.div
+                  className="absolute -inset-3 sm:-inset-4 rounded-[2rem] opacity-70"
+                  style={{ background: `linear-gradient(135deg, ${TOKENS.cyan}38, transparent 48%, ${TOKENS.teal}20)` }}
+                  animate={{ rotate: [0, 1.5, 0, -1.5, 0], scale: [1, 1.02, 1] }}
+                  transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                  aria-hidden="true"
+                />
 
-          <div className="mt-5 rounded-2xl p-6 relative overflow-hidden" style={{ backgroundColor: TOKENS.ink }}>
-            <Quote size={28} color={TOKENS.cyan} className="mb-3 opacity-80" />
-            <p className="font-serif text-lg leading-snug text-white italic">"{biography.quote}"</p>
-            <p className="mt-3 text-xs font-medium" style={{ color: TOKENS.cyan }}>— {doctor.name}</p>
-          </div>
-        </Reveal>
+                <div className="dap-photo-frame dap-image-wrap relative rounded-[1.75rem] overflow-hidden bg-white">
+                  <img
+                    src={DOCTOR_PHOTO}
+                    alt={`${doctor.name} in his clinic`}
+                    className="w-full h-[360px] sm:h-[440px] lg:h-[470px] object-cover transition-transform duration-700 ease-out hover:scale-[1.035]"
+                  />
 
-        <Reveal className="lg:col-span-7">
-          <SectionHeading eyebrow="About the Doctor" title={biography.heading} description={firstPara} />
+                  <div
+                    className="absolute left-4 right-4 bottom-4 rounded-2xl px-4 py-3 backdrop-blur-xl flex items-center gap-3 border border-white/20 shadow-lg"
+                    style={{ backgroundColor: "rgba(14,42,63,0.66)" }}
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: "rgba(143,227,196,0.14)" }}>
+                      <CheckCircle2 size={18} color="#8FE3C4" />
+                    </span>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[1.6px] font-semibold text-[#8FE3C4]">Trusted Care</p>
+                      <p className="text-white text-sm font-medium">Board Certified · Cardiovascular Medicine</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="mt-6 space-y-4 text-base leading-relaxed" style={{ color: TOKENS.inkSoft }}>
-            {expanded && (
-              <div className="space-y-4 dap-reveal dap-visible">
-                {restParas.map((p) => (
-                  <p key={p.slice(0, 24)}>{p}</p>
+                <motion.div
+                  className="absolute -right-3 -top-4 sm:-right-5 sm:-top-5 h-14 w-14 rounded-2xl hidden sm:flex items-center justify-center shadow-lg border border-white/60"
+                  style={{ backgroundColor: "rgba(255,255,255,0.9)", color: TOKENS.teal }}
+                  animate={{ y: [0, -7, 0], rotate: [0, 4, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+                  aria-hidden="true"
+                >
+                  <HeartPulse size={24} />
+                </motion.div>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal className="lg:col-span-7">
+            <div className="max-w-2xl">
+              <span className="dap-section-kicker inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] font-semibold mb-4" style={{ color: TOKENS.teal }}>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: TOKENS.teal }} />
+                About the Doctor
+              </span>
+
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-[2.7rem] leading-[1.12] mb-5" style={{ color: TOKENS.ink }}>
+                {biography.heading}
+              </h2>
+
+              <div className="h-px w-16 mb-6" style={{ background: `linear-gradient(90deg, ${TOKENS.teal}, ${TOKENS.cyan})` }} />
+
+              <p className="text-base sm:text-[17px] leading-[1.85]" style={{ color: TOKENS.inkSoft }}>
+                {firstPara}
+              </p>
+
+              <div className={`mt-5 overflow-hidden transition-all duration-500 ${expanded ? "max-h-[700px] opacity-100" : "max-h-0 opacity-0"}`}>
+                <div className="space-y-4 text-base sm:text-[17px] leading-[1.85]" style={{ color: TOKENS.inkSoft }}>
+                  {restParas.map((p) => <p key={p.slice(0, 24)}>{p}</p>)}
+                </div>
+              </div>
+
+              <button
+                onClick={() => setExpanded((v) => !v)}
+                className="dap-read-more mt-5 inline-flex items-center gap-2 text-sm font-semibold"
+                style={{ color: TOKENS.teal }}
+                aria-expanded={expanded}
+              >
+                <span>{expanded ? "Read Less" : "Read More"}</span>
+                <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.25 }} className="inline-flex">
+                  <ChevronDown size={17} />
+                </motion.span>
+              </button>
+
+              <div className="mt-8 flex flex-wrap gap-2.5">
+                {["Interventional Cardiology", "Heart Failure Care", "Preventive Cardiology", "Vascular Imaging"].map((tag, index) => (
+                  <motion.span
+                    key={tag}
+                    className="dap-tag text-xs sm:text-sm font-medium rounded-full px-3.5 py-2 border"
+                    style={{ backgroundColor: TOKENS.paperAlt, borderColor: "rgba(31,111,102,0.08)", color: TOKENS.tealDark }}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.8 }}
+                    transition={{ duration: 0.4, delay: index * 0.08 }}
+                    whileHover={{ y: -3 }}
+                  >
+                    {tag}
+                  </motion.span>
                 ))}
               </div>
-            )}
-          </div>
 
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold"
-            style={{ color: TOKENS.teal }}
-            aria-expanded={expanded}
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <motion.div whileHover={{ y: -4 }} className="rounded-2xl border p-4 bg-white/70 backdrop-blur-sm" style={{ borderColor: TOKENS.line }}>
+                  <div className="flex items-center gap-3">
+                    <span className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "rgba(31,111,102,0.1)" }}>
+                      <Clock size={18} color={TOKENS.teal} />
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: TOKENS.slate }}>Experience</p>
+                      <p className="text-sm font-semibold mt-0.5" style={{ color: TOKENS.ink }}>15+ Years Clinical Care</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div whileHover={{ y: -4 }} className="rounded-2xl border p-4 bg-white/70 backdrop-blur-sm" style={{ borderColor: TOKENS.line }}>
+                  <div className="flex items-center gap-3">
+                    <span className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "rgba(111,182,196,0.13)" }}>
+                      <MapPin size={18} color={TOKENS.tealDark} />
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: TOKENS.slate }}>Clinic</p>
+                      <p className="text-sm font-semibold mt-0.5" style={{ color: TOKENS.ink }}>Meridian Heart Institute</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* The quote now spans the content width, eliminating the large unused space on the right. */}
+        <Reveal className="mt-10 lg:mt-14">
+          <motion.div
+            className="dap-quote-card relative overflow-hidden rounded-[1.75rem] p-7 sm:p-9 lg:p-10"
+            style={{ background: `linear-gradient(135deg, ${TOKENS.ink} 0%, #123C55 60%, #0E4E4A 100%)`, boxShadow: "0 24px 60px -30px rgba(14,42,63,0.5)" }}
+            whileHover={{ y: -4 }}
           >
-            {expanded ? "Read Less" : "Read More"}
-            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
-
-          <div className="mt-8 flex flex-wrap gap-2.5">
-            {["Interventional Cardiology", "Heart Failure Care", "Preventive Cardiology", "Vascular Imaging"].map((tag) => (
-              <span key={tag} className="text-xs font-medium rounded-full px-3.5 py-1.5" style={{ backgroundColor: TOKENS.paperAlt, color: TOKENS.tealDark }}>
-                {tag}
-              </span>
-            ))}
-          </div>
+            <div className="absolute -right-10 -top-16 h-44 w-44 rounded-full border border-white/10" aria-hidden="true" />
+            <div className="absolute right-8 -bottom-20 h-52 w-52 rounded-full border border-[#6FB6C4]/10" aria-hidden="true" />
+            <div className="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
+              <div className="shrink-0 h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10" style={{ backgroundColor: "rgba(111,182,196,0.12)" }}>
+                <Quote size={25} color={TOKENS.cyan} />
+              </div>
+              <div>
+                <p className="font-serif text-xl sm:text-2xl lg:text-[1.7rem] leading-[1.5] text-white italic">"{biography.quote}"</p>
+                <div className="mt-5 flex items-center gap-3">
+                  <span className="h-px w-8" style={{ backgroundColor: TOKENS.cyan }} />
+                  <p className="text-sm font-semibold" style={{ color: TOKENS.cyan }}>— {doctor.name}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </Reveal>
       </div>
     </section>
@@ -743,48 +1043,154 @@ const VARIANT_STYLES = {
   mint: { bg: TOKENS.mint, border: TOKENS.mint, titleColor: TOKENS.tealDark, bodyColor: TOKENS.inkSoft, iconBg: "rgba(31,111,102,0.16)", iconColor: TOKENS.tealDark, tagBg: "rgba(31,111,102,0.14)", tagColor: TOKENS.tealDark },
 };
 
+const ICONS_EXTENDED = {
+  ...ICONS,
+  heartPulse: HeartPulse,
+  clock: Clock,
+  stethoscope: Stethoscope,
+  shieldCheck: ShieldCheck,
+  building: Building2,
+};
+
 const ExpertiseCard = ({ item, index }) => {
-  const [ref, visible] = useReveal(0.2);
-  const Icon = ICONS[item.icon] || Activity;
+  const Icon = ICONS_EXTENDED[item.icon] || Activity;
   const v = VARIANT_STYLES[item.variant] || VARIANT_STYLES.default;
 
   return (
-    <div
-      ref={ref}
-      className={`dap-reveal ${visible ? "dap-visible" : ""} dap-expertise-card rounded-2xl border p-6`}
-      style={{ backgroundColor: v.bg, borderColor: v.border, transitionDelay: `${index * 70}ms` }}
+    <motion.article
+      className="dap-expertise-card group relative min-w-0 h-full rounded-2xl border p-6 sm:p-7 overflow-hidden"
+      style={{ backgroundColor: v.bg, borderColor: v.border }}
+      initial={{ opacity: 0, y: 24, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, delay: Math.min(index * 0.06, 0.3), ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -8, rotateX: 1.5, rotateY: -1.5 }}
     >
-      <div className="h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: v.iconBg }}>
-        <Icon size={20} color={v.iconColor} />
+      <motion.div
+        className="absolute -right-16 -top-16 h-32 w-32 rounded-full blur-3xl opacity-0 group-hover:opacity-40"
+        style={{ backgroundColor: TOKENS.cyan }}
+        animate={{ scale: [1, 1.15, 1] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <div className="relative z-10 flex h-full flex-col">
+        <motion.div
+          className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl"
+          style={{ backgroundColor: v.iconBg }}
+          whileHover={{ rotate: 8, scale: 1.1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        >
+          <Icon size={21} color={v.iconColor} />
+        </motion.div>
+
+        <h3 className="font-serif text-lg sm:text-xl mb-2" style={{ color: v.titleColor }}>{item.title}</h3>
+        <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: v.bodyColor }}>{item.description}</p>
+
+        <div className="flex flex-wrap gap-2 mb-5">
+          {item.tags.map((tag) => (
+            <span key={tag} className="text-[11px] font-semibold rounded-full px-2.5 py-1" style={{ backgroundColor: v.tagBg, color: v.tagColor }}>
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="group/link inline-flex w-fit items-center gap-1.5 text-xs font-semibold"
+          style={{ color: v.iconColor }}
+        >
+          Learn More
+          <ArrowRight size={13} className="transition-transform duration-300 group-hover/link:translate-x-1" />
+        </button>
       </div>
-      <h3 className="font-serif text-lg mb-1.5" style={{ color: v.titleColor }}>{item.title}</h3>
-      <p className="text-sm leading-relaxed mb-4" style={{ color: v.bodyColor }}>{item.description}</p>
-      <div className="flex flex-wrap gap-2">
-        {item.tags.map((tag) => (
-          <span key={tag} className="text-xs font-medium rounded-full px-2.5 py-1" style={{ backgroundColor: v.tagBg, color: v.tagColor }}>
-            {tag}
-          </span>
-        ))}
-      </div>
-    </div>
+    </motion.article>
   );
 };
 
-const ExpertiseSection = () => (
-  <section id="expertise" className="py-20 sm:py-28 px-6 sm:px-10" style={{ backgroundColor: TOKENS.paper }} aria-label="Areas of expertise">
-    <div className="max-w-6xl mx-auto">
-      <Reveal className="text-center max-w-xl mx-auto mb-14">
-        <Eyebrow>Specializations</Eyebrow>
-        <h2 className="font-serif text-3xl sm:text-4xl" style={{ color: TOKENS.ink }}>Areas of Expertise</h2>
-      </Reveal>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {expertiseAreas.map((item, i) => (
-          <ExpertiseCard key={item.title} item={item} index={i} />
-        ))}
+const ExpertiseSection = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const total = expertiseAreas.length;
+
+  useEffect(() => {
+    if (isPaused) return undefined;
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % total);
+    }, 2800);
+    return () => window.clearInterval(timer);
+  }, [isPaused, total]);
+
+  const next = () => setActiveIndex((current) => (current + 1) % total);
+  const prev = () => setActiveIndex((current) => (current - 1 + total) % total);
+
+  return (
+    <section id="expertise" className="relative overflow-hidden py-20 sm:py-28 px-6 sm:px-10" style={{ backgroundColor: TOKENS.paper }} aria-label="Areas of expertise">
+      <div className="absolute -left-32 top-20 h-72 w-72 rounded-full blur-3xl opacity-20" style={{ backgroundColor: TOKENS.cyan }} aria-hidden="true" />
+      <div className="absolute -right-32 bottom-0 h-80 w-80 rounded-full blur-3xl opacity-15" style={{ backgroundColor: TOKENS.teal }} aria-hidden="true" />
+
+      <div className="relative max-w-6xl mx-auto">
+        <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between mb-10 sm:mb-12">
+          <Reveal className="max-w-2xl">
+            <Eyebrow>Specializations</Eyebrow>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl leading-tight" style={{ color: TOKENS.ink }}>
+              Expert Cardiology Services
+            </h2>
+            <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed" style={{ color: TOKENS.slate }}>
+              Comprehensive heart-health solutions with advanced diagnostics, personalized treatment, and long-term preventive care.
+            </p>
+          </Reveal>
+
+          <Reveal className="flex items-center gap-2 self-start sm:self-auto">
+            <button type="button" onClick={prev} aria-label="Previous expertise" className="dap-carousel-arrow" style={{ color: TOKENS.tealDark }}>
+              <ChevronLeft size={17} />
+            </button>
+            <button type="button" onClick={next} aria-label="Next expertise" className="dap-carousel-arrow" style={{ color: TOKENS.tealDark }}>
+              <ChevronRight size={17} />
+            </button>
+          </Reveal>
+        </div>
+
+        <div
+          className="relative overflow-hidden"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onFocus={() => setIsPaused(true)}
+          onBlur={() => setIsPaused(false)}
+        >
+          <motion.div
+            className="dap-expertise-carousel-track flex gap-5"
+            animate={{ x: `calc(-${activeIndex} * var(--dap-slide))` }}
+            transition={{ type: "spring", stiffness: 85, damping: 18, mass: 0.8 }}
+          >
+            {expertiseAreas.map((item, i) => (
+              <div key={item.title} className="w-full flex-none sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-60px)/4)]">
+                <ExpertiseCard item={item} index={i} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        <div className="mt-7 flex items-center justify-between gap-5">
+          <div className="flex items-center gap-1.5" aria-label="Expertise carousel position">
+            {expertiseAreas.map((item, i) => (
+              <button
+                key={item.title}
+                type="button"
+                aria-label={`Go to ${item.title}`}
+                onClick={() => setActiveIndex(i)}
+                className={`h-1.5 rounded-full transition-all duration-500 ${i === activeIndex ? "w-8" : "w-1.5"}`}
+                style={{ backgroundColor: i === activeIndex ? TOKENS.teal : "#C8D8D6" }}
+              />
+            ))}
+          </div>
+          <p className="hidden sm:block text-xs font-mono uppercase tracking-widest" style={{ color: TOKENS.slate }}>
+            {String(activeIndex + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </p>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const AppointmentCTA = () => {
   const [confirmed, setConfirmed] = useState(false);
