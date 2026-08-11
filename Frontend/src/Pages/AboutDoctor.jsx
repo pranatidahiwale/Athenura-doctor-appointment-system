@@ -90,6 +90,19 @@ const GlobalStyles = () => (
     @keyframes dapDrawLine {
       to { stroke-dashoffset: 0; }
     }
+    @keyframes dapMarquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .dap-marquee-track {
+      display: flex;
+      width: max-content;
+      animation: dapMarquee 38s linear infinite;
+    }
+    .dap-marquee-wrap:hover .dap-marquee-track {
+      animation-play-state: paused;
+    }
 
     .dap-reveal {
       opacity: 0;
@@ -176,6 +189,7 @@ const GlobalStyles = () => (
         scroll-behavior: auto !important;
       }
       .dap-reveal { opacity: 1; transform: none; }
+      .dap-marquee-track { animation: none; }
     }
   `}</style>
 );
@@ -321,6 +335,9 @@ const ICONS = {
   award: Award,
   file: FileText,
   users: Users,
+  stethoscope: Stethoscope,
+  pulse: HeartPulse,
+  building: Building2,
 };
 
 const expertiseAreas = [
@@ -350,6 +367,34 @@ const expertiseAreas = [
     title: "Vascular Imaging",
     description: "High-quality echocardiography and cardiac imaging for precise diagnosis and ongoing monitoring.",
     tags: ["Echocardiography", "Cardiac MRI"],
+    variant: "default",
+  },
+  {
+    icon: "stethoscope",
+    title: "Cardiac Rehabilitation",
+    description: "Structured recovery programs combining exercise therapy, education, and close monitoring after cardiac events or procedures.",
+    tags: ["Exercise Therapy", "Recovery Plans"],
+    variant: "default",
+  },
+  {
+    icon: "pulse",
+    title: "Arrhythmia & ECG Monitoring",
+    description: "Diagnosis and long-term management of irregular heart rhythms using advanced ECG and Holter monitoring.",
+    tags: ["Holter Monitoring", "Rhythm Therapy"],
+    variant: "dark",
+  },
+  {
+    icon: "shield",
+    title: "Hypertension Management",
+    description: "Personalized treatment plans to control blood pressure and reduce long-term cardiovascular complications.",
+    tags: ["BP Monitoring", "Medication Review"],
+    variant: "mint",
+  },
+  {
+    icon: "building",
+    title: "Post-Surgical Cardiac Care",
+    description: "Dedicated follow-up care and recovery support for patients after bypass surgery or valve procedures.",
+    tags: ["Post-Op Care", "Follow-up"],
     variant: "default",
   },
 ];
@@ -526,14 +571,30 @@ const Biography = () => {
     <section className="py-20 sm:py-28 px-6 sm:px-10" style={{ backgroundColor: TOKENS.paper }} aria-label="Doctor biography">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         <Reveal className="lg:col-span-5">
-          <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl">
-            <img src={DOCTOR_PHOTO} alt={`${doctor.name} in his clinic`} className="w-full h-[380px] object-cover" />
-          </div>
+          <div className="relative mt-4">
+            <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl">
+              <img src={DOCTOR_PHOTO} alt={`${doctor.name} in his clinic`} className="w-full h-[380px] object-cover" />
+              <div
+                className="absolute bottom-0 left-0 right-0 p-5 backdrop-blur-md"
+                style={{ background: "linear-gradient(0deg, rgba(14,42,63,0.75) 0%, rgba(14,42,63,0.15) 100%)" }}
+              >
+                <p className="text-white font-serif text-lg leading-tight">{doctor.name}</p>
+                <p className="text-xs font-medium mt-0.5" style={{ color: TOKENS.cyan }}>{doctor.title}</p>
+              </div>
+            </div>
 
-          <div className="mt-5 rounded-2xl p-6 relative overflow-hidden" style={{ backgroundColor: TOKENS.ink }}>
-            <Quote size={28} color={TOKENS.cyan} className="mb-3 opacity-80" />
-            <p className="font-serif text-lg leading-snug text-white italic">"{biography.quote}"</p>
-            <p className="mt-3 text-xs font-medium" style={{ color: TOKENS.cyan }}>— {doctor.name}</p>
+            <div
+              className="absolute -top-4 -right-4 flex items-center gap-2.5 rounded-xl bg-white px-4 py-3 shadow-lg"
+              style={{ boxShadow: "0 14px 30px -12px rgba(14,42,63,0.35)" }}
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: TOKENS.mint }}>
+                <ShieldCheck size={18} color={TOKENS.teal} />
+              </div>
+              <div className="leading-tight">
+                <p className="text-[13px] font-semibold whitespace-nowrap" style={{ color: TOKENS.ink }}>Trusted Care</p>
+                <p className="text-[11px] whitespace-nowrap" style={{ color: TOKENS.slate }}>Board Certified</p>
+              </div>
+            </div>
           </div>
         </Reveal>
 
@@ -569,9 +630,94 @@ const Biography = () => {
           </div>
         </Reveal>
       </div>
+
+      {/* =====================================================
+          QUOTE SECTION
+      ====================================================== */}
+
+      <section className="px-5 pt-16 pb-16 sm:px-8 sm:pt-20 lg:px-16">
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 25,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          whileHover={{
+            y: -2,
+          }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{
+            duration: 0.7,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="relative mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] border px-7 py-9 sm:px-10 sm:py-11 lg:px-14 lg:py-12"
+          style={{
+            borderColor: "rgba(31,111,102,0.16)",
+            background: `linear-gradient(120deg, #FFFFFF 0%, ${TOKENS.mint} 100%)`,
+            boxShadow: "0 24px 50px -28px rgba(14,42,63,0.18)",
+          }}
+        >
+          {/* subtle decorative heart watermark */}
+          <motion.div
+            animate={{
+              scale: [1, 1.035, 1],
+              opacity: [0.1, 0.16, 0.1],
+            }}
+            transition={{
+              duration: 3.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="pointer-events-none absolute -bottom-8 -right-6 hidden sm:block"
+            style={{ color: TOKENS.teal }}
+            aria-hidden="true"
+          >
+            <HeartPulse size={140} strokeWidth={1.4} />
+          </motion.div>
+
+          <div className="relative z-10 flex items-start gap-5 sm:gap-7">
+            <motion.div
+              whileHover={{
+                scale: 1.05,
+                rotate: -4,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 16,
+              }}
+              className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-full border bg-white sm:flex"
+              style={{ borderColor: "rgba(31,111,102,0.2)", boxShadow: "0 8px 20px -10px rgba(14,42,63,0.2)" }}
+            >
+              <Quote size={24} strokeWidth={1.8} color={TOKENS.teal} />
+            </motion.div>
+
+            <div className="min-w-0">
+              <blockquote
+                className="max-w-3xl font-serif text-xl font-medium italic leading-[1.5]"
+                style={{ color: TOKENS.ink }}
+              >
+                “My goal isn't just to treat heart conditions, but to
+                empower my patients with the knowledge and support they
+                need to lead vibrant, heart-healthy lives.”
+              </blockquote>
+
+              <div className="mt-6 flex items-center gap-3">
+                <span className="h-[2px] w-10 rounded-full" style={{ backgroundColor: TOKENS.teal }} />
+                <span className="text-sm font-semibold tracking-wide sm:text-base" style={{ color: TOKENS.tealDark }}>
+                  Dr. Rajesh Malhotra
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
     </section>
   );
-};
+}
 
 const StatCard = ({ stat }) => {
   const [ref, visible] = useReveal(0.5);
@@ -697,8 +843,13 @@ const HonorCard = ({ item, index }) => {
   return (
     <div
       ref={ref}
-      className={`dap-reveal ${visible ? "dap-visible" : ""} dap-card-hover relative rounded-2xl p-6 overflow-hidden`}
-      style={{ backgroundColor: TOKENS.ink, transitionDelay: `${index * 80}ms` }}
+      className={`dap-reveal ${visible ? "dap-visible" : ""} dap-card-hover relative rounded-2xl p-6 overflow-hidden border`}
+      style={{
+        background: "linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 100%)",
+        borderColor: "rgba(255,255,255,0.14)",
+        boxShadow: "0 18px 40px -22px rgba(0,0,0,0.55)",
+        transitionDelay: `${index * 80}ms`,
+      }}
     >
       <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-20 blur-2xl" style={{ backgroundColor: TOKENS.amber }} aria-hidden="true" />
       <div className="relative h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: "rgba(185,134,46,0.18)" }}>
@@ -743,16 +894,21 @@ const VARIANT_STYLES = {
   mint: { bg: TOKENS.mint, border: TOKENS.mint, titleColor: TOKENS.tealDark, bodyColor: TOKENS.inkSoft, iconBg: "rgba(31,111,102,0.16)", iconColor: TOKENS.tealDark, tagBg: "rgba(31,111,102,0.14)", tagColor: TOKENS.tealDark },
 };
 
-const ExpertiseCard = ({ item, index }) => {
+const ExpertiseCard = ({ item, index, animate = true }) => {
   const [ref, visible] = useReveal(0.2);
   const Icon = ICONS[item.icon] || Activity;
   const v = VARIANT_STYLES[item.variant] || VARIANT_STYLES.default;
+  const revealClasses = animate ? `dap-reveal ${visible ? "dap-visible" : ""}` : "";
 
   return (
     <div
-      ref={ref}
-      className={`dap-reveal ${visible ? "dap-visible" : ""} dap-expertise-card rounded-2xl border p-6`}
-      style={{ backgroundColor: v.bg, borderColor: v.border, transitionDelay: `${index * 70}ms` }}
+      ref={animate ? ref : undefined}
+      className={`${revealClasses} dap-expertise-card rounded-2xl border p-6 h-full`}
+      style={{
+        backgroundColor: v.bg,
+        borderColor: v.border,
+        transitionDelay: animate ? `${index * 70}ms` : undefined,
+      }}
     >
       <div className="h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: v.iconBg }}>
         <Icon size={20} color={v.iconColor} />
@@ -770,21 +926,36 @@ const ExpertiseCard = ({ item, index }) => {
   );
 };
 
-const ExpertiseSection = () => (
-  <section id="expertise" className="py-20 sm:py-28 px-6 sm:px-10" style={{ backgroundColor: TOKENS.paper }} aria-label="Areas of expertise">
-    <div className="max-w-6xl mx-auto">
-      <Reveal className="text-center max-w-xl mx-auto mb-14">
-        <Eyebrow>Specializations</Eyebrow>
-        <h2 className="font-serif text-3xl sm:text-4xl" style={{ color: TOKENS.ink }}>Areas of Expertise</h2>
-      </Reveal>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {expertiseAreas.map((item, i) => (
-          <ExpertiseCard key={item.title} item={item} index={i} />
-        ))}
+const ExpertiseSection = () => {
+  const loopItems = [...expertiseAreas, ...expertiseAreas];
+
+  return (
+    <section id="expertise" className="py-20 sm:py-28 overflow-hidden" style={{ backgroundColor: TOKENS.paper }} aria-label="Areas of expertise">
+      <div className="max-w-6xl mx-auto px-6 sm:px-10">
+        <Reveal className="text-center max-w-xl mx-auto mb-14">
+          <Eyebrow>Specializations</Eyebrow>
+          <h2 className="font-serif text-3xl sm:text-4xl" style={{ color: TOKENS.ink }}>Areas of Expertise</h2>
+        </Reveal>
       </div>
-    </div>
-  </section>
-);
+
+      <div
+        className="dap-marquee-wrap relative"
+        style={{
+          maskImage: "linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%)",
+        }}
+      >
+        <div className="dap-marquee-track gap-5 px-6 sm:px-10">
+          {loopItems.map((item, i) => (
+            <div key={`${item.title}-${i}`} className="w-[270px] sm:w-[300px] shrink-0">
+              <ExpertiseCard item={item} index={i % expertiseAreas.length} animate={false} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const AppointmentCTA = () => {
   const [confirmed, setConfirmed] = useState(false);
