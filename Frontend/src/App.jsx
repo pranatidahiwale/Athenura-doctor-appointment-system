@@ -5,7 +5,7 @@ import Login from './Auth/Login'
 import Signup from './Auth/Signup'
 import ForgotPass from './Auth/forgotpass'
 import Home from './Pages/Home'
-import AboutDoctor from '../src/Pages/AboutDoctor'
+import AboutDoctor from "./Pages/AboutDoctor";
 
 function App() {
   return (
@@ -14,34 +14,24 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPass />} />
       <Route 
-      path="/aboutDoctor"
-       element={
-       <>
-        <Navbar />
-       <AboutDoctor />
-       <Footer />
-       </>
-       } />
+        path="/aboutdoctors"
+        element={
+          <>
+            <Navbar />
+            <AboutDoctor />
+            <Footer />
+          </>
+        } 
+      />
       <Route
         path="/"
         element={
           <>
             <Home />
-
           </>
         }
       />
     </Routes>
-
-
-
-
-
-  
-   
-
-  
-
   )
 }
 
