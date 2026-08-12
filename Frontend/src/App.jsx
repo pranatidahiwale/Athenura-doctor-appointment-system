@@ -7,6 +7,7 @@ import ForgotPass from './Auth/forgotpass'
 import Home from './Pages/Home'
 import AboutDoctor from "./Pages/AboutDoctor";
 import Services from "./Pages/Services";
+import Testimonials from "./Pages/Testimonials";
 
 function App() {
   return (
@@ -30,6 +31,16 @@ function App() {
           <>
             <Navbar />
             <Services />
+            <Footer />
+          </>
+        }
+      />
+      <Route
+        path="/testimonials"
+        element={
+          <>
+            <Navbar />
+            <Testimonials />
             <Footer />
           </>
         }
