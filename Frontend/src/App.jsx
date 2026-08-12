@@ -8,14 +8,20 @@ import Home from './Pages/Home'
 import AboutDoctor from "./Pages/AboutDoctor";
 import Services from "./Pages/Services";
 import Testimonials from "./Pages/Testimonials";
+import SchedulePage from './Pages/Schedule'
+import Appointment from './Pages/Appointment'
+
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+
       <Route path="/signup" element={<Signup />} />
+
       <Route path="/forgot-password" element={<ForgotPass />} />
-      <Route 
+
+      <Route
         path="/aboutdoctors"
         element={
           <>
@@ -23,8 +29,29 @@ function App() {
             <AboutDoctor />
             <Footer />
           </>
-        } 
+        }
       />
+
+      <Route
+        path="/schedule"
+        element={
+          <>
+            <SchedulePage />
+            <Footer />
+          </>
+        }
+      />
+
+      <Route
+        path="/appointment"
+        element={
+          <>
+            <Appointment />
+            <Footer />
+          </>
+        }
+      />
+
       <Route
         path="/services"
         element={

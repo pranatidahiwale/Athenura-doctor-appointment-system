@@ -10,12 +10,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "AboutDoctors", path: "/aboutdoctors" },
+    { name: "Doctor", path: "/aboutdoctors" },
     { name: "Services", path: "/services" },
     { name: "Schedule", path: "/schedule" },
-    { name: "Testimonials", path: "/testimonials" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Contact Us", path: "/contact" },
   ];
 
   useEffect(() => {
@@ -71,11 +68,11 @@ const Navbar = () => {
           })}
         </div>
 
-        {/* Right Side - Compact & Balanced Login & Book Buttons */}
+        {/* Right Side - Custom Login & Book Buttons */}
         <div className="hidden lg:flex items-center gap-[8px]">
           <Link
             to="/login"
-            className="flex items-center gap-2 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[20px] py-[10px] text-[14px] font-semibold text-[#008F87] transition-all duration-200 hover:bg-[rgba(0,143,135,0.06)] active:scale-[0.97]"
+            className="flex items-center gap-2 rounded-[999px] bg-[#008F87] px-[20px] py-[10px] text-[14px] font-semibold text-white shadow-[0_5px_15px_rgba(0,143,135,0.18)] transition-all duration-200 hover:bg-[#007A73] hover:shadow-[0_8px_20px_rgba(0,143,135,0.25)] hover:-translate-y-[2px] active:scale-[0.97]"
           >
             <User size={16} />
             Login
@@ -83,7 +80,7 @@ const Navbar = () => {
 
           <Link
             to="/appointment"
-            className="flex items-center gap-2 rounded-[999px] bg-[#008F87] px-[22px] py-[11px] text-[14px] font-semibold text-white shadow-[0_5px_15px_rgba(0,143,135,0.18)] transition-all duration-200 hover:bg-[#007A73] hover:shadow-[0_8px_20px_rgba(0,143,135,0.25)] hover:-translate-y-[2px] active:scale-[0.97]"
+            className="flex items-center gap-2 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[22px] py-[11px] text-[14px] font-semibold text-[#008F87] transition-all duration-200 hover:bg-[rgba(0,143,135,0.06)] active:scale-[0.97]"
           >
             <Calendar size={15} />
             Book
@@ -127,7 +124,7 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[20px] py-[10px] text-center text-sm font-semibold text-[#008F87]"
+                  className="flex items-center justify-center gap-2 rounded-[999px] bg-[#008F87] px-[20px] py-[10px] text-center text-sm font-semibold text-white shadow-[0_7px_18px_rgba(0,143,135,0.20)]"
                 >
                   <User size={16} />
                   Login
@@ -136,7 +133,7 @@ const Navbar = () => {
                 <Link
                   to="/appointment"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-1.5 rounded-[999px] bg-[#008F87] px-[22px] py-[11px] text-center text-sm font-semibold text-white shadow-[0_7px_18px_rgba(0,143,135,0.20)]"
+                  className="flex items-center justify-center gap-1.5 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[22px] py-[11px] text-center text-sm font-semibold text-[#008F87]"
                 >
                   <Calendar size={15} />
                   Book
