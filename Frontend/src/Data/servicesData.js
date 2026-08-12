@@ -1,0 +1,467 @@
+import {
+  Users,
+  Heart,
+  ScanLine,
+  ShieldCheck,
+  Baby,
+  Dumbbell,
+  Brain,
+  Bone,
+  Eye,
+  Smile,
+  Pill,
+  Syringe,
+  Microscope,
+  Ear,
+} from "lucide-react";
+
+export const servicesData = [
+  {
+    id: 1,
+    slug: "general-consultation",
+    icon: Users,
+    title: "General Consultation",
+    shortDesc:
+      "Comprehensive check-ups and everyday health guidance from our primary care physicians.",
+    image:
+      "https://i.ibb.co/n8gs0DR7/Chat-GPT-Image-Aug-11-2026-05-07-45-PM.png",
+    overview:
+      "Our General Consultation service is the first step for most patients — a thorough, unhurried check-up where our primary care physicians review your medical history, current symptoms, and overall lifestyle to build a complete picture of your health. Whether it's a routine visit or a new concern, our doctors take the time to listen before recommending any next steps.",
+    keyServices: [
+      "Full body physical examination",
+      "Symptom evaluation and diagnosis",
+      "Chronic disease management (diabetes, BP, thyroid)",
+      "Health risk assessment",
+      "Referral to specialists when required",
+      "Digital prescription and follow-up scheduling",
+    ],
+    conditionsTreated: [
+      "Fever, cold & flu",
+      "Fatigue and general weakness",
+      "Digestive issues",
+      "Minor infections",
+      "Lifestyle-related health concerns",
+    ],
+    doctorsAvailable: 6,
+    avgRating: 4.8,
+    consultationFee: "₹499",
+    duration: "20–30 mins",
+    availability: "Mon–Sat, 9:00 AM – 8:00 PM",
+  },
+  {
+    id: 2,
+    slug: "cardiology",
+    icon: Heart,
+    title: "Cardiology",
+    shortDesc:
+      "Heart health screening, ECGs, and long-term cardiac care from experienced specialists.",
+    image:
+      "https://i.ibb.co/4bWzF1V/Chat-GPT-Image-Aug-11-2026-05-10-42-PM.png",
+    overview:
+      "Our Cardiology department is equipped to diagnose and manage everything from routine heart-health screenings to complex cardiac conditions. Using modern diagnostic tools like ECG, 2D Echo, and stress testing, our cardiologists build long-term treatment and prevention plans tailored to your heart's specific needs.",
+    keyServices: [
+      "ECG (Electrocardiogram)",
+      "2D Echocardiography",
+      "Treadmill Stress Test (TMT)",
+      "Blood pressure & cholesterol management",
+      "Post cardiac-event follow-up care",
+      "Heart disease risk screening",
+    ],
+    conditionsTreated: [
+      "Hypertension",
+      "Arrhythmia (irregular heartbeat)",
+      "Coronary artery disease",
+      "Heart failure",
+      "High cholesterol",
+    ],
+    doctorsAvailable: 4,
+    avgRating: 4.9,
+    consultationFee: "₹899",
+    duration: "30–40 mins",
+    availability: "Mon–Fri, 10:00 AM – 6:00 PM",
+  },
+  {
+    id: 3,
+    slug: "diagnostic-imaging",
+    icon: ScanLine,
+    title: "Diagnostic Imaging",
+    shortDesc:
+      "MRI, CT, and ultrasound imaging with fast, accurate reporting for confident diagnoses.",
+    image:
+      "https://i.ibb.co/KxFGLXb1/Chat-GPT-Image-Aug-11-2026-05-19-17-PM.png",
+    overview:
+      "Our in-house Diagnostic Imaging center offers high-resolution MRI, CT scans, X-rays, and ultrasound imaging, all reported by experienced radiologists. With same-day report turnaround for most scans, our imaging team helps your doctor reach an accurate diagnosis faster.",
+    keyServices: [
+      "MRI (Magnetic Resonance Imaging)",
+      "CT Scan (Computed Tomography)",
+      "Ultrasound / Sonography",
+      "Digital X-Ray",
+      "Doppler studies",
+      "Radiology report review with specialist",
+    ],
+    conditionsTreated: [
+      "Soft tissue & joint injuries",
+      "Internal organ abnormalities",
+      "Suspected tumors or growths",
+      "Fractures and bone injuries",
+      "Prenatal imaging",
+    ],
+    doctorsAvailable: 3,
+    avgRating: 4.7,
+    consultationFee: "₹1,200 – ₹4,500",
+    duration: "15–45 mins (scan dependent)",
+    availability: "Mon–Sat, 8:00 AM – 9:00 PM",
+  },
+  {
+    id: 4,
+    slug: "preventive-care",
+    icon: ShieldCheck,
+    title: "Preventive Care",
+    shortDesc:
+      "Screenings and vaccination programs designed to catch concerns before they grow.",
+    image:
+      "https://i.ibb.co/PZnCttjr/Chat-GPT-Image-Aug-11-2026-05-21-43-PM.png",
+    overview:
+      "Preventive Care is about staying ahead of illness rather than reacting to it. Our team designs personalized screening schedules, vaccination plans, and lifestyle programs based on your age, family history, and risk factors — helping you catch potential health issues long before they become serious.",
+    keyServices: [
+      "Annual health check-up packages",
+      "Cancer screening (breast, cervical, colon)",
+      "Vaccination & immunization planning",
+      "Diabetes & cholesterol screening",
+      "Lifestyle & nutrition counseling",
+      "Personalized preventive health plans",
+    ],
+    conditionsTreated: [
+      "Early-stage lifestyle diseases",
+      "Nutritional deficiencies",
+      "Genetic risk conditions",
+      "Pre-diabetes",
+    ],
+    doctorsAvailable: 5,
+    avgRating: 4.8,
+    consultationFee: "₹699",
+    duration: "30 mins",
+    availability: "Mon–Sat, 9:00 AM – 7:00 PM",
+  },
+  {
+    id: 5,
+    slug: "pediatrics",
+    icon: Baby,
+    title: "Pediatrics",
+    shortDesc:
+      "Gentle, attentive care for infants through teens, from checkups to growth tracking.",
+    image:
+      "https://i.ibb.co/ymH1GpJh/Chat-GPT-Image-Aug-11-2026-05-26-56-PM.png",
+    overview:
+      "Our Pediatrics team specializes in the physical, behavioral, and developmental health of children — from newborns to teenagers. We focus on creating a calm, friendly environment so both parents and children feel comfortable, while closely tracking growth milestones and immunization schedules.",
+    keyServices: [
+      "Newborn & infant care",
+      "Growth & development tracking",
+      "Childhood vaccination schedule",
+      "Nutrition & feeding guidance",
+      "Common childhood illness treatment",
+      "Behavioral & developmental screening",
+    ],
+    conditionsTreated: [
+      "Common cold, cough & fever",
+      "Allergies & asthma in children",
+      "Growth delays",
+      "Digestive issues in infants",
+      "Skin conditions (rashes, eczema)",
+    ],
+    doctorsAvailable: 4,
+    avgRating: 4.9,
+    consultationFee: "₹599",
+    duration: "20–30 mins",
+    availability: "Mon–Sat, 9:00 AM – 8:00 PM",
+  },
+  {
+    id: 6,
+    slug: "sports-medicine",
+    icon: Dumbbell,
+    title: "Sports Medicine",
+    shortDesc:
+      "Injury recovery and performance care for athletes at every level of activity.",
+    image:
+      "https://i.ibb.co/F46JjbvH/Chat-GPT-Image-Aug-11-2026-05-30-55-PM.png",
+    overview:
+      "Whether you're a professional athlete or a weekend runner, our Sports Medicine specialists help you recover from injuries faster and perform better. We combine physical assessment, rehabilitation planning, and injury-prevention strategies tailored to your sport and activity level.",
+    keyServices: [
+      "Sports injury diagnosis & treatment",
+      "Physiotherapy & rehabilitation",
+      "Muscle & ligament injury care",
+      "Performance & fitness assessment",
+      "Injury prevention programs",
+      "Return-to-play clearance",
+    ],
+    conditionsTreated: [
+      "Sprains & strains",
+      "ACL/ligament injuries",
+      "Tendonitis",
+      "Stress fractures",
+      "Post-surgery rehabilitation",
+    ],
+    doctorsAvailable: 3,
+    avgRating: 4.7,
+    consultationFee: "₹799",
+    duration: "30–45 mins",
+    availability: "Mon–Fri, 10:00 AM – 6:00 PM",
+  },
+  {
+    id: 7,
+    slug: "neurology",
+    icon: Brain,
+    title: "Neurology",
+    shortDesc:
+      "Diagnosis and treatment for conditions affecting the brain, spine, and nervous system.",
+    image:
+      "https://i.ibb.co/2033x07f/Chat-GPT-Image-Aug-11-2026-04-49-36-PM.png",
+    overview:
+      "Our Neurology department manages disorders of the brain, spinal cord, and nervous system, ranging from routine migraines to complex neurological conditions. Backed by advanced diagnostic support, our neurologists focus on accurate diagnosis and long-term management plans.",
+    keyServices: [
+      "Migraine & headache management",
+      "Epilepsy diagnosis & treatment",
+      "Stroke care & rehabilitation guidance",
+      "Nerve conduction studies",
+      "Memory & cognitive assessment",
+      "Sleep disorder evaluation",
+    ],
+    conditionsTreated: [
+      "Migraine & chronic headaches",
+      "Epilepsy / seizures",
+      "Stroke",
+      "Peripheral neuropathy",
+      "Parkinson's disease",
+    ],
+    doctorsAvailable: 2,
+    avgRating: 4.8,
+    consultationFee: "₹999",
+    duration: "30–40 mins",
+    availability: "Tue, Thu, Sat, 11:00 AM – 5:00 PM",
+  },
+  {
+    id: 8,
+    slug: "orthopedics",
+    icon: Bone,
+    title: "Orthopedics",
+    shortDesc:
+      "Care for bones, joints, and muscles, from fractures to long-term mobility issues.",
+    image:
+      "https://i.ibb.co/cK1QQ8Fs/Chat-GPT-Image-Aug-11-2026-04-51-14-PM.png",
+    overview:
+      "From acute fractures to chronic joint pain, our Orthopedics team helps patients regain mobility and live pain-free. We offer both non-surgical and surgical treatment options, along with rehabilitation support to ensure a complete recovery.",
+    keyServices: [
+      "Fracture diagnosis & treatment",
+      "Joint pain & arthritis management",
+      "Knee & hip replacement consultation",
+      "Spine & back pain treatment",
+      "Sports & accident injury care",
+      "Post-operative rehabilitation",
+    ],
+    conditionsTreated: [
+      "Fractures & dislocations",
+      "Arthritis",
+      "Back & neck pain",
+      "Ligament & tendon injuries",
+      "Osteoporosis",
+    ],
+    doctorsAvailable: 4,
+    avgRating: 4.8,
+    consultationFee: "₹799",
+    duration: "30 mins",
+    availability: "Mon–Sat, 9:00 AM – 7:00 PM",
+  },
+  {
+    id: 9,
+    slug: "ophthalmology",
+    icon: Eye,
+    title: "Ophthalmology",
+    shortDesc:
+      "Complete eye care, vision testing, and treatment for common and complex eye conditions.",
+    image:
+      "https://i.ibb.co/fGpB8Jrc/Chat-GPT-Image-Aug-11-2026-04-52-30-PM.png",
+    overview:
+      "Our Ophthalmology unit provides comprehensive eye care — from routine vision testing to advanced treatment for conditions like cataracts and glaucoma. Our specialists use modern diagnostic equipment to ensure precise evaluation and effective treatment plans.",
+    keyServices: [
+      "Comprehensive eye examination",
+      "Vision & refraction testing",
+      "Cataract evaluation & surgery consultation",
+      "Glaucoma screening & management",
+      "Retina evaluation",
+      "Contact lens & spectacle prescription",
+    ],
+    conditionsTreated: [
+      "Refractive errors (myopia, hyperopia)",
+      "Cataract",
+      "Glaucoma",
+      "Dry eyes",
+      "Conjunctivitis",
+    ],
+    doctorsAvailable: 3,
+    avgRating: 4.7,
+    consultationFee: "₹599",
+    duration: "20–30 mins",
+    availability: "Mon–Sat, 10:00 AM – 6:00 PM",
+  },
+  {
+    id: 10,
+    slug: "dental-care",
+    icon: Smile,
+    title: "Dental Care",
+    shortDesc:
+      "Routine cleanings, fillings, and oral health checkups for the whole family.",
+    image:
+      "https://i.ibb.co/whtd6gtS/Chat-GPT-Image-Aug-11-2026-04-53-57-PM.png",
+    overview:
+      "Our Dental Care team provides complete oral health services for every age group, from routine cleanings to more involved procedures like root canals and cosmetic dentistry, all delivered in a comfortable, patient-friendly setting.",
+    keyServices: [
+      "Dental cleaning & scaling",
+      "Cavity filling & root canal treatment",
+      "Tooth extraction",
+      "Braces & orthodontic consultation",
+      "Cosmetic dentistry (whitening, veneers)",
+      "Pediatric dental care",
+    ],
+    conditionsTreated: [
+      "Cavities & tooth decay",
+      "Gum disease",
+      "Tooth sensitivity",
+      "Misaligned teeth",
+      "Oral infections",
+    ],
+    doctorsAvailable: 3,
+    avgRating: 4.8,
+    consultationFee: "₹499",
+    duration: "30–60 mins",
+    availability: "Mon–Sat, 9:00 AM – 8:00 PM",
+  },
+  {
+    id: 11,
+    slug: "pharmacy",
+    icon: Pill,
+    title: "Pharmacy",
+    shortDesc:
+      "On-site prescription fulfillment and medication guidance from licensed pharmacists.",
+    image:
+      "https://i.ibb.co/LVx0P8P/Chat-GPT-Image-Aug-11-2026-04-55-13-PM.png",
+    overview:
+      "Our on-site Pharmacy ensures you can walk out with your prescribed medication the same day. Licensed pharmacists are available to guide you on dosage, interactions, and side effects, making sure your treatment plan is followed safely and correctly.",
+    keyServices: [
+      "Prescription medicine fulfillment",
+      "Over-the-counter medication guidance",
+      "Dosage & interaction counseling",
+      "Home delivery for regular medication",
+      "Refill reminders for chronic patients",
+      "Generic medicine alternatives",
+    ],
+    conditionsTreated: [
+      "Chronic medication management",
+      "Post-consultation prescriptions",
+      "Minor ailment OTC needs",
+    ],
+    doctorsAvailable: 2,
+    avgRating: 4.6,
+    consultationFee: "Free (medicine cost applies)",
+    duration: "5–10 mins",
+    availability: "Mon–Sun, 8:00 AM – 10:00 PM",
+  },
+  {
+    id: 12,
+    slug: "vaccination",
+    icon: Syringe,
+    title: "Vaccination",
+    shortDesc:
+      "Routine immunizations and travel vaccines for children and adults alike.",
+    image:
+      "https://i.ibb.co/VWtVtZh1/Chat-GPT-Image-Aug-11-2026-04-56-56-PM.png",
+    overview:
+      "Our Vaccination program covers routine childhood immunizations, adult booster doses, and travel-specific vaccines. All vaccines are stored and administered under strict safety protocols by trained nursing staff and supervising physicians.",
+    keyServices: [
+      "Childhood immunization schedule",
+      "Adult booster vaccines",
+      "Travel vaccination",
+      "Flu & seasonal vaccines",
+      "Vaccination record maintenance",
+      "Post-vaccine observation & care",
+    ],
+    conditionsTreated: [
+      "Preventable childhood diseases",
+      "Seasonal influenza",
+      "Travel-related infectious disease risk",
+    ],
+    doctorsAvailable: 2,
+    avgRating: 4.8,
+    consultationFee: "₹300 (+ vaccine cost)",
+    duration: "10–15 mins",
+    availability: "Mon–Sat, 9:00 AM – 6:00 PM",
+  },
+  {
+    id: 13,
+    slug: "pathology-lab-tests",
+    icon: Microscope,
+    title: "Pathology & Lab Tests",
+    shortDesc:
+      "Accurate lab diagnostics and blood work with quick turnaround on results.",
+    image:
+      "https://i.ibb.co/SX07gRZf/Chat-GPT-Image-Aug-11-2026-04-58-50-PM.png",
+    overview:
+      "Our in-house Pathology Lab conducts a wide range of blood, urine, and specialized diagnostic tests with fast, reliable reporting. Results are digitally shared and can be reviewed with your doctor to plan the right next steps.",
+    keyServices: [
+      "Complete blood count (CBC)",
+      "Blood sugar & HbA1c testing",
+      "Lipid profile & thyroid panel",
+      "Liver & kidney function tests",
+      "Urine & stool analysis",
+      "Home sample collection",
+    ],
+    conditionsTreated: [
+      "Diabetes monitoring",
+      "Thyroid disorders",
+      "Anemia",
+      "Infections",
+      "Organ function abnormalities",
+    ],
+    doctorsAvailable: 2,
+    avgRating: 4.7,
+    consultationFee: "₹250 – ₹2,000 (test dependent)",
+    duration: "10–15 mins (sample collection)",
+    availability: "Mon–Sun, 7:00 AM – 8:00 PM",
+  },
+  {
+    id: 14,
+    slug: "ent-care",
+    icon: Ear,
+    title: "ENT Care",
+    shortDesc:
+      "Treatment for ear, nose, and throat conditions from allergies to hearing concerns.",
+    image:
+      "https://i.ibb.co/PzPNwyY0/Chat-GPT-Image-Aug-11-2026-05-00-58-PM.png",
+    overview:
+      "Our ENT (Ear, Nose & Throat) specialists diagnose and treat a wide range of conditions affecting hearing, breathing, and the throat. From chronic sinus issues to hearing loss evaluation, our team provides both medical and minor procedural care.",
+    keyServices: [
+      "Ear examination & hearing tests",
+      "Sinus & nasal congestion treatment",
+      "Throat infection & tonsillitis care",
+      "Allergy evaluation",
+      "Minor ENT procedures",
+      "Snoring & sleep-breathing assessment",
+    ],
+    conditionsTreated: [
+      "Sinusitis",
+      "Tonsillitis",
+      "Hearing loss",
+      "Chronic ear infections",
+      "Nasal allergies",
+    ],
+    doctorsAvailable: 2,
+    avgRating: 4.7,
+    consultationFee: "₹599",
+    duration: "20–30 mins",
+    availability: "Mon–Sat, 10:00 AM – 6:00 PM",
+  },
+];
+
+export const getServiceBySlug = (slug) =>
+  servicesData.find((service) => service.slug === slug);
+
+export default servicesData;

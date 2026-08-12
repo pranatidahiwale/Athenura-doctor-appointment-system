@@ -11,7 +11,8 @@ import {
   Calendar,
   TrendingUp,
 } from "lucide-react";
-import logo from "./logo.png";
+import logo1 from "../assets/logo1.png";
+import { Link } from "react-router-dom";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -78,7 +79,9 @@ export default function MedicaCareLogin() {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="mb-10 lg:mb-14"
           >
-            <img src={logo} alt="MedicaCare" className="h-20 w-auto" />
+            <Link to="/">
+              <img src={logo1} alt="MedicaCare" className="h-20 w-auto" />
+            </Link>
           </motion.div>
 
           <motion.h1
@@ -128,21 +131,60 @@ export default function MedicaCareLogin() {
             ].map(({ Icon, title, desc }, index) => (
               <motion.div
                 key={title}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: -24, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
                 transition={{
-                  duration: 0.5,
-                  ease: "easeOut",
-                  delay: 0.35 + 0.1 * index,
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20,
+                  delay: 0.4 + 0.15 * index,
                 }}
                 className="flex items-start gap-4"
               >
-                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white text-teal-500 shadow-md shadow-slate-200/60">
+                <motion.div
+                  initial={{ scale: 0, boxShadow: "0 0 0 0 rgba(45,212,191,0)" }}
+                  animate={{
+                    scale: 1,
+                    boxShadow: [
+                      "0 0 0 0 rgba(45,212,191,0.6)",
+                      "0 0 18px 6px rgba(45,212,191,0.35)",
+                      "0 0 0 0 rgba(45,212,191,0)",
+                    ],
+                  }}
+                  transition={{
+                    scale: {
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 15,
+                      delay: 0.4 + 0.5 * index,
+                    },
+                    boxShadow: {
+                      duration: 0.9,
+                      delay: 0.4 + 0.5 * index,
+                      ease: "easeOut",
+                    },
+                  }}
+                  className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white text-teal-500 shadow-md shadow-slate-200/60"
+                >
                   <Icon className="h-5 w-5" strokeWidth={2} />
-                </div>
+                </motion.div>
                 <div>
-                  <p className="text-sm font-bold text-[#0a2530]">{title}</p>
-                  <p className="text-sm text-slate-400">{desc}</p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.7 + 0.5 * index }}
+                    className="text-sm font-bold text-[#0a2530]"
+                  >
+                    {title}
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.8 + 0.5 * index }}
+                    className="text-sm text-slate-400"
+                  >
+                    {desc}
+                  </motion.p>
                 </div>
               </motion.div>
             ))}
@@ -210,7 +252,17 @@ export default function MedicaCareLogin() {
                         "0 0 0 2px rgba(34,211,238,0.4), 0 0 24px rgba(34,211,238,0.25)",
                     }}
                   >
-                    <Plus className="h-6 w-6 text-white" strokeWidth={3} />
+                    <motion.div
+                      animate={{ color: ["#ef4444", "#22c55e"] }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Plus className="h-6 w-6" strokeWidth={3} />
+                    </motion.div>
                   </div>
                 </motion.div>
 

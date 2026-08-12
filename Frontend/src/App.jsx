@@ -6,6 +6,7 @@ import Signup from './Auth/Signup'
 import ForgotPass from './Auth/forgotpass'
 import Home from './Pages/Home'
 import AboutDoctor from "./Pages/AboutDoctor";
+import Services from "./Pages/Services";
 
 function App() {
   return (
@@ -22,6 +23,16 @@ function App() {
             <Footer />
           </>
         } 
+      />
+      <Route
+        path="/services"
+        element={
+          <>
+            <Navbar />
+            <Services />
+            <Footer />
+          </>
+        }
       />
       <Route
         path="/"
