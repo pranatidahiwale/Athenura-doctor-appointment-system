@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   MapPin,
   Phone,
@@ -31,21 +32,30 @@ const Footer = () => {
           {/* Social Icons */}
           <div className="flex items-center gap-3 mt-5">
             <a
-              href="#"
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
               className="w-9 h-9 rounded-full border border-slate-700 bg-slate-900/50 flex items-center justify-center text-slate-300 hover:bg-teal-600 hover:border-teal-600 hover:text-white transition-all duration-200"
             >
               <FaFacebookF size={16} />
             </a>
 
             <a
-              href="#"
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
               className="w-9 h-9 rounded-full border border-slate-700 bg-slate-900/50 flex items-center justify-center text-slate-300 hover:bg-teal-600 hover:border-teal-600 hover:text-white transition-all duration-200"
             >
               <FaInstagram size={16} />
             </a>
 
             <a
-              href="#"
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
               className="w-9 h-9 rounded-full border border-slate-700 bg-slate-900/50 flex items-center justify-center text-slate-300 hover:bg-teal-600 hover:border-teal-600 hover:text-white transition-all duration-200"
             >
               <FaLinkedinIn size={16} />
@@ -60,33 +70,47 @@ const Footer = () => {
           </h4>
 
           <div className="flex flex-col gap-3">
-            <a
-              href="#"
+            <Link
+              to="/aboutdoctor"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               About Doctor
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Services
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/schedule"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Schedule
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/testimonials"
+              className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
+            >
+              Testimonials
+            </Link>
+
+            <Link
+              to="/faq"
+              className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
+            >
+              FAQ
+            </Link>
+
+            <Link
+              to="/contact"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Contact
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -97,33 +121,33 @@ const Footer = () => {
           </h4>
 
           <div className="flex flex-col gap-3">
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Cardiac Screening
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               ECG Testing
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Heart Monitoring
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="text-[14px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Consultation
-            </a>
+            </Link>
           </div>
         </div>
 

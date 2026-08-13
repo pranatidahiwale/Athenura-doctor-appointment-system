@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 
@@ -15,162 +16,55 @@ import Testimonials from "./Pages/Testimonials";
 import SchedulePage from "./Pages/Schedule";
 import Appointment from "./Pages/Appointment";
 
+// Yeh component page change hone par window ko top par scroll kar dega
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
+// Common Layout Component jisme Navbar aur Footer pehle se hain
+function PageLayout({ children }) {
+  return (
+    <>
+      <Navbar />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+    </>
+  );
+}
+
 function App() {
   return (
-    <Routes>
-
-      {/* Login */}
-      <Route
-        path="/login"
-        element={<Login />}
-      />
-
-      {/* Signup */}
-      <Route
-        path="/signup"
-        element={<Signup />}
-      />
-
-      {/* Forgot Password */}
-      <Route
-        path="/forgot-password"
-        element={<ForgotPass />}
-      />
-
-      {/* About Doctor */}
-      <Route
-        path="/aboutDoctor"
-        element={
-          <>
-            <Navbar />
-            <AboutDoctor />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* About Doctor - alternate URL */}
-      <Route
-        path="/aboutdoctors"
-        element={
-          <>
-            <Navbar />
-            <AboutDoctor />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* FAQ */}
-      <Route
-        path="/faq"
-        element={
-          <>
-            <Navbar />
-            <FAQ />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* Contact */}
-      <Route
-        path="/contact"
-        element={
-          <>
-            <Navbar />
-            <Contact />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* Schedule */}
-      <Route
-        path="/schedule"
-        element={
-          <>
-            <Navbar />
-            <SchedulePage />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* Appointment */}
-      <Route
-        path="/appointment"
-        element={
-          <>
-            <Navbar />
-            <Appointment />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* Services */}
-      <Route
-        path="/services"
-        element={
-          <>
-            <Navbar />
-            <Services />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* Testimonials */}
-      <Route
-        path="/testimonials"
-        element={
-          <>
-            <Navbar />
-            <Testimonials />
-            <Footer />
-          </>
-        }
-      />
-
-      {/* Home */}
-      <Route
-        path="/"
-        element={
-          <>
-            <Home />
-          </>
-        }
-      />
-
-    </Routes>
     <div className="min-h-screen flex flex-col bg-transparent">
       
-      <Navbar />
+      {/* ScrollToTop component ko yaha routes ke upar rakha hai */}
+      <ScrollToTop />
+      
+      <Routes>
+        {/* Authentication Pages (Ab inme bhi Navbar aur Footer aa jayega) */}
+        <Route path="/login" element={<PageLayout><Login /></PageLayout>} />
+        <Route path="/signup" element={<PageLayout><Signup /></PageLayout>} />
+        <Route path="/forgot-password" element={<PageLayout><ForgotPass /></PageLayout>} />
 
-      <main className="flex-grow">
-        <Routes>
-          {/* Authentication Pages  */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPass />} />
+        {/* Main Pages */}
+        <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+        <Route path="/aboutdoctor" element={<PageLayout><AboutDoctor /></PageLayout>} />
+        <Route path="/faq" element={<PageLayout><FAQ /></PageLayout>} />
+        <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
+        <Route path="/services" element={<PageLayout><Services /></PageLayout>} />
+        <Route path="/testimonials" element={<PageLayout><Testimonials /></PageLayout>} />
+        <Route path="/schedule" element={<PageLayout><SchedulePage /></PageLayout>} />
+        <Route path="/appointment" element={<PageLayout><Appointment /></PageLayout>} />
+      </Routes>
 
-          {/* Main Pages */}
-          <Route path="/" element={<Home />} />
-          <Route path="/aboutdoctor" element={<AboutDoctor />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/testimonials" element={<Testimonials />} />
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/appointment" element={<Appointment />} />
-        </Routes>
-      </main>
-
-      {/* Global Footer */}
-      <Footer />
     </div>
-
   );
 }
 

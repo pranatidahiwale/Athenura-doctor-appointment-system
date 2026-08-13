@@ -15,8 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
+
 
 /* ================= DATA ================= */
 
@@ -129,7 +128,7 @@ const Contact = () => {
 
   return (
     <div className="w-full bg-[#f3f6ff] font-[Poppins,sans-serif] text-[#16263D] overflow-x-hidden text-[16px]">
-      <Navbar />
+     
 
       {/* ================= HERO ================= */}
       <section className="relative w-full overflow-hidden">
@@ -511,7 +510,7 @@ const Contact = () => {
         </motion.div>
       </section>
 
-      <Footer />
+      
     </div>
   );
 };
