@@ -71,104 +71,21 @@ const Field = ({ label, children }) => (
 const inputClasses =
   "w-full rounded-[10px] border border-[#D5DDDF] bg-[#FBFCFD] px-4 py-3 text-[14.5px] text-[#16263D] placeholder:text-[#9AA6AB] outline-none transition-all duration-300 focus:border-[#006B63] focus:bg-white focus:shadow-[0_0_0_4px_rgba(0,107,99,0.10)]";
 
-/* ================= HERO ILLUSTRATION ================= */
+/* ================= HERO BACKGROUND ================= */
 
-const ContactHeroIllustration = () => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.92, y: 20 }}
-    animate={{ opacity: 1, scale: 1, y: 0 }}
-    transition={{ duration: 0.75, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-    className="relative mx-auto w-full max-w-[420px]"
-  >
-    <svg
-      viewBox="0 0 420 420"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-full h-auto"
-    >
-      <defs>
-        <linearGradient id="cHeroBlob" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#E6F4F3" />
-          <stop offset="100%" stopColor="#CFEBE8" />
-        </linearGradient>
-        <linearGradient id="cHeroCard" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="100%" stopColor="#F7FBFA" />
-        </linearGradient>
-        <linearGradient id="cHeroTeal" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#006B63" />
-          <stop offset="100%" stopColor="#00857A" />
-        </linearGradient>
-      </defs>
-
-      {/* backdrop blob */}
-      <path
-        d="M210 40C280 35 355 75 370 145C385 215 355 285 295 325C235 365 155 375 100 335C45 295 25 220 40 155C55 90 140 45 210 40Z"
-        fill="url(#cHeroBlob)"
-      />
-
-      {/* floating dashed ring */}
-      <circle
-        cx="210"
-        cy="200"
-        r="150"
-        fill="none"
-        stroke="#8DE4DC"
-        strokeWidth="1.5"
-        strokeDasharray="4 8"
-        opacity="0.6"
-      />
-
-      {/* central card: envelope / message */}
-      <g>
-        <rect x="90" y="130" width="240" height="160" rx="20" fill="url(#cHeroCard)" stroke="#E3E8EA" />
-        {/* envelope shape */}
-        <rect x="115" y="160" width="190" height="120" rx="12" fill="#E6F4F3" stroke="#8DE4DC" />
-        <path
-          d="M115 168L210 235L305 168"
-          fill="none"
-          stroke="#006B63"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* small unread dot */}
-        <circle cx="292" cy="172" r="9" fill="#3B9CFF" />
-      </g>
-
-      {/* floating phone badge - top right */}
-      <motion.g
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <rect x="272" y="50" width="72" height="72" rx="18" fill="url(#cHeroTeal)" />
-        <path
-          d="M292 74C292 71 294 69 297 69H303C305 69 307 70 308 72L311 79C312 81 311 83 310 84L306 87C308 93 313 98 319 100L322 96C323 95 325 94 327 95L334 98C336 99 337 101 337 103V109C337 112 335 114 332 114C317 114 292 89 292 74Z"
-          fill="#FFFFFF"
-        />
-      </motion.g>
-
-      {/* floating pin badge - bottom left */}
-      <motion.g
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-      >
-        <rect x="45" y="255" width="76" height="76" rx="18" fill="#FFFFFF" stroke="#E3E8EA" />
-        <path
-          d="M83 273C72 273 64 281 64 292C64 306 83 322 83 322C83 322 102 306 102 292C102 281 94 273 83 273Z"
-          fill="none"
-          stroke="#006B63"
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-        />
-        <circle cx="83" cy="292" r="7" fill="#00857A" />
-      </motion.g>
-
-      {/* small floating dot accents */}
-      <circle cx="335" cy="220" r="6" fill="#3B9CFF" opacity="0.7" />
-      <circle cx="80" cy="120" r="5" fill="#8DE4DC" opacity="0.8" />
-      <circle cx="255" cy="345" r="7" fill="#006B63" opacity="0.35" />
-    </svg>
-  </motion.div>
+const ContactHeroBackground = () => (
+  <div className="pointer-events-none absolute inset-0">
+    <img
+      src="https://images.unsplash.com/photo-1758691462848-31a39258dbd8?auto=format&fit=crop&w=1600&q=80"
+      alt="Our care team is a phone call away"
+      className="h-full w-full object-cover"
+    />
+    {/* teal-to-dark wash for text legibility + brand consistency */}
+    <div
+      className="absolute inset-0"
+      style={{ background: "linear-gradient(100deg, rgba(9,32,45,0.92) 0%, rgba(0,60,55,0.82) 38%, rgba(0,71,66,0.55) 65%, rgba(0,71,66,0.30) 100%)" }}
+    />
+  </div>
 );
 
 /* ================= PAGE ================= */
@@ -215,54 +132,63 @@ const Contact = () => {
       <Navbar />
 
       {/* ================= HERO ================= */}
-      <section className="relative w-full border-t border-blue-100 overflow-hidden bg-gradient-to-br from-[#F7F9FC] via-[#EFF6F5] to-[#E6F1EE]">
-        <div
-          className="pointer-events-none absolute -top-24 -left-24 h-[360px] w-[360px] rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, #006B63, transparent 70%)" }}
-        />
-        <div
-          className="pointer-events-none absolute -bottom-32 -right-16 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, #3B9CFF, transparent 70%)" }}
-        />
+      <section className="relative w-full overflow-hidden">
+        <ContactHeroBackground />
 
-        <div className="relative z-10 max-w-[1180px] mx-auto px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-10 items-center">
-            {/* ---- Text column ---- */}
-            <div className="text-center lg:text-left">
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#B8D5D2] bg-white/70 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[1.5px] text-[#006B63] backdrop-blur-sm"
+        <div className="relative z-10 max-w-[1180px] mx-auto px-6 lg:px-8 py-24 sm:py-28 lg:py-36">
+          <div className="max-w-[640px] text-center mx-auto lg:mx-0 lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[1.5px] text-white backdrop-blur-sm"
+            >
+              <MessageSquare size={14} strokeWidth={2.4} />
+              Get In Touch
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.08 }}
+              className="text-[32px] sm:text-[42px] lg:text-[46px] font-bold leading-[1.15] text-white"
+            >
+              We'd love to hear
+              <br className="hidden lg:block" /> from you
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.16 }}
+              className="mt-4 max-w-[520px] mx-auto lg:mx-0 text-[16px] sm:text-[17px] leading-[1.7] text-[#DCE9E7]"
+            >
+              Questions about a visit, your treatment plan, or billing?
+              Send us a message and our care team will get back to you
+              within one business day.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.24 }}
+              className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+            >
+              <a
+                href="tel:+910000000000"
+                className="flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#006B63] shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-transform duration-300 hover:-translate-y-0.5"
               >
-                <MessageSquare size={14} strokeWidth={2.4} />
-                Get In Touch
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.08 }}
-                className="text-[32px] sm:text-[42px] lg:text-[46px] font-bold leading-[1.15] text-[#10233d]"
+                <Phone size={16} strokeWidth={2.4} />
+                +91 00000 00000
+              </a>
+              <a
+                href="mailto:care@meridianheart.com"
+                className="flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-5 py-3 text-[14px] font-semibold text-white backdrop-blur-sm transition-transform duration-300 hover:-translate-y-0.5"
               >
-                We'd love to hear
-                <br className="hidden lg:block" /> from you
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.16 }}
-                className="mt-4 max-w-[520px] mx-auto lg:mx-0 text-[16px] sm:text-[17px] leading-[1.7] text-gray-700"
-              >
-                Questions about a visit, your treatment plan, or billing?
-                Send us a message and our care team will get back to you
-                within one business day.
-              </motion.p>
-            </div>
-
-            {/* ---- Illustration column ---- */}
-            <ContactHeroIllustration />
+                <Mail size={16} strokeWidth={2.4} />
+                care@meridianheart.com
+              </a>
+            </motion.div>
           </div>
         </div>
       </section>
