@@ -22,9 +22,8 @@ import {
   Smile,
 } from "lucide-react";
 
-import Navbar from "../Components/Navbar";
 import Hero from "../Components/Hero";
-import Footer from "../Components/Footer";
+
 import {
   stats,
   services,
@@ -32,7 +31,7 @@ import {
   patients,
 } from "../Data/doctorData.js";
 
-// Import local images from the assets folder
+
 import cardiacScreeningImg from "../assets/Hero-section/Cardiac-Screening.png";
 import heartFailureImg from "../assets/Hero-section/Heart-Failure-care.png";
 import hypertensionImg from "../assets/Hero-section/Hypertension-care.png";
@@ -74,7 +73,7 @@ const Counter = ({ target, suffix }) => {
 };
 
 const Home = () => {
-  // Map local images to your services based on title or index fallback
+  
   const mappedServices = services.map((service, index) => {
     let localImg = service.image;
     const titleLower = service.title?.toLowerCase() || "";
@@ -154,7 +153,7 @@ const Home = () => {
 
   return (
     <div className="w-full bg-[#f3f6ff] dark:bg-[#030712] font-[Poppins,sans-serif] text-[#16263D] dark:text-gray-100 overflow-x-hidden text-[16px] transition-colors duration-300">
-      <Navbar />
+     
 
       {/* ================= HERO SECTION ================= */}
       <Hero />
@@ -582,7 +581,7 @@ const Home = () => {
         </motion.div>
       </section>
 
-      <Footer />
+      
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from "../Components/Navbar";
-import { clinicContactData, mockSlots } from "../Data/doctorData";
+import { clinicContactData, mockSlots, mockDoctor } from "../Data/doctorData";
 import { 
   CheckCircle2, 
   PhoneCall, 
@@ -23,20 +22,7 @@ import {
 const Appointment = () => {
   const [currentStep, setCurrentStep] = useState(1);
   
-  // Fallback mock doctor object since it's not exported from doctorData.js
-  const mockDoctor = {
-    id: "doctor-001",
-    name: "Dr. Rajesh Malhotra",
-    specialization: "Cardiology Specialist",
-    experience: "15+ Years",
-    qualification: "MBBS, MD - Cardiology, FACC",
-    clinic: "Apollo Medical Center",
-    clinicAddress: clinicContactData?.address || "Athenura Healthcare Tower, Civil Lines, Nagpur, Maharashtra",
-    rating: 4.9,
-    reviews: 480,
-    consultationHours: "Monday - Friday, 08:00 AM - 05:00 PM",
-    contactNumber: clinicContactData?.phone || "+91 (0712) 555-0192"
-  };
+  
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -104,12 +90,7 @@ const Appointment = () => {
   return (
     <div className="font-['Poppins'] bg-gradient-to-br from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0] text-[#0F172A] min-h-screen pb-20 box-border selection:bg-[#0D9488] selection:text-white">
       
-      {/* Sticky Navbar Wrapper */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300">
-        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-3">
-          <Navbar /> 
-        </div>
-      </div>
+      
 
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 pt-6">
         

@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
+import React from "react";
 
 export const stats = [
   {
@@ -312,3 +313,4 @@ export const mockSlots = [
   "03:00 PM",
   "03:30 PM"
 ];
+

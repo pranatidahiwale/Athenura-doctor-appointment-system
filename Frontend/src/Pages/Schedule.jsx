@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from "../Components/Navbar";
 import ScheduleBgImg from '../assets/Sheadule-Section/Sheadule-Bg-Img.png';
 import { 
   Calendar, 
@@ -64,7 +63,7 @@ export default function SchedulePage() {
     }
   };
 
-  // Handler for the CTA button click to navigate directly to the Appointment page
+  
   const handleDirectBookingTrigger = () => {
     navigate('/appointment');
   };
@@ -102,10 +101,7 @@ export default function SchedulePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 selection:bg-[#009D95]/30 selection:text-[#009D95]" style={{ fontFamily: "'Poppins', sans-serif" }}>
-      {/* Sticky Navbar Container */}
-      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-xs border-b border-slate-200/80">
-        <Navbar />
-      </div>
+      
       
       {/* Hero Section */}
       <section className="relative h-[52vh] min-h-[460px] w-full overflow-hidden flex items-center">
