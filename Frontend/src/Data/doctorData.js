@@ -141,3 +141,174 @@ export const patients = [
       "Finding a cardiologist who listens carefully is rare. Dr. Malhotra gave me his full attention and structured an effective routine.",
   },
 ];
+
+
+// ==========================================
+// ATHENURA DOCTOR APPOINTMENT MANAGEMENT SYSTEM
+// Schedule.jsx - Dummy Data Configuration
+// ==========================================
+
+// src/Data/doctorData.js
+
+export const weeklyScheduleData = [
+  {
+    day: "Monday",
+    opening: "08:00 AM",
+    closing: "06:00 PM",
+    status: "Available"
+  },
+  {
+    day: "Tuesday",
+    opening: "08:00 AM",
+    closing: "06:00 PM",
+    status: "Available"
+  },
+  {
+    day: "Wednesday",
+    opening: "08:00 AM",
+    closing: "06:00 PM",
+    status: "Extended Hours"
+  },
+  {
+    day: "Thursday",
+    opening: "08:00 AM",
+    closing: "06:00 PM",
+    status: "Available"
+  },
+  {
+    day: "Friday",
+    opening: "08:00 AM",
+    closing: "05:00 PM",
+    status: "Available"
+  },
+  {
+    day: "Saturday",
+    opening: "-",
+    closing: "-",
+    status: "Closed"
+  },
+  {
+    day: "Sunday",
+    opening: "-",
+    closing: "-",
+    status: "Closed"
+  }
+];
+
+export const timeSlotsData = {
+  morning: [
+    { time: "08:30 AM", available: true },
+    { time: "09:15 AM", available: true },
+    { time: "10:00 AM", available: false },
+    { time: "10:45 AM", available: true },
+    { time: "11:30 AM", available: true }
+  ],
+  afternoon: [
+    { time: "01:00 PM", available: true },
+    { time: "01:30 PM", available: false },
+    { time: "02:00 PM", available: true },
+    { time: "02:45 PM", available: true },
+    { time: "03:30 PM", available: false },
+    { time: "04:30 PM", available: true }
+  ],
+  evening: [
+    { time: "05:15 PM", available: true },
+    { time: "06:00 PM", available: false }
+  ]
+};
+
+export const clinicHolidaysData = [
+  {
+    name: "Maharashtra Day",
+    date: "May 01, 2026",
+    status: "Holiday",
+    description: "State public holiday. Clinic remains closed."
+  },
+  {
+    name: "Dr. Mehta's Leave",
+    date: "June 15, 2026",
+    status: "Leave",
+    description: "Dr. Rajesh Mehta is on personal leave."
+  },
+  {
+    name: "Independence Day",
+    date: "August 15, 2026",
+    status: "Holiday",
+    description: "National holiday. All consultations are suspended."
+  },
+  {
+    name: "Ganesh Chaturthi",
+    date: "September 14, 2026",
+    status: "Holiday",
+    description: "Festival holiday. Clinic remains closed."
+  },
+  {
+    name: "Diwali Holiday",
+    date: "November 08, 2026",
+    status: "Holiday",
+    description: "Diwali festival celebration holiday."
+  }
+];
+
+export const doctorScheduleInfo = {
+  doctorName: "Dr. Rajesh Mehta",
+  qualification: "M.D.",
+  specialization: "General Physician",
+  clinicName: "Athenura Healthcare Clinic",
+  consultationDuration: "30 Minutes",
+  consultationMode: "In-Clinic & Online",
+  clinicStatus: "Open Today"
+};
+
+export const scheduleHeroData = {
+  badge: "Athenura Specialist Care",
+  title: "Professional Medical Care & Scheduling",
+  description: "Book your consultations effortlessly and receive expert medical attention tailored to your health needs.",
+  features: [
+    "Easy Scheduling",
+    "Real-time Availability",
+    "Trusted Care"
+  ],
+  status: "Active"
+};
+
+export const appointmentSummaryData = {
+  defaultMessage: "Please select an available time slot.",
+  selectedDateLabel: "Selected Date",
+  selectedTimeLabel: "Selected Time",
+  buttonText: "Book Your Appointment"
+};
+
+export const clinicContactData = {
+  phone: "+91 (0712) 555-0192",
+  email: "support@athenuraclinic.com",
+  address: "Athenura Healthcare Tower, Civil Lines, Nagpur, Maharashtra",
+  supportText: "Contact Athenura Clinic Support line for emergency queries."
+};
+
+export const mockDoctor = {
+  id: "doctor-001",
+  name: "Dr. Rajesh Malhotra",
+  specialization: "Cardiology Specialist",
+  experience: "15+ Years",
+  qualification: "MBBS, MD - Cardiology, FACC",
+  clinic: "Apollo Medical Center",
+  clinicAddress: "104, Health Avenue, Near Central Park, New Delhi",
+  rating: 4.9,
+  reviews: 480,
+  consultationHours: "Monday - Friday, 08:00 AM - 05:00 PM",
+  contactNumber: "+91 (011) 2345-6789"
+};
+
+export const mockSlots = [
+  "09:00 AM",
+  "09:30 AM",
+  "10:00 AM",
+  "10:30 AM",
+  "11:00 AM",
+  "11:30 AM",
+  "02:00 PM",
+  "02:30 PM",
+  "03:00 PM",
+  "03:30 PM"
+];
