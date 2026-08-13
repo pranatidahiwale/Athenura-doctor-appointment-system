@@ -14,8 +14,7 @@ import {
   MessageCircleQuestion,
 } from "lucide-react";
 
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
+
 
 /* ================= DATA ================= */
 
@@ -231,7 +230,7 @@ const FAQ = () => {
 
   return (
     <div className="w-full bg-[#f3f6ff] font-[Poppins,sans-serif] text-[#16263D] overflow-x-hidden text-[16px]">
-      <Navbar />
+     
 
       {/* ================= HERO ================= */}
       <section className="relative w-full overflow-hidden min-h-[560px] sm:min-h-[620px] lg:min-h-[680px] flex items-center">
@@ -433,7 +432,7 @@ const FAQ = () => {
         </motion.div>
       </section>
 
-      <Footer />
+      
     </div>
   );
 };

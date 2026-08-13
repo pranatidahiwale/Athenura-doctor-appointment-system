@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScheduleBgImg from '../assets/Sheadule-Section/Sheadule-Bg-Img.png';
 import { 
@@ -33,10 +33,7 @@ export default function SchedulePage() {
   const [error, setError] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  
-  const bookingFormRef = useRef(null);
-
-  // Automatically scroll to and highlight the appointment section on mount
+  // Automatically scroll karwane wala code yahan se hata diya gaya hai
   useEffect(() => {
     const fetchScheduleData = async () => {
       setLoading(true);
@@ -50,11 +47,6 @@ export default function SchedulePage() {
     };
 
     fetchScheduleData();
-
-    // Automatically scroll to the slots/booking action container when page opens
-    if (bookingFormRef.current) {
-      bookingFormRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   }, []);
 
   const handleSlotSelect = (slotObj) => {
@@ -63,7 +55,6 @@ export default function SchedulePage() {
     }
   };
 
-  
   const handleDirectBookingTrigger = () => {
     navigate('/appointment');
   };
@@ -101,7 +92,6 @@ export default function SchedulePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 selection:bg-[#009D95]/30 selection:text-[#009D95]" style={{ fontFamily: "'Poppins', sans-serif" }}>
-      
       
       {/* Hero Section */}
       <section className="relative h-[52vh] min-h-[460px] w-full overflow-hidden flex items-center">
@@ -231,7 +221,7 @@ export default function SchedulePage() {
         </div>
 
         {/* Lower Grid: Available Slots & Clinic Holidays */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" ref={bookingFormRef} id="appointments">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" id="appointments">
           
           {/* Today's Available Slots (Span 8) */}
           <div className="lg:col-span-8 bg-white backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl">
