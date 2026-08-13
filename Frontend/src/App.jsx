@@ -5,7 +5,9 @@ import Login from './Auth/Login'
 import Signup from './Auth/Signup'
 import ForgotPass from './Auth/forgotpass'
 import Home from './Pages/Home'
-import AboutDoctor from "./Pages/AboutDoctor";
+import AboutDoctor from '../src/Pages/AboutDoctor'
+import FAQ from '../src/Pages/FAQ';
+import Contact from '../src/Pages/Contact';
 import Services from "./Pages/Services";
 import Testimonials from "./Pages/Testimonials";
 import SchedulePage from './Pages/Schedule'
@@ -20,6 +22,12 @@ function App() {
       <Route path="/signup" element={<Signup />} />
 
       <Route path="/forgot-password" element={<ForgotPass />} />
+      <Route path="/aboutDoctor" element={<>  <Navbar /> <AboutDoctor /> <Footer /></>} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/contact" element={<Contact />} />
+        <Route
+        path="/"
+
 
       <Route
         path="/aboutdoctors"
