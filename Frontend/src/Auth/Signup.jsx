@@ -15,7 +15,8 @@ import {
   Calendar,
   TrendingUp,
 } from "lucide-react";
-import logo from "./logo.png";
+import logo1 from "../assets/logo1.png";
+import { Link } from "react-router-dom";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -55,6 +56,7 @@ export default function MedicaCareRegister() {
     agreed: false,
   });
   const [errors, setErrors] = useState({});
+  const [agreedShake, setAgreedShake] = useState(0);
 
   const update = (field) => (e) => {
     const value = field === "agreed" ? e.target.checked : e.target.value;
@@ -81,7 +83,10 @@ export default function MedicaCareRegister() {
     if (form.confirmPassword !== form.password || !form.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
-    if (!form.agreed) newErrors.agreed = "You must accept the Terms & Conditions";
+    if (!form.agreed) {
+      newErrors.agreed = "You must accept the Terms & Conditions";
+      setAgreedShake((s) => s + 1);
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -94,7 +99,7 @@ export default function MedicaCareRegister() {
 
   return (
     <div className="min-h-screen w-full bg-white font-sans antialiased [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      <style>{`
+     <style>{`
         html, body {
           scrollbar-width: none;
           -ms-overflow-style: none;
@@ -102,16 +107,22 @@ export default function MedicaCareRegister() {
         html::-webkit-scrollbar, body::-webkit-scrollbar {
           display: none;
         }
+        @media (min-width: 1024px) and (min-height: 700px) {
+          html, body {
+            overflow: hidden;
+          }
+        }
       `}</style>
       <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row-reverse">
-        <div className="relative z-10 flex w-full flex-col items-stretch justify-center lg:justify-start bg-gradient-to-br from-white to-cyan-50 px-6 py-16 sm:px-10 min-h-[55vh] lg:min-h-0 lg:py-10 lg:w-[42%] lg:px-16 lg:pt-14 lg:pb-16">
-          <motion.div
+        <div className="relative z-10 flex w-full flex-col items-stretch justify-center bg-gradient-to-br from-white to-cyan-50 px-6 py-16 sm:px-10 min-h-[55vh] lg:min-h-0 lg:py-10 lg:w-[42%] lg:px-16">          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="mb-10 lg:mb-14"
           >
-            <img src={logo} alt="MedicaCare" className="h-20 w-auto" />
+             <Link to="/">
+              <img src={logo1} alt="MedicaCare" className="h-20 w-auto" />
+            </Link>
           </motion.div>
 
           <motion.h1
@@ -166,23 +177,61 @@ export default function MedicaCareRegister() {
                 transition={{
                   duration: 0.5,
                   ease: "easeOut",
-                  delay: 0.35 + 0.1 * index,
+                  delay: 0.35 + 0.5 * index,
                 }}
                 className="flex items-start gap-4"
               >
-                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white text-teal-500 shadow-md shadow-slate-200/60">
+                <motion.div
+                  initial={{ scale: 0, boxShadow: "0 0 0 0 rgba(45,212,191,0)" }}
+                  animate={{
+                    scale: 1,
+                    boxShadow: [
+                      "0 0 0 0 rgba(45,212,191,0.6)",
+                      "0 0 18px 6px rgba(45,212,191,0.35)",
+                      "0 0 0 0 rgba(45,212,191,0)",
+                    ],
+                  }}
+                  transition={{
+                    scale: {
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 15,
+                      delay: 0.4 + 0.5 * index,
+                    },
+                    boxShadow: {
+                      duration: 0.9,
+                      delay: 0.4 + 0.5 * index,
+                      ease: "easeOut",
+                    },
+                  }}
+                  className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white text-teal-500 shadow-md shadow-slate-200/60"
+                >
                   <Icon className="h-5 w-5" strokeWidth={2} />
-                </div>
+                </motion.div>
                 <div>
-                  <p className="text-sm font-bold text-[#0a2530]">{title}</p>
-                  <p className="text-sm text-slate-400">{desc}</p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.7 + 0.5 * index }}
+                    className="text-sm font-bold text-[#0a2530]"
+                  >
+                    {title}
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.8 + 0.5 * index }}
+                    className="text-sm text-slate-400"
+                  >
+                    {desc}
+                  </motion.p>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
 
-        <div className="relative flex w-full flex-col justify-between overflow-hidden bg-gradient-to-bl from-[#0a2a35] to-[#0f3a42] px-6 pb-8 pt-10 sm:px-10 lg:w-[58%] lg:px-16 lg:py-10 rounded-b-[48px] lg:rounded-none">
+        <div className="relative flex w-full flex-col justify-between overflow-hidden bg-gradient-to-bl from-[#0a2a35] to-[#0f3a42] px-6 pb-8 pt-10 sm:px-10 lg:w-[58%] lg:px-16 lg:py-10">
           <svg
             className="pointer-events-none absolute -right-1 top-0 hidden h-full w-24 lg:block"
             viewBox="0 0 100 800"
@@ -205,12 +254,11 @@ export default function MedicaCareRegister() {
             cols={4}
           />
 
-          <div className="relative z-10 flex flex-1 items-center justify-center py-6">
-            <motion.div
+          <div className="relative z-10 flex flex-1 items-center justify-center px-4 py-6 sm:px-6">            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-8"
+              className="w-full max-w-lg mx-auto rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-8"
             >
               <motion.div
                 variants={containerVariants}
@@ -218,48 +266,12 @@ export default function MedicaCareRegister() {
                 animate="show"
                 className="flex flex-col items-center"
               >
-                <motion.div
-                  variants={fieldVariants}
-                  className="relative mb-4 flex h-14 w-14 items-center justify-center"
-                >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 20,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    className="absolute inset-0 rounded-full border border-dashed border-cyan-400/40"
-                  >
-                    <span className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-400" />
-                    <span className="absolute -bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-400" />
-                  </motion.div>
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full"
-                    style={{
-                      background:
-                        "radial-gradient(circle, #0f3a42 0%, #0a2530 80%)",
-                      boxShadow:
-                        "0 0 0 2px rgba(34,211,238,0.4), 0 0 24px rgba(34,211,238,0.25)",
-                    }}
-                  >
-                    <Plus className="h-5 w-5 text-white" strokeWidth={3} />
-                  </div>
-                </motion.div>
-
                 <motion.h2
                   variants={fieldVariants}
                   className="text-3xl font-bold text-white"
                 >
-                  Create <span className="text-cyan-400">Account</span>
+                  Sign <span className="text-cyan-400">Up</span>
                 </motion.h2>
-                <motion.p
-                  variants={fieldVariants}
-                  className="mt-2 text-sm text-gray-400"
-                >
-                  Register your clinic to get started
-                </motion.p>
-
                 <form onSubmit={handleRegister} className="mt-5 w-full">
                   <motion.p
                     variants={fieldVariants}
@@ -468,7 +480,15 @@ export default function MedicaCareRegister() {
                   </div>
 
                   <motion.div variants={fieldVariants} className="mt-3">
-                    <label className="flex cursor-pointer items-start gap-2 text-xs text-gray-400">
+                    <motion.label
+                      key={agreedShake}
+                      initial={errors.agreed ? { x: 0 } : false}
+                      animate={errors.agreed ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                      className={`flex cursor-pointer items-start gap-2 text-xs ${
+                        errors.agreed ? "text-red-400" : "text-gray-400"
+                      }`}
+                    >
                       <input
                         type="checkbox"
                         checked={form.agreed}
@@ -477,26 +497,32 @@ export default function MedicaCareRegister() {
                       />
                       <span>
                         I agree to the{" "}
-                        <a href="#" className="text-cyan-400 hover:underline">
+                        <a
+                          href="#"
+                          className={`hover:underline ${errors.agreed ? "text-red-400" : "text-cyan-400"}`}
+                        >
                           Terms &amp; Conditions
                         </a>{" "}
                         and{" "}
-                        <a href="#" className="text-cyan-400 hover:underline">
+                        <a
+                          href="#"
+                          className={`hover:underline ${errors.agreed ? "text-red-400" : "text-cyan-400"}`}
+                        >
                           Privacy Policy
                         </a>
                       </span>
-                    </label>
-                    <p className={`mt-1.5 h-4 text-xs text-red-400 ${errors.agreed ? "opacity-100" : "opacity-0"}`}>
-                      {errors.agreed || " "}
-                    </p>
+                    </motion.label>
                   </motion.div>
 
-                  <motion.div variants={fieldVariants} className="mt-4 w-full">
+                  <motion.div
+                    variants={fieldVariants}
+                    className="mt-4 flex w-full flex-col items-center justify-between gap-3 sm:flex-row"
+                  >
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-500 py-2.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/30 transition-shadow duration-200 hover:shadow-cyan-400/40"
+                      className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-500 px-8 py-2.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/30 transition-shadow duration-200 hover:shadow-cyan-400/40"
                     >
                       Create Account
                       <motion.span
@@ -508,21 +534,18 @@ export default function MedicaCareRegister() {
                         <ChevronRight className="h-4 w-4" />
                       </motion.span>
                     </motion.button>
+
+                    <p className="text-sm text-gray-400">
+                      Already have an account?{" "}
+                      <Link
+                        to="/login"
+                        className="font-semibold text-cyan-400 transition-colors duration-200 hover:text-cyan-300"
+                      >
+                        Login
+                      </Link>
+                    </p>
                   </motion.div>
                 </form>
-
-                <motion.p
-                  variants={fieldVariants}
-                  className="mt-4 text-center text-sm text-gray-400"
-                >
-                  Already have an account?{" "}
-                  <a
-                    href="login"
-                    className="font-semibold text-cyan-400 transition-colors duration-200 hover:text-cyan-300"
-                  >
-                    Login
-                  </a>
-                </motion.p>
               </motion.div>
             </motion.div>
           </div>
