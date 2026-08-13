@@ -9,6 +9,12 @@ import AboutDoctor from "./Pages/AboutDoctor";
 import Services from "./Pages/Services";
 import Testimonials from "./Pages/Testimonials";
 
+import DoctorsDashboard from "./DoctorDashboard/DoctorsDashboard";
+import Dashboard from "./DoctorDashboard/Dashboard";
+import AppointmentManagement from "./DoctorDashboard/AppointmentManagement";
+import Schedule from "./DoctorDashboard/Schedule";
+import ProfileSettings from "./DoctorDashboard/ProfileSettings";
+
 function App() {
   return (
     <Routes>
@@ -45,6 +51,13 @@ function App() {
           </>
         }
       />
+      <Route path="/doctor-dashboard" element={<DoctorsDashboard />}>
+        <Route index element={<Dashboard />} />
+        <Route path="appointments" element={<AppointmentManagement />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="profile" element={<ProfileSettings />} />
+      </Route>
+
       <Route
         path="/"
         element={
