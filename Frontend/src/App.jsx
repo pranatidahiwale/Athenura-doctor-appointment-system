@@ -18,12 +18,12 @@ import Appointment from "./Pages/Appointment";
 function App() {
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
-      {/* Global Navbar jo sabhi pages par upar float karega */}
+      
       <Navbar />
 
       <main className="flex-grow">
         <Routes>
-          {/* Authentication Pages (Agar yahan Navbar/Footer nahi chahiye toh inhe alag route structure mein rakh sakte hain, filhal ye main layout ke sath hain) */}
+          {/* Authentication Pages  */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPass />} />
