@@ -29,9 +29,9 @@ function App() {
         path="/"
         element={
           <>
-            <Navbar />
+           
             <Home />
-            <Footer />
+            
           </>
         }
       />
