@@ -54,7 +54,7 @@ const Hero = () => {
               </button>
 
               <button className="group inline-flex items-center gap-2 rounded-xl border border-[#b8ddd8] bg-white/90 backdrop-blur-md px-7 py-3.5 text-sm font-semibold text-[#315a55] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white">
-                <span>Find a Doctor</span>
+                <span>View Services</span>
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1 text-[#008f83]" />
               </button>
             </div>

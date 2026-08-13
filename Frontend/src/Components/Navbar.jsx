@@ -10,12 +10,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "AboutDoctors", path: "/aboutdoctors" },
+    { name: "Doctor", path: "/aboutdoctors" },
     { name: "Services", path: "/services" },
     { name: "Schedule", path: "/schedule" },
-    { name: "Testimonials", path: "/testimonials" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Contact Us", path: "/contact" },
   ];
 
   useEffect(() => {
@@ -31,17 +28,17 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="w-full flex justify-center pt-3 px-4 sticky top-[12px] z-[1000] font-['Poppins',sans-serif]">
+    <div className="sticky top-0 left-0 w-full z-[1000] font-['Poppins',sans-serif] bg-transparent">
       <nav
-        className={`w-full max-w-[1200px] h-[72px] rounded-[24px] border transition-all duration-300 px-[16px] py-[8px] flex items-center justify-between ${
+        className={`w-full h-[72px] border-b transition-all duration-300 px-6 flex items-center justify-between ${
           scrolled
-            ? "bg-[rgba(255,255,255,0.96)] shadow-[0_10px_35px_rgba(0,70,65,0.10)] border-[rgba(0,143,135,0.12)] backdrop-blur-[18px]"
-            : "bg-[rgba(255,255,255,0.92)] shadow-[0_8px_30px_rgba(0,70,65,0.08)] border-[rgba(0,143,135,0.08)] backdrop-blur-[18px]"
+            ? "bg-[rgba(255,255,255,0.96)] shadow-md border-slate-200 backdrop-blur-[18px]"
+            : "bg-[rgba(255,255,255,0.92)] border-slate-200/60 backdrop-blur-[18px]"
         }`}
       >
         {/* Logo & Brand */}
         <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-14 w-36 items-center justify-start overflow-hidden rounded-xl">
+          <div className="flex h-14 w-36 items-center justify-start overflow-hidden">
             <img 
               src={DoctorLogo} 
               alt="Athenura Logo" 
@@ -51,7 +48,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-1 lg:flex rounded-full bg-slate-50/80 p-1 border border-slate-100/80">
+        <div className="hidden items-center gap-2 lg:flex">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path;
 
@@ -59,10 +56,10 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`rounded-full px-[18px] py-[10px] text-[15px] font-medium transition-all duration-200 ${
+                className={`px-4 py-2 text-[15px] font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-[rgba(0,143,135,0.08)] text-[#008F87] font-semibold shadow-sm border border-[rgba(0,143,135,0.1)]"
-                    : "text-[#294946] hover:text-[#008F87] hover:bg-white/50"
+                    ? "text-[#008F87] font-semibold border-b-2 border-[#008F87]"
+                    : "text-[#294946] hover:text-[#008F87]"
                 }`}
               >
                 {link.name}
@@ -71,11 +68,11 @@ const Navbar = () => {
           })}
         </div>
 
-        {/* Right Side - Compact & Balanced Login & Book Buttons */}
+        {/* Right Side - Custom Login & Book Buttons (Pehle Jaise Rounded) */}
         <div className="hidden lg:flex items-center gap-[8px]">
           <Link
             to="/login"
-            className="flex items-center gap-2 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[20px] py-[10px] text-[14px] font-semibold text-[#008F87] transition-all duration-200 hover:bg-[rgba(0,143,135,0.06)] active:scale-[0.97]"
+            className="flex items-center gap-2 rounded-[999px] bg-[#008F87] px-[20px] py-[10px] text-[14px] font-semibold text-white shadow-[0_5px_15px_rgba(0,143,135,0.18)] transition-all duration-200 hover:bg-[#007A73] hover:shadow-[0_8px_20px_rgba(0,143,135,0.25)] hover:-translate-y-[2px] active:scale-[0.97]"
           >
             <User size={16} />
             Login
@@ -83,7 +80,7 @@ const Navbar = () => {
 
           <Link
             to="/appointment"
-            className="flex items-center gap-2 rounded-[999px] bg-[#008F87] px-[22px] py-[11px] text-[14px] font-semibold text-white shadow-[0_5px_15px_rgba(0,143,135,0.18)] transition-all duration-200 hover:bg-[#007A73] hover:shadow-[0_8px_20px_rgba(0,143,135,0.25)] hover:-translate-y-[2px] active:scale-[0.97]"
+            className="flex items-center gap-2 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[22px] py-[11px] text-[14px] font-semibold text-[#008F87] transition-all duration-200 hover:bg-[rgba(0,143,135,0.06)] active:scale-[0.97]"
           >
             <Calendar size={15} />
             Book
@@ -101,7 +98,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {mobileOpen && (
-          <div className="absolute left-4 right-4 top-[80px] rounded-[18px] border border-slate-100 bg-[#FFFFFF] p-6 shadow-[0_15px_40px_rgba(0,70,65,0.12)] lg:hidden animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="absolute left-0 right-0 top-[72px] border-b border-slate-200 bg-[#FFFFFF] p-6 shadow-lg lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path;
@@ -110,10 +107,10 @@ const Navbar = () => {
                     key={link.name}
                     to={link.path}
                     onClick={() => setMobileOpen(false)}
-                    className={`rounded-xl px-4 py-3 text-sm font-medium transition ${
+                    className={`px-4 py-3 text-sm font-medium transition ${
                       isActive
                         ? "bg-[rgba(0,143,135,0.08)] text-[#008F87] font-semibold"
-                        : "text-[#294946] hover:bg-[#E6F4F3] hover:text-[#008F87]"
+                        : "text-[#294946] hover:bg-slate-50 hover:text-[#008F87]"
                     }`}
                   >
                     {link.name}
@@ -123,11 +120,11 @@ const Navbar = () => {
 
               <div className="my-2 h-px bg-slate-100" />
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 pt-2">
                 <Link
                   to="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[20px] py-[10px] text-center text-sm font-semibold text-[#008F87]"
+                  className="flex items-center justify-center gap-2 rounded-[999px] bg-[#008F87] px-[20px] py-[10px] text-center text-sm font-semibold text-white shadow-[0_7px_18px_rgba(0,143,135,0.20)]"
                 >
                   <User size={16} />
                   Login
@@ -136,7 +133,7 @@ const Navbar = () => {
                 <Link
                   to="/appointment"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-1.5 rounded-[999px] bg-[#008F87] px-[22px] py-[11px] text-center text-sm font-semibold text-white shadow-[0_7px_18px_rgba(0,143,135,0.20)]"
+                  className="flex items-center justify-center gap-1.5 rounded-[999px] border border-[rgba(0,143,135,0.2)] bg-transparent px-[22px] py-[11px] text-center text-sm font-semibold text-[#008F87]"
                 >
                   <Calendar size={15} />
                   Book
