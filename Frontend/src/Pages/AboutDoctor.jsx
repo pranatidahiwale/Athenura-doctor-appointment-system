@@ -346,56 +346,48 @@ const expertiseAreas = [
     title: "Interventional Cardiology",
     description: "Advanced minimally invasive cardiovascular procedures and catheter-based treatments for structural heart disease.",
     tags: ["Catheterization", "Angioplasty"],
-    variant: "default",
   },
   {
     icon: "heart",
     title: "Heart Failure Management",
     description: "Comprehensive management and monitoring of heart failure and related cardiovascular conditions.",
     tags: ["Monitoring", "Long-term Care"],
-    variant: "dark",
   },
   {
     icon: "shield",
     title: "Preventive Cardiology",
     description: "Advanced screening, lifestyle counseling, and preventive strategies to reduce cardiovascular risk.",
     tags: ["Risk Analysis", "Lifestyle Coaching"],
-    variant: "mint",
   },
   {
     icon: "monitor",
     title: "Vascular Imaging",
     description: "High-quality echocardiography and cardiac imaging for precise diagnosis and ongoing monitoring.",
     tags: ["Echocardiography", "Cardiac MRI"],
-    variant: "default",
   },
   {
     icon: "stethoscope",
     title: "Cardiac Rehabilitation",
     description: "Structured recovery programs combining exercise therapy, education, and close monitoring after cardiac events or procedures.",
     tags: ["Exercise Therapy", "Recovery Plans"],
-    variant: "default",
   },
   {
     icon: "pulse",
     title: "Arrhythmia & ECG Monitoring",
     description: "Diagnosis and long-term management of irregular heart rhythms using advanced ECG and Holter monitoring.",
     tags: ["Holter Monitoring", "Rhythm Therapy"],
-    variant: "dark",
   },
   {
     icon: "shield",
     title: "Hypertension Management",
     description: "Personalized treatment plans to control blood pressure and reduce long-term cardiovascular complications.",
     tags: ["BP Monitoring", "Medication Review"],
-    variant: "mint",
   },
   {
     icon: "building",
     title: "Post-Surgical Cardiac Care",
     description: "Dedicated follow-up care and recovery support for patients after bypass surgery or valve procedures.",
     tags: ["Post-Op Care", "Follow-up"],
-    variant: "default",
   },
 ];
 
@@ -631,10 +623,6 @@ const Biography = () => {
         </Reveal>
       </div>
 
-      {/* =====================================================
-          QUOTE SECTION
-      ====================================================== */}
-
       <section className="px-5 pt-16 pb-16 sm:px-8 sm:pt-20 lg:px-16">
         <motion.div
           initial={{
@@ -843,39 +831,137 @@ const HonorCard = ({ item, index }) => {
   return (
     <div
       ref={ref}
-      className={`dap-reveal ${visible ? "dap-visible" : ""} dap-card-hover relative rounded-2xl p-6 overflow-hidden border`}
-      style={{
-        background: "linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 100%)",
-        borderColor: "rgba(255,255,255,0.14)",
-        boxShadow: "0 18px 40px -22px rgba(0,0,0,0.55)",
-        transitionDelay: `${index * 80}ms`,
-      }}
+      className={`dap-reveal ${visible ? "dap-visible" : ""} dap-card-hover rounded-2xl border bg-white p-7`}
+      style={{ borderColor: TOKENS.line, transitionDelay: `${index * 80}ms` }}
     >
-      <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-20 blur-2xl" style={{ backgroundColor: TOKENS.amber }} aria-hidden="true" />
-      <div className="relative h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: "rgba(185,134,46,0.18)" }}>
+      <div className="h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: "rgba(185,134,46,0.14)" }}>
         <Icon size={20} color={TOKENS.amber} />
       </div>
-      <h3 className="relative font-serif text-lg mb-2 text-white">{item.title}</h3>
-      <p className="relative text-sm leading-relaxed" style={{ color: "#C4D1D6" }}>{item.description}</p>
+      <h3 className="font-serif text-lg mb-2" style={{ color: TOKENS.ink }}>{item.title}</h3>
+      <p className="text-sm leading-relaxed" style={{ color: TOKENS.slate }}>{item.description}</p>
     </div>
   );
 };
 
+const UseCountUp = (target, duration = 1300, start = false) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!start) return undefined;
+    let startTime = null;
+    let raf;
+    const step = (ts) => {
+      if (startTime === null) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      setCount(Math.round(progress * target));
+      if (progress < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [start, target, duration]);
+  return count;
+};
+
+const HonorsBadge = () => {
+  const [started, setStarted] = useState(false);
+  const count = useCountUp(12, 1300, started);
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.6, y: 12 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      onViewportEnter={() => setStarted(true)}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.35 }}
+      className="absolute -bottom-5 left-5 sm:left-8 flex items-center gap-2.5 rounded-xl bg-white px-4 py-3"
+      style={{ boxShadow: "0 16px 32px -14px rgba(0,0,0,0.45)" }}
+    >
+      <motion.div
+        animate={{ rotate: [0, -8, 8, 0] }}
+        transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.4, ease: "easeInOut" }}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+        style={{ backgroundColor: "rgba(185,134,46,0.16)" }}
+      >
+        <Trophy size={18} color={TOKENS.amber} />
+      </motion.div>
+      <div className="leading-tight">
+        <p className="text-[13px] font-semibold whitespace-nowrap" style={{ color: TOKENS.ink }}>{count}+ Honors</p>
+        <p className="text-[11px] whitespace-nowrap" style={{ color: TOKENS.slate }}>Regional &amp; National</p>
+      </div>
+    </motion.div>
+  );
+};
+
 const HonorsSection = () => (
-  <section className="py-20 sm:py-28 px-6 sm:px-10" style={{ backgroundColor: TOKENS.ink }} aria-label="Honors and awards">
-    <div className="max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-14">
+  <section
+    className="relative py-20 sm:py-28 px-6 sm:px-10 overflow-hidden"
+    style={{ backgroundColor: TOKENS.paperAlt }}
+    aria-label="Honors and awards"
+  >
+    {/* ambient accents, toned to match the paper background */}
+    <motion.div
+      animate={{ scale: [1, 1.15, 1], opacity: [0.12, 0.22, 0.12] }}
+      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      className="pointer-events-none absolute -top-24 -left-16 h-72 w-72 rounded-full blur-3xl"
+      style={{ backgroundColor: TOKENS.cyan }}
+      aria-hidden="true"
+    />
+    <motion.div
+      animate={{ scale: [1, 1.1, 1], opacity: [0.08, 0.14, 0.08] }}
+      transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full blur-3xl"
+      style={{ backgroundColor: TOKENS.amber }}
+      aria-hidden="true"
+    />
+
+    {/* floating decorative icons */}
+    <div className="pointer-events-none absolute top-14 right-10 sm:right-24 opacity-10 dap-float-slow" aria-hidden="true">
+      <Trophy size={44} color={TOKENS.amber} />
+    </div>
+    <div className="pointer-events-none absolute bottom-16 left-10 sm:left-20 opacity-10 dap-float" aria-hidden="true">
+      <Sparkles size={36} color={TOKENS.teal} />
+    </div>
+
+    <div className="relative max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-20 sm:mb-24">
         <Reveal className="lg:col-span-6">
           <SectionHeading
             eyebrow="Recognition"
             title="Honors & Awards"
             description="A shelf that reflects fifteen years of clinical practice, research, and community leadership in cardiovascular care."
-            light
           />
+          <div className="mt-6 flex items-center gap-3">
+            <span className="h-[2px] w-10 rounded-full" style={{ backgroundColor: TOKENS.amber }} />
+            <span className="text-sm font-medium tracking-wide" style={{ color: TOKENS.teal }}>
+              15+ Years of Distinguished Practice
+            </span>
+          </div>
         </Reveal>
+
         <Reveal className="lg:col-span-6">
-          <div className="rounded-2xl overflow-hidden shadow-2xl">
-            <img src={AWARDS_PHOTO} alt="Dr. Malhotra's awards: Physician of the Year 2022, Outstanding Service in Healthcare trophy, Indian Heart Association certificate, and Lead Author award" className="w-full h-[260px] sm:h-[300px] object-cover" />
+          <div className="relative">
+            <motion.div
+              animate={{ opacity: [0.35, 0.6, 0.35] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -inset-3 rounded-[1.75rem] blur-lg"
+              style={{ background: `linear-gradient(135deg, ${TOKENS.cyan}33, ${TOKENS.amber}22)` }}
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, rotate: -1.5 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              whileHover={{ scale: 1.025, rotate: -0.6 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="relative rounded-2xl overflow-hidden shadow-xl border bg-white"
+              style={{ borderColor: TOKENS.line }}
+            >
+              <img
+                src={AWARDS_PHOTO}
+                alt="Dr. Malhotra's awards: Physician of the Year 2022, Outstanding Service in Healthcare trophy, Indian Heart Association certificate, and Lead Author award"
+                className="w-full h-[260px] sm:h-[300px] object-cover"
+              />
+            </motion.div>
+
+            <HonorsBadge />
           </div>
         </Reveal>
       </div>
@@ -888,36 +974,28 @@ const HonorsSection = () => (
   </section>
 );
 
-const VARIANT_STYLES = {
-  default: { bg: "#FFFFFF", border: TOKENS.line, titleColor: TOKENS.ink, bodyColor: TOKENS.slate, iconBg: "rgba(111,182,196,0.16)", iconColor: TOKENS.tealDark, tagBg: TOKENS.paperAlt, tagColor: TOKENS.tealDark },
-  dark: { bg: TOKENS.ink, border: TOKENS.ink, titleColor: "#FFFFFF", bodyColor: "#C4D1D6", iconBg: "rgba(111,182,196,0.2)", iconColor: TOKENS.cyan, tagBg: "rgba(255,255,255,0.1)", tagColor: TOKENS.cyan },
-  mint: { bg: TOKENS.mint, border: TOKENS.mint, titleColor: TOKENS.tealDark, bodyColor: TOKENS.inkSoft, iconBg: "rgba(31,111,102,0.16)", iconColor: TOKENS.tealDark, tagBg: "rgba(31,111,102,0.14)", tagColor: TOKENS.tealDark },
-};
-
 const ExpertiseCard = ({ item, index, animate = true }) => {
   const [ref, visible] = useReveal(0.2);
   const Icon = ICONS[item.icon] || Activity;
-  const v = VARIANT_STYLES[item.variant] || VARIANT_STYLES.default;
   const revealClasses = animate ? `dap-reveal ${visible ? "dap-visible" : ""}` : "";
 
   return (
     <div
       ref={animate ? ref : undefined}
-      className={`${revealClasses} dap-expertise-card rounded-2xl border p-6 h-full`}
+      className={`${revealClasses} dap-expertise-card rounded-2xl border bg-white p-6 h-full`}
       style={{
-        backgroundColor: v.bg,
-        borderColor: v.border,
+        borderColor: TOKENS.line,
         transitionDelay: animate ? `${index * 70}ms` : undefined,
       }}
     >
-      <div className="h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: v.iconBg }}>
-        <Icon size={20} color={v.iconColor} />
+      <div className="h-11 w-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: "rgba(111,182,196,0.16)" }}>
+        <Icon size={20} color={TOKENS.tealDark} />
       </div>
-      <h3 className="font-serif text-lg mb-1.5" style={{ color: v.titleColor }}>{item.title}</h3>
-      <p className="text-sm leading-relaxed mb-4" style={{ color: v.bodyColor }}>{item.description}</p>
+      <h3 className="font-serif text-lg mb-1.5" style={{ color: TOKENS.ink }}>{item.title}</h3>
+      <p className="text-sm leading-relaxed mb-4" style={{ color: TOKENS.slate }}>{item.description}</p>
       <div className="flex flex-wrap gap-2">
         {item.tags.map((tag) => (
-          <span key={tag} className="text-xs font-medium rounded-full px-2.5 py-1" style={{ backgroundColor: v.tagBg, color: v.tagColor }}>
+          <span key={tag} className="text-xs font-medium rounded-full px-2.5 py-1" style={{ backgroundColor: TOKENS.paperAlt, color: TOKENS.tealDark }}>
             {tag}
           </span>
         ))}
