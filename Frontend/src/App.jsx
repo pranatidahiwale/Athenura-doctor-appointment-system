@@ -17,6 +17,133 @@ import Appointment from "./Pages/Appointment";
 
 function App() {
   return (
+    <Routes>
+
+      {/* Login */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      {/* Signup */}
+      <Route
+        path="/signup"
+        element={<Signup />}
+      />
+
+      {/* Forgot Password */}
+      <Route
+        path="/forgot-password"
+        element={<ForgotPass />}
+      />
+
+      {/* About Doctor */}
+      <Route
+        path="/aboutDoctor"
+        element={
+          <>
+            <Navbar />
+            <AboutDoctor />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* About Doctor - alternate URL */}
+      <Route
+        path="/aboutdoctors"
+        element={
+          <>
+            <Navbar />
+            <AboutDoctor />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* FAQ */}
+      <Route
+        path="/faq"
+        element={
+          <>
+            <Navbar />
+            <FAQ />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Contact */}
+      <Route
+        path="/contact"
+        element={
+          <>
+            <Navbar />
+            <Contact />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Schedule */}
+      <Route
+        path="/schedule"
+        element={
+          <>
+            <Navbar />
+            <SchedulePage />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Appointment */}
+      <Route
+        path="/appointment"
+        element={
+          <>
+            <Navbar />
+            <Appointment />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Services */}
+      <Route
+        path="/services"
+        element={
+          <>
+            <Navbar />
+            <Services />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Testimonials */}
+      <Route
+        path="/testimonials"
+        element={
+          <>
+            <Navbar />
+            <Testimonials />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Home */}
+      <Route
+        path="/"
+        element={
+          <>
+            <Home />
+          </>
+        }
+      />
+
+    </Routes>
     <div className="min-h-screen flex flex-col bg-transparent">
       {/* Global Navbar jo sabhi pages par upar float karega */}
       <Navbar />
@@ -43,6 +170,7 @@ function App() {
       {/* Global Footer */}
       <Footer />
     </div>
+
   );
 }
 
