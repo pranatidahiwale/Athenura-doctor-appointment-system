@@ -1,36 +1,44 @@
-import { Routes, Route } from 'react-router-dom'
-import Navbar from '../src/Components/Navbar'
-import Footer from '../src/Components/Footer'
-import Login from './Auth/Login'
-import Signup from './Auth/Signup'
-import ForgotPass from './Auth/forgotpass'
-import Home from './Pages/Home'
-import AboutDoctor from '../src/Pages/AboutDoctor'
-import FAQ from '../src/Pages/FAQ';
-import Contact from '../src/Pages/Contact';
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
+
+import Login from "./Auth/Login";
+import Signup from "./Auth/Signup";
+import ForgotPass from "./Auth/forgotpass";
+
+import Home from "./Pages/Home";
+import AboutDoctor from "./Pages/AboutDoctor";
+import FAQ from "./Pages/FAQ";
+import Contact from "./Pages/Contact";
 import Services from "./Pages/Services";
 import Testimonials from "./Pages/Testimonials";
-import SchedulePage from './Pages/Schedule'
-import Appointment from './Pages/Appointment'
-
+import SchedulePage from "./Pages/Schedule";
+import Appointment from "./Pages/Appointment";
 
 function App() {
   return (
     <Routes>
+
+      {/* Authentication */}
       <Route path="/login" element={<Login />} />
-
       <Route path="/signup" element={<Signup />} />
-
       <Route path="/forgot-password" element={<ForgotPass />} />
-      <Route path="/aboutDoctor" element={<>  <Navbar /> <AboutDoctor /> <Footer /></>} />
-      <Route path="/faq" element={<FAQ />} />
-      <Route path="/contact" element={<Contact />} />
-        <Route
-        path="/"
 
-
+      {/* Home */}
       <Route
-        path="/aboutdoctors"
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Home />
+            <Footer />
+          </>
+        }
+      />
+
+      {/* Doctor */}
+      <Route
+        path="/aboutdoctor"
         element={
           <>
             <Navbar />
@@ -40,26 +48,31 @@ function App() {
         }
       />
 
+      {/* FAQ */}
       <Route
-        path="/schedule"
+        path="/faq"
         element={
           <>
-            <SchedulePage />
+            <Navbar />
+            <FAQ />
             <Footer />
           </>
         }
       />
 
+      {/* Contact */}
       <Route
-        path="/appointment"
+        path="/contact"
         element={
           <>
-            <Appointment />
+            <Navbar />
+            <Contact />
             <Footer />
           </>
         }
       />
 
+      {/* Services */}
       <Route
         path="/services"
         element={
@@ -70,6 +83,8 @@ function App() {
           </>
         }
       />
+
+      {/* Testimonials */}
       <Route
         path="/testimonials"
         element={
@@ -80,16 +95,33 @@ function App() {
           </>
         }
       />
+
+      {/* Schedule */}
       <Route
-        path="/"
+        path="/schedule"
         element={
           <>
-            <Home />
+            <Navbar />
+            <SchedulePage />
+            <Footer />
           </>
         }
       />
+
+      {/* Appointment */}
+      <Route
+        path="/appointment"
+        element={
+          <>
+            <Navbar />
+            <Appointment />
+            <Footer />
+          </>
+        }
+      />
+
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;
