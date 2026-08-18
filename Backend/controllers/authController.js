@@ -1,4 +1,5 @@
  import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import Doctor from "../models/Doctor.js";
 
 // Doctor Signup Controller
@@ -51,14 +52,61 @@ export const loginDoctor = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password." });
     }
 
+    // Generate JWT Token
+    const token = jwt.sign(
+      { id: doctor._id },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "7d" }
+    );
+
     res.status(200).json({
       message: "Login successful",
+      token,
       doctor: {
         id: doctor._id,
         fullName: doctor.fullName,
         email: doctor.email,
         clinicName: doctor.clinicName,
       },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+// Get Doctor Profile Controller
+export const getDoctorProfile = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.user.id).select("-password");
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found." });
+    }
+    res.status(200).json(doctor);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Update Doctor Profile Controller
+export const updateDoctorProfile = async (req, res) => {
+  try {
+    const updates = req.body;
+    
+    // Prevent updating password through this route for security
+    delete updates.password;
+
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      req.user.id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found." });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully!",
+      doctor: updatedDoctor,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

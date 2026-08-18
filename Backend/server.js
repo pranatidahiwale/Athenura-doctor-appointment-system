@@ -14,7 +14,11 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
-app.use("/api/auth", authRoutes);
+// Change this:
+// app.use("/api/auth", authRoutes);
+
+// To this:
+app.use("/api/doctors", authRoutes);
 
 // Database Connection & Server Start
 const PORT = process.env.PORT || 5000;

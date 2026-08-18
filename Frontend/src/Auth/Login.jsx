@@ -12,7 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -38,7 +38,7 @@ const fieldVariants = {
 };
 
 export default function MedicaCareLogin() {
-  const navigate = useNavigate(); // Added navigation hook
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,32 +64,33 @@ export default function MedicaCareLogin() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Connected Handle Login to Backend API
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    // 1. Run form validation first! If it fails, stop execution.
     if (!validate()) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("http://localhost:5000/api/doctors/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+      
       const data = await response.json();
-
+      
       if (response.ok) {
-        alert("Login successful!");
-        // If your backend returns a token, store it:
-        // localStorage.setItem("token", data.token);
+        // 2. Save the token to localStorage
+        localStorage.setItem("token", data.token);
         
-        navigate("/doctor-dashboard"); // Redirect to your dashboard or home page
+        // 3. Redirect to profile page using React Router's navigate
+        navigate("/doctor-dashboard"); 
       } else {
-        alert(data.message || "Login failed");
+        alert(data.message);
       }
     } catch (err) {
-      console.error("Error during login:", err);
-      alert("Server error. Please make sure your backend server is running.");
+      console.error("Login error:", err);
+      alert("Something went wrong. Please check if your backend server is running.");
     }
   };
 
