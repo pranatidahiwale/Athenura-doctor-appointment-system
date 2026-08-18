@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   User,
@@ -15,7 +16,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import logo1 from "../assets/logo1.png";
-import { Link } from "react-router-dom";
+
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -72,6 +73,7 @@ const InputField = ({
 );
 
 export default function MedicaCareRegister() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm] = useState({
@@ -121,10 +123,37 @@ export default function MedicaCareRegister() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleRegister = (e) => {
+   const handleRegister = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log("Register attempt with:", form);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: form.fullName,
+          phoneNumber: form.phone,
+          email: form.email,
+          clinicName: form.clinicName,
+          clinicAddress: form.clinicAddress,
+          medicalRegistrationNo: form.regNumber,
+          password: form.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Doctor registered successfully!");
+        navigate("/login"); // Redirects to your login page
+      } else {
+        alert(data.message || "Signup failed");
+      }
+    } catch (err) {
+      console.error("Error during signup:", err);
+      alert("Server error. Please make sure your backend server is running.");
+    }
   };
 
   return (
