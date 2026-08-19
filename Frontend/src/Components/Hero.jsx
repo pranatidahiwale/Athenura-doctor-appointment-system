@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   CheckCircle2,
@@ -41,22 +42,31 @@ const Hero = () => {
               </span>
             </h1>
 
-            {/* Sub Heading */}
-            <h2 className="mt-4 text-2xl font-bold text-[#009b8d] sm:text-3xl drop-shadow-sm font-['Poppins',sans-serif]">
-              Quality Care Near You
-            </h2>
+            
 
             {/* Buttons */}
             <div className="mt-8 flex flex-wrap gap-4">
-              <button className="group inline-flex items-center gap-2 rounded-xl bg-[#008f83] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#008f83]/20 transition-all hover:-translate-y-0.5 hover:bg-[#00766d]">
-                <span>Book Appointment</span>
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-              </button>
+              <Link
+              to="/appointment"
+              className="group inline-flex items-center gap-2 rounded-xl bg-[#008f83] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#008f83]/20 transition-all hover:-translate-y-0.5 hover:bg-[#00766d]"
+              >
+              <span>Book Appointment</span>
+              <ArrowRight
+              size={16}
+              className="transition-transform group-hover:translate-x-1"
+              />
+              </Link>
 
-              <button className="group inline-flex items-center gap-2 rounded-xl border border-[#b8ddd8] bg-white/90 backdrop-blur-md px-7 py-3.5 text-sm font-semibold text-[#315a55] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white">
-                <span>View Services</span>
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1 text-[#008f83]" />
-              </button>
+              <Link
+            to="/services"
+             className="group inline-flex items-center gap-2 rounded-xl border border-[#b8ddd8] bg-white/90 backdrop-blur-md px-7 py-3.5 text-sm font-semibold text-[#315a55] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white"
+               >
+             <span>View Services</span>
+              <ArrowRight
+             size={16}
+              className="transition-transform group-hover:translate-x-1 text-[#008f83]"
+             />
+             </Link>
             </div>
 
             {/* Small Modern Feature Cards */}

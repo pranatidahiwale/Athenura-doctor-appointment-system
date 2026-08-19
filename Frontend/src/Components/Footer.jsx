@@ -14,13 +14,22 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-[#0a0f1d] border-t border-slate-800 px-6 sm:px-10 lg:px-12 pt-14 pb-8 font-[Poppins,sans-serif]">
+    <footer className="w-full bg-black border-t border-slate-800 px-6 sm:px-10 lg:px-12 pt-14 pb-8 font-[Poppins,sans-serif]">
       
-      {/* Main Footer */}
-      <div className="mx-auto max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.1fr_1.2fr] gap-10 lg:gap-14">
+      {/* Main Footer - 4 Equal/Balanced Columns */}
+      <div className="mx-auto max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
 
-        {/* About */}
+        {/* Column 1: Logo, About & Socials */}
         <div>
+          {/*Logo*/}
+          <div className="flex items-center -mt-6 -ml-2 mb-2">
+            <img 
+              src="/Footer-logo.jpg" 
+              alt="Athenura Logo" 
+              className="w-28 h-28 object-contain rounded-md"
+            />
+          </div>
+
           <p className="text-[14px] leading-[1.8] text-slate-400 font-normal">
             Leading the way in cardiovascular care
             <br />
@@ -63,7 +72,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Quick Links */}
+        {/* Column 2: Quick Links */}
         <div>
           <h4 className="text-[13px] font-semibold tracking-wider text-white mb-5 uppercase">
             Quick Links
@@ -114,7 +123,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Services */}
+        {/* Column 3: Services */}
         <div>
           <h4 className="text-[13px] font-semibold tracking-wider text-white mb-5 uppercase">
             Services
@@ -151,7 +160,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Contact Info */}
+        {/* Column 4: Contact Info */}
         <div>
           <h4 className="text-[13px] font-semibold tracking-wider text-white mb-5 uppercase">
             Contact Info
@@ -211,17 +220,17 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-[12px] text-slate-500">
-            © 2026 Cardiovascular Care. All rights reserved.
+            © 2026 ATHENURA. All rights reserved.
           </p>
 
           {/* Legal Links */}
           <div className="flex flex-wrap items-center gap-6">
-            <a
-              href="#"
+            <Link
+              to="/privacy-policy"
               className="text-[12px] text-slate-400 hover:text-teal-400 transition-colors"
             >
               Privacy Policy
-            </a>
+            </Link>
 
             <a
               href="#"

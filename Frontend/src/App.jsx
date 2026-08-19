@@ -16,7 +16,7 @@ import Testimonials from "./Pages/Testimonials";
 import SchedulePage from "./Pages/Schedule";
 import Appointment from "./Pages/Appointment";
 
-import DoctorsDashboard from "./DoctorDashboard/DoctorsDashboard"; // Added missing import
+import DoctorsDashboard from "./DoctorDashboard/DoctorsDashboard"; 
 import Dashboard from "./DoctorDashboard/Dashboard";
 import AppointmentManagement from "./DoctorDashboard/AppointmentManagement";
 import Schedule from "./DoctorDashboard/Schedule";
@@ -33,7 +33,7 @@ function ScrollToTop() {
   return null;
 }
 
-// PageLayout wrapper for standard pages (includes Navbar and Footer)
+// PageLayout wrapper for standard pages 
 function PageLayout({ children }) {
   return (
     <>
@@ -51,9 +51,9 @@ function App() {
       
       <Routes>
         {/* Auth Pages */}
-        <Route path="/login" element={<PageLayout><Login /></PageLayout>} />
-        <Route path="/signup" element={<PageLayout><Signup /></PageLayout>} />
-        <Route path="/forgot-password" element={<PageLayout><ForgotPass /></PageLayout>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />}/>
+        <Route path="/forgot-password" element={<ForgotPass />}/>
 
         {/* Main Website Pages */}
         <Route path="/" element={<PageLayout><Home /></PageLayout>} />
@@ -65,8 +65,8 @@ function App() {
         <Route path="/schedule" element={<PageLayout><SchedulePage /></PageLayout>} />
         <Route path="/appointment" element={<PageLayout><Appointment /></PageLayout>} />
 
-        {/* Doctor Dashboard (Nested Routes without standard Navbar/Footer) */}
-        <Route path="/doctor-dashboard/*" element={<DoctorsDashboard />}>
+        
+        <Route path="/doctor-dashboard" element={<DoctorsDashboard />}>
           <Route index element={<Dashboard />} />
           <Route path="appointments" element={<AppointmentManagement />} />
           <Route path="schedule" element={<Schedule />} />

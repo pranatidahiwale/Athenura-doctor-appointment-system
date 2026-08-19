@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
+
 
 import {
   Stethoscope,
@@ -509,13 +512,13 @@ const DoctorHero = () => (
         </div>
 
         <div className="dap-fade-up-4 flex flex-col sm:flex-row gap-3">
-          <a
-            href="#appointment"
-            className="dap-btn-primary inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold text-white"
-            style={{ backgroundColor: TOKENS.teal }}
-          >
+          <Link
+            to="/appointment"
+             className="dap-btn-primary inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold text-white"
+             style={{ backgroundColor: TOKENS.teal }}
+            >
             Book an Appointment <ArrowRight size={16} />
-          </a>
+            </Link>
           <a
             href="#expertise"
             className="dap-btn-ghost inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold border-2"
@@ -1076,22 +1079,24 @@ const AppointmentCTA = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="w-full lg:w-auto flex justify-start lg:justify-end"
             >
-              <motion.button
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative overflow-hidden flex w-full lg:w-auto min-w-[280px] items-center justify-center gap-3 rounded-[12px] bg-white px-8 py-4 text-[16px] font-semibold text-[#006B63] shadow-[0_8px_25px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
-              >
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F4F3] text-[#006B63] transition-colors duration-300 group-hover:bg-[#006B63] group-hover:text-white">
-                  <CalendarDays size={18} strokeWidth={2.2} />
-                </div>
-                <span>Book Appointment</span>
-                <ArrowRight
-                  size={18}
-                  strokeWidth={2.5}
-                  className="transform transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </motion.button>
+              <Link
+  to="/appointment"
+  className="group relative overflow-hidden flex w-full lg:w-auto min-w-[280px] items-center justify-center gap-3 rounded-[12px] bg-white px-8 py-4 text-[16px] font-semibold text-[#006B63] shadow-[0_8px_25px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
+>
+  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+
+  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F4F3] text-[#006B63] transition-colors duration-300 group-hover:bg-[#006B63] group-hover:text-white">
+    <CalendarDays size={18} strokeWidth={2.2} />
+  </div>
+
+  <span>Book Appointment</span>
+
+       <ArrowRight
+        size={18}
+         strokeWidth={2.5}
+         className="transform transition-transform duration-300 group-hover:translate-x-1"
+         />
+         </Link>
             </motion.div>
           </div>
         </motion.div>
