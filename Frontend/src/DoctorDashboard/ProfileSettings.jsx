@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -15,7 +15,7 @@ const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
 `;
 
-function Field({ label, value, onChange, type = "text", highlight, hint }) {
+function Field({ label, value, onChange, type = "text", highlight, hint, placeholder }) {
   return (
     <div>
       <p className="text-[12px] font-medium mb-1.5" style={{ color: "#63796F" }}>
@@ -25,6 +25,7 @@ function Field({ label, value, onChange, type = "text", highlight, hint }) {
         type={type}
         value={value}
         onChange={(e) => onChange && onChange(e.target.value)}
+        placeholder={placeholder}
         className="w-full rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium outline-none transition-colors"
         style={{
           border: `1px solid ${highlight ? "#B7D9CB" : "#DCEAE3"}`,
@@ -49,7 +50,7 @@ function SelectField({ label, value, onChange, options }) {
   const [open, setOpen] = useState(false);
   const ref = React.useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
@@ -68,8 +69,8 @@ function SelectField({ label, value, onChange, options }) {
         className="flex items-center justify-between rounded-xl px-3.5 py-2.5 w-full"
         style={{ border: "1px solid #DCEAE3", background: "#FBFEFC" }}
       >
-        <span className="text-[13.5px] font-medium" style={{ color: "#0E271F" }}>
-          {value}
+        <span className="text-[13.5px] font-medium" style={{ color: value ? "#0E271F" : "#8AA398" }}>
+          {value || "Select specialization"}
         </span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.15 }}>
           <ChevronDown size={15} color="#8AA398" />
@@ -120,13 +121,13 @@ function SelectField({ label, value, onChange, options }) {
   );
 }
 
-function SectionCard({ icon: Icon, title, children, delay = 0, className = "" }) {
+function SectionCard({ icon: Icon, title, children, delay = 0 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay }}
-      className={`rounded-2xl bg-white p-6 ${className}`}
+      className="rounded-2xl bg-white p-6"
       style={{ border: "1px solid #DCEAE3", boxShadow: "0 1px 2px rgba(14,39,31,0.04)" }}
     >
       <div className="flex items-center gap-2 mb-5 pb-4" style={{ borderBottom: "1px solid #ECF3EF" }}>
@@ -144,24 +145,60 @@ function SectionCard({ icon: Icon, title, children, delay = 0, className = "" })
 }
 
 export default function ProfileSettings() {
-  const [specialization, setSpecialization] = useState("Cardiology");
-  const [fullName, setFullName] = useState("Rajesh Malhotra");
-  const [email, setEmail] = useState("rajeshmalhotra@email.com");
-  const [phone, setPhone] = useState("+91 98765 43210");
-  const [years, setYears] = useState("15");
-  const [license, setLicense] = useState("MCI-77420-IND");
-  const [address, setAddress] = useState(
-    "204, Sai Complex, Wardha Road, Sadar, Nagpur, Maharashtra 440001"
-  );
-  const [fee, setFee] = useState("1200");
+  const [specialization, setSpecialization] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [years, setYears] = useState("");
+  const [medicalRegistrationNo, setMedicalRegistrationNo] = useState("");
+  const [clinicAddress, setClinicAddress] = useState("");
+  const [fee, setFee] = useState("");
   const [title, setTitle] = useState(
-    () => localStorage.getItem("doctorTitle") || "Senior Cardiologist"
+    () => localStorage.getItem("doctorTitle") || ""
   );
   const [photo, setPhoto] = useState(
     "https://i.ibb.co/bRyPh259/Atharv.png"
   );
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
   const fileInputRef = React.useRef(null);
+
+  // Fetch profile and authentication data from backend on load
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Pre-fill fields coming from signup/login info
+        setFullName(data.fullName || "");
+        setEmail(data.email || "");
+        setPhoneNumber(data.phoneNumber || "");
+
+        // Other fields remain blank or use whatever is stored in the database
+        setSpecialization(data.specialization || "");
+        setYears(data.years || "");
+        setMedicalRegistrationNo(data.medicalRegistrationNo || "");
+        setClinicAddress(data.clinicAddress || "");
+        setFee(data.fee || "");
+        setTitle(data.title || "");
+      }
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
@@ -171,24 +208,55 @@ export default function ProfileSettings() {
     }
   };
 
-  const handleSave = () => {
-    localStorage.setItem("doctorTitle", title);
-    window.dispatchEvent(new Event("doctorTitleChange"));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const updatedData = {
+        fullName,
+        email,
+        phoneNumber,
+        specialization,
+        years,
+        medicalRegistrationNo,
+        clinicAddress,
+        fee,
+        title,
+      };
+
+      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        localStorage.setItem("doctorTitle", title);
+        window.dispatchEvent(new Event("doctorTitleChange"));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } else {
+        alert("Failed to update profile");
+      }
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("Server error while saving.");
+    }
   };
 
   const handleCancel = () => {
-    setTitle(localStorage.getItem("doctorTitle") || "Senior Cardiologist");
-    setSpecialization("Cardiology");
-    setFullName("Rajesh Malhotra");
-    setEmail("rajeshmalhotra@email.com");
-    setPhone("+91 98765 43210");
-    setYears("15");
-    setLicense("MCI-77420-IND");
-    setAddress("204, Sai Complex, Wardha Road, Sadar, Nagpur, Maharashtra 440001");
-    setFee("1200");
+    fetchProfile();
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center text-[#63796F]">
+        Loading profile settings...
+      </div>
+    );
+  }
 
   return (
     <div
@@ -253,12 +321,12 @@ export default function ProfileSettings() {
               className="text-[19px] font-semibold"
               style={{ fontFamily: "'Fraunces', serif", color: "#0E271F" }}
             >
-              Dr. {fullName}
+              Dr. {fullName || "Doctor"}
             </h2>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Senior Gynaecologist"
+              placeholder="e.g. Senior Cardiologist"
               className="text-[13.5px] mb-2.5 w-full sm:w-auto bg-transparent outline-none border-b border-dashed text-center sm:text-left"
               style={{ color: "#63796F", borderColor: "#DCEAE3" }}
             />
@@ -275,7 +343,7 @@ export default function ProfileSettings() {
                 style={{ background: "#F4FAF7", color: "#63796F", border: "1px solid #DCEAE3" }}
               >
                 <BadgeCheck size={12} strokeWidth={2.4} />
-                {years}+ Years Exp
+                {years || "0"}+ Years Exp
               </span>
             </div>
           </div>
@@ -284,9 +352,25 @@ export default function ProfileSettings() {
         <div className="grid md:grid-cols-2 gap-5">
           <SectionCard icon={User} title="Personal Information" delay={0.1}>
             <div className="space-y-4">
-              <Field label="Full Name" value={fullName} onChange={setFullName} />
-              <Field label="Professional Email" value={email} onChange={setEmail} type="email" />
-              <Field label="Phone Number" value={phone} onChange={setPhone} />
+              <Field
+                label="Full Name"
+                value={fullName}
+                onChange={setFullName}
+                placeholder="Enter full name"
+              />
+              <Field
+                label="Professional Email"
+                value={email}
+                onChange={setEmail}
+                type="email"
+                placeholder="Enter email address"
+              />
+              <Field
+                label="Phone Number"
+                value={phoneNumber}
+                onChange={setPhoneNumber}
+                placeholder="Enter phone number"
+              />
             </div>
           </SectionCard>
 
@@ -298,11 +382,17 @@ export default function ProfileSettings() {
                 onChange={setSpecialization}
                 options={["Cardiology", "General Medicine", "Neurology", "Orthopedics", "Pediatrics", "Dermatology"]}
               />
-              <Field label="Years of Experience" value={years} onChange={setYears} />
+              <Field
+                label="Years of Experience"
+                value={years}
+                onChange={setYears}
+                placeholder="e.g. 5"
+              />
               <Field
                 label="Medical License No."
-                value={license}
-                onChange={setLicense}
+                value={medicalRegistrationNo}
+                onChange={setMedicalRegistrationNo}
+                placeholder="Enter license number"
                 highlight
               />
             </div>
@@ -317,8 +407,9 @@ export default function ProfileSettings() {
                   Clinic Address
                 </p>
                 <textarea
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  value={clinicAddress}
+                  onChange={(e) => setClinicAddress(e.target.value)}
+                  placeholder="Enter complete clinic address"
                   rows={3}
                   className="w-full rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium outline-none resize-none"
                   style={{ border: "1px solid #DCEAE3", background: "#FBFEFC", color: "#0E271F" }}
@@ -339,6 +430,7 @@ export default function ProfileSettings() {
                   <input
                     value={fee}
                     onChange={(e) => setFee(e.target.value)}
+                    placeholder="500"
                     className="w-full text-[13.5px] font-medium outline-none bg-transparent"
                     style={{ color: "#0E271F" }}
                   />

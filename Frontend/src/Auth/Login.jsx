@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -12,7 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -38,6 +38,7 @@ const fieldVariants = {
 };
 
 export default function MedicaCareLogin() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,10 +64,34 @@ export default function MedicaCareLogin() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    // 1. Run form validation first! If it fails, stop execution.
     if (!validate()) return;
-    console.log("Login attempt with:", { email, password, rememberMe });
+
+    try {
+      const response = await fetch("http://localhost:5000/api/doctors/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // 2. Save the token to localStorage
+        localStorage.setItem("token", data.token);
+        
+        // 3. Redirect to profile page using React Router's navigate
+        navigate("/doctor-dashboard"); 
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Something went wrong. Please check if your backend server is running.");
+    }
   };
 
   return (
@@ -342,12 +367,12 @@ export default function MedicaCareLogin() {
                       />
                       Remember Me
                     </label>
-                    <a
-                      href="forgot-password"
+                    <Link
+                      to="/forgot-password"
                       className="text-xs text-cyan-400 transition-all duration-200 hover:underline"
                     >
                       Forgot Password?
-                    </a>
+                    </Link>
                   </motion.div>
 
                   <motion.div variants={fieldVariants} className="mt-6 w-full">
@@ -386,12 +411,12 @@ export default function MedicaCareLogin() {
                   className="mt-6 text-center text-sm text-gray-400"
                 >
                   Don't have an account?{" "}
-                  <a
-                    href="signup"
+                  <Link
+                    to="/signup"
                     className="font-semibold text-cyan-400 transition-colors duration-200 hover:text-cyan-300"
                   >
                     Create Account
-                  </a>
+                  </Link>
                 </motion.p>
               </motion.div>
             </motion.div>
