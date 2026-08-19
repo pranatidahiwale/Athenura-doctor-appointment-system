@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/authRoutes.js";
+import appointmentRoutes from './routes/appointmentRoutes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors());
 
 // To this:
 app.use("/api/doctors", authRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Database Connection & Server Start
 const PORT = process.env.PORT || 5000;

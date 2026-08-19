@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import { 
   CheckCircle2, 
   PhoneCall, 
@@ -21,6 +21,9 @@ import { mockDoctor, timeSlotsData } from '../Data/doctorData.js';
 const Appointment = () => {
   
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [referenceId, setReferenceId] = useState('');
   
   // Use mock doctor data imported from doctardata.js
   const doctorData = {
@@ -36,7 +39,6 @@ const Appointment = () => {
     contactNumber: mockDoctor.contactNumber
   };
 
-  
   const availableSlots = [
     ...timeSlotsData.morning.map(s => s.time),
     ...timeSlotsData.afternoon.map(s => s.time),
@@ -70,9 +72,44 @@ const Appointment = () => {
     }));
   };
 
-  // Non-functional placeholders for UI preview
-  const handleDummySubmit = (e) => {
+ const handleSubmitAppointment = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/appointments/book', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const textResponse = await response.text(); // Get raw text first to avoid parsing crashes
+      let result;
+      
+      try {
+        result = JSON.parse(textResponse);
+      } catch (parseErr) {
+        console.error("Non-JSON response received from server:", textResponse);
+        throw new Error("Server returned an invalid response format (not JSON). Check backend terminal.");
+      }
+
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Failed to book appointment');
+      }
+
+      // Safely check for reference ID or fallback to a placeholder
+      const refId = result.data?._id || result.data?.id || 'SUCCESS-' + Math.floor(Math.random() * 100000);
+      setReferenceId(refId);
+      setCurrentStep(3);
+    } catch (err) {
+      console.error("Booking error:", err);
+      setErrorMessage(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -108,8 +145,8 @@ const Appointment = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Step 1 */}
-            <div className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 bg-teal-50 border border-teal-200 shadow-sm">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all bg-[#0D9488] text-white shadow-md">
+            <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${currentStep === 1 ? 'bg-teal-50 border border-teal-200 shadow-sm' : 'bg-slate-50 opacity-70'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 1 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
                 1
               </div>
               <div>
@@ -119,8 +156,8 @@ const Appointment = () => {
             </div>
 
             {/* Step 2 */}
-            <div className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 bg-slate-50 opacity-70">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all bg-slate-200 text-slate-600">
+            <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${currentStep === 2 ? 'bg-teal-50 border border-teal-200 shadow-sm' : 'bg-slate-50 opacity-70'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 2 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
                 2
               </div>
               <div>
@@ -130,8 +167,8 @@ const Appointment = () => {
             </div>
 
             {/* Step 3 */}
-            <div className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 bg-slate-50 opacity-70">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all bg-slate-200 text-slate-600">
+            <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${currentStep === 3 ? 'bg-teal-50 border border-teal-200 shadow-sm' : 'bg-slate-50 opacity-70'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 3 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
                 3
               </div>
               <div>
@@ -151,7 +188,7 @@ const Appointment = () => {
             
             {/* STEP 1: PATIENT FORM */}
             {currentStep === 1 && (
-              <form onSubmit={handleDummySubmit} className="space-y-6">
+              <form onSubmit={(e) => { e.preventDefault(); }} className="space-y-6">
                 <div>
                   <h2 className="text-[22px] font-extrabold text-[#0F172A] mb-1">Patient Information & Appointment Details</h2>
                   <p className="text-[14px] text-slate-500">Please fill out your personal information and choose an optimal slot.</p>
@@ -258,7 +295,7 @@ const Appointment = () => {
                   </div>
                 </div>
 
-                {/* Time Slot Selection Component (Mapped from doctardata.js) */}
+                {/* Time Slot Selection Component */}
                 <div className="pt-4">
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">
                     Available Time Slot <span className="text-red-500">*</span>
@@ -295,7 +332,6 @@ const Appointment = () => {
                     name="reasonForVisit"
                     value={formData.reasonForVisit}
                     onChange={handleChange}
-                    required
                     placeholder="Enter service or reason for your visit"
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:bg-white transition-all text-sm"
                   />
@@ -321,7 +357,14 @@ const Appointment = () => {
                 <div className="pt-4 flex justify-end">
                   <button 
                     type="button"
-                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl shadow-lg shadow-teal-600/20 transition-all duration-200 text-sm opacity-90 cursor-default"
+                    onClick={() => {
+                      if (!formData.fullName || !formData.phoneNumber || !formData.preferredDate || !formData.preferredTime || !formData.reasonForVisit) {
+                        alert('Please fill out all required fields before proceeding.');
+                        return;
+                      }
+                      setCurrentStep(2);
+                    }}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl shadow-lg shadow-teal-600/20 transition-all duration-200 text-sm cursor-pointer"
                   >
                     Proceed to Review
                     <ArrowRight size={16} />
@@ -330,8 +373,8 @@ const Appointment = () => {
               </form>
             )}
 
-            {/* STEP 2: REVIEW & CONFIRM (UI Placeholder Present for Future Integration) */}
-            {false && (
+            {/* STEP 2: REVIEW & CONFIRM */}
+            {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
                   <h2 className="text-[22px] font-extrabold text-[#0F172A] mb-1">Review Your Appointment</h2>
@@ -339,6 +382,12 @@ const Appointment = () => {
                 </div>
 
                 <hr className="border-slate-100 my-4" />
+
+                {errorMessage && (
+                  <div className="p-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl">
+                    {errorMessage}
+                  </div>
+                )}
 
                 <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-6">
                   <div>
@@ -348,11 +397,27 @@ const Appointment = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
                       <div>
                         <span className="text-slate-400 text-xs block">Full Name</span>
-                        <strong className="text-slate-800">-</strong>
+                        <strong className="text-slate-800">{formData.fullName}</strong>
                       </div>
                       <div>
                         <span className="text-slate-400 text-xs block">Phone Number</span>
-                        <strong className="text-slate-800">-</strong>
+                        <strong className="text-slate-800">{formData.phoneNumber}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-xs block">Email Address</span>
+                        <strong className="text-slate-800">{formData.emailAddress}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-xs block">Age & Gender</span>
+                        <strong className="text-slate-800">{formData.age} yrs, {formData.gender}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-xs block">Date & Time</span>
+                        <strong className="text-slate-800">{formData.preferredDate} at {formData.preferredTime}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-xs block">Reason for Visit</span>
+                        <strong className="text-slate-800">{formData.reasonForVisit}</strong>
                       </div>
                     </div>
                   </div>
@@ -361,7 +426,8 @@ const Appointment = () => {
                 <div className="flex items-center justify-between pt-4">
                   <button 
                     type="button"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl text-sm"
+                    onClick={() => setCurrentStep(1)}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all"
                   >
                     <ArrowLeft size={16} />
                     Back to Edit
@@ -369,17 +435,19 @@ const Appointment = () => {
 
                   <button 
                     type="button"
-                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] text-white font-semibold rounded-xl text-sm"
+                    onClick={handleSubmitAppointment}
+                    disabled={loading}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl text-sm shadow-lg shadow-teal-600/20 transition-all disabled:opacity-50"
                   >
-                    Confirm Appointment Request
+                    {loading ? 'Submitting...' : 'Confirm Appointment Request'}
                     <ArrowRight size={16} />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: REQUEST SUBMITTED / CONFIRMATION (UI Placeholder Present for Future Integration) */}
-            {false && (
+            {/* STEP 3: REQUEST SUBMITTED / CONFIRMATION */}
+            {currentStep === 3 && (
               <div className="space-y-6 text-center py-6">
                 <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner mb-4">
                   <CheckCircle2 size={42} />
@@ -392,13 +460,27 @@ const Appointment = () => {
 
                 <div className="inline-block bg-teal-50 border border-teal-200 px-6 py-3 rounded-2xl my-4">
                   <span className="text-xs text-teal-700 block font-medium">Reference Tracking ID</span>
-                  <strong className="text-sm text-teal-900 tracking-wide font-medium">APT-2026-0000</strong>
+                  <strong className="text-sm text-teal-900 tracking-wide font-medium">{referenceId}</strong>
                 </div>
 
                 <div className="pt-6">
                   <button 
                     type="button"
-                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] text-white font-semibold rounded-xl text-sm"
+                    onClick={() => {
+                      setFormData({
+                        fullName: '',
+                        phoneNumber: '',
+                        emailAddress: '',
+                        age: '',
+                        gender: '',
+                        preferredDate: '',
+                        preferredTime: '',
+                        reasonForVisit: '',
+                        additionalNotes: ''
+                      });
+                      setCurrentStep(1);
+                    }}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl text-sm shadow-lg shadow-teal-600/20 transition-all"
                   >
                     Book Another Appointment
                   </button>
@@ -485,6 +567,7 @@ const Appointment = () => {
         </div>
 
       </div>
+
     </div>
   );
 };
