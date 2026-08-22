@@ -91,7 +91,8 @@ export default function MedicaCareRegister() {
   const [agreedShake, setAgreedShake] = useState(0);
 
   const update = (field) => (e) => {
-    const value = field === "agreed" ? e.target.checked : e.target.value;
+    let value = field === "agreed" ? e.target.checked : e.target.value;
+    if (field === "email") value = value.toLowerCase();
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
