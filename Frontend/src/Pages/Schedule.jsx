@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScheduleBgImg from '../assets/Sheadule-Section/Sheadule-Bg-Img.png';
 import { 
@@ -63,35 +63,37 @@ export default function SchedulePage() {
     fetchScheduleData();
   }, []);
 
-  const generateWeeklySchedule = (schedule) => {
+ const generateWeeklySchedule = (schedule) => {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const shortDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     
-    let earliestStart = "09:00 AM";
-    let latestEnd = "05:00 PM";
-    
-    if (schedule.morningSession?.enabled) {
-      earliestStart = schedule.morningSession.startTime;
-      if (!schedule.eveningSession?.enabled) {
-        latestEnd = schedule.morningSession.endTime;
-      }
-    }
-    if (schedule.eveningSession?.enabled) {
-      latestEnd = schedule.eveningSession.endTime;
-      if (!schedule.morningSession?.enabled) {
-        earliestStart = schedule.eveningSession.startTime;
-      }
-    }
-
     const weekly = days.map((fullDay, index) => {
       const shortDay = shortDays[index];
-      const isActive = schedule.activeDays.includes(shortDay);
+      // Check if the day exists in activeDays (handling case sensitivity safely)
+      const isActive = schedule.activeDays?.some(
+        d => d.toLowerCase() === shortDay.toLowerCase()
+      );
       
       if (isActive) {
+        // Determine correct opening/closing based on active sessions
+        let openTime = "-";
+        let closeTime = "-";
+
+        if (schedule.morningSession?.enabled && schedule.eveningSession?.enabled) {
+          openTime = schedule.morningSession.startTime;
+          closeTime = schedule.eveningSession.endTime;
+        } else if (schedule.morningSession?.enabled) {
+          openTime = schedule.morningSession.startTime;
+          closeTime = schedule.morningSession.endTime;
+        } else if (schedule.eveningSession?.enabled) {
+          openTime = schedule.eveningSession.startTime;
+          closeTime = schedule.eveningSession.endTime;
+        }
+
         return {
           day: fullDay,
-          opening: earliestStart,
-          closing: latestEnd,
+          opening: openTime,
+          closing: closeTime,
           status: 'Available'
         };
       } else {
@@ -178,7 +180,7 @@ export default function SchedulePage() {
   };
 
   const handleDirectBookingTrigger = () => {
-    navigate('/appointment');
+    navigate('/appointment', { state: { selectedTime: selectedSlot } });
   };
 
   if (loading) {

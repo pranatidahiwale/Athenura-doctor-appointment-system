@@ -73,6 +73,7 @@ export const loginDoctor = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 // Get Doctor Profile Controller
 export const getDoctorProfile = async (req, res) => {
   try {
@@ -89,14 +90,20 @@ export const getDoctorProfile = async (req, res) => {
 // Update Doctor Profile Controller
 export const updateDoctorProfile = async (req, res) => {
   try {
-    const updates = req.body;
+    const updates = { ...req.body };
     
     // Prevent updating password through this route for security
     delete updates.password;
 
+    // Handle nested schedule payload coming from the frontend dashboard
+    let updateData = updates;
+    if (updates.schedule) {
+      updateData = { schedule: updates.schedule };
+    }
+
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       req.user.id,
-      { $set: updates },
+      { $set: updateData },
       { new: true, runValidators: true }
     ).select("-password");
 
@@ -114,16 +121,34 @@ export const updateDoctorProfile = async (req, res) => {
 };
 
 // Get Public Schedule (For patient booking side)
+ // Get Public Schedule (For patient booking side)
+ // Get Public Schedule (For patient booking side)
 export const getPublicSchedule = async (req, res) => {
   try {
-    // For now, since it's a single clinic, we just fetch the first doctor
-    const doctor = await Doctor.findOne().select("schedule");
-    
-    if (!doctor || !doctor.schedule) {
-      return res.status(404).json({ message: "Doctor schedule not found." });
+    const { email, id } = req.query;
+    let query = {};
+
+    if (email) {
+      query = { email };
+    } else if (id) {
+      query = { _id: id };
     }
 
-    res.status(200).json({ schedule: doctor.schedule });
+    // Find the specific doctor or fallback to the latest doctor record
+    const doctor = email || id 
+      ? await Doctor.findOne(query).select("-password")
+      : await Doctor.findOne().sort({ updatedAt: -1 }).select("-password");
+    
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found." });
+    }
+
+    res.status(200).json({ 
+      doctorName: doctor.fullName,
+      clinicName: doctor.clinicName,
+      clinicAddress: doctor.clinicAddress,
+      schedule: doctor.schedule 
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
