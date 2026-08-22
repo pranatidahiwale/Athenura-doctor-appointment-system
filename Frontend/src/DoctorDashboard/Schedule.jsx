@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import {
   CalendarDays,
@@ -231,10 +232,87 @@ export default function Schedule() {
   const [eveningEnd, setEveningEnd] = useState("08:00 PM");
   const [slotDuration, setSlotDuration] = useState("30 Minutes");
   const [bufferTime, setBufferTime] = useState("10 Minutes");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  useEffect(() => {
+    fetchSchedule();
+  }, []);
+
+  const fetchSchedule = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      if (response.ok && data.schedule) {
+        const sched = data.schedule;
+        if (sched.activeDays) setActiveDays(sched.activeDays);
+        if (sched.morningSession) {
+          setMorningOn(sched.morningSession.enabled);
+          setMorningStart(sched.morningSession.startTime);
+          setMorningEnd(sched.morningSession.endTime);
+        }
+        if (sched.eveningSession) {
+          setEveningOn(sched.eveningSession.enabled);
+          setEveningStart(sched.eveningSession.startTime);
+          setEveningEnd(sched.eveningSession.endTime);
+        }
+        if (sched.slotDuration) setSlotDuration(sched.slotDuration);
+        if (sched.bufferTime) setBufferTime(sched.bufferTime);
+      }
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+      toast.error("Failed to load schedule");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("You must be logged in to save.");
+        return;
+      }
+
+      const scheduleData = {
+        schedule: {
+          activeDays,
+          morningSession: { enabled: morningOn, startTime: morningStart, endTime: morningEnd },
+          eveningSession: { enabled: eveningOn, startTime: eveningStart, endTime: eveningEnd },
+          slotDuration,
+          bufferTime
+        }
+      };
+
+      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(scheduleData)
+      });
+
+      if (response.ok) {
+        setSaved(true);
+        toast.success("Schedule saved successfully!");
+        setTimeout(() => setSaved(false), 2000);
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to save schedule");
+      }
+    } catch (error) {
+      console.error("Error saving schedule:", error);
+      toast.error("An error occurred while saving.");
+    }
   };
 
   const toggleDay = (day) => {

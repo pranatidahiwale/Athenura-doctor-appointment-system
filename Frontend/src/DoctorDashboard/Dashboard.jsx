@@ -67,125 +67,6 @@ const HEADING_FONT = "'Fraunces', Georgia, 'Times New Roman', serif";
 const BODY_FONT =
   "'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif";
 
-const STATS = [
-  {
-    id: "total",
-    label: "Total Appointments",
-    value: "124",
-    icon: CalendarClock,
-    tone: "teal",
-    footer: (
-      <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium whitespace-nowrap">
-        <TrendingUp size={13} className="shrink-0" /> +12% v.s last month
-      </span>
-    ),
-  },
-  {
-    id: "pending",
-    label: "Pending Requests",
-    value: "12",
-    icon: AlertTriangle,
-    tone: "rose",
-    tag: "Action Required",
-    footer: <span className="text-xs text-slate-400 whitespace-nowrap">New unreviewed cases</span>,
-  },
-  {
-    id: "approved",
-    label: "Approved",
-    value: "86",
-    icon: CheckCircle2,
-    tone: "emerald",
-    footer: <span className="text-xs text-slate-400 whitespace-nowrap">Confirmed this week</span>,
-  },
-  {
-    id: "today",
-    label: "Today's Total",
-    value: "14",
-    icon: CalendarClock,
-    tone: "slate",
-    footer: <span className="text-xs text-slate-400 whitespace-nowrap">Across all locations</span>,
-  },
-];
-
-const REQUESTS = [
-  {
-    id: 1,
-    name: "Laxman Rajvansh",
-    date: "Oct 24, 09:30 AM",
-    reason: "Routine Follow-up",
-    status: "pending",
-  },
-  {
-    id: 2,
-    name: "Yash Ingle",
-    date: "Oct 24, 11:00 AM",
-    reason: "Chest Pain - Acute",
-    status: "urgent",
-  },
-  {
-    id: 3,
-    name: "Nisha Wagh",
-    date: "Oct 25, 08:00 AM",
-    reason: "Post-surgery Review",
-    status: "pending",
-  },
-];
-
-const SCHEDULE = [
-  {
-    id: 1,
-    time: "08:30 - 09:15",
-    title: "Morning Rounds",
-    subtitle: "General Ward B-Block",
-    status: null,
-  },
-  {
-    id: 2,
-    time: "09:30 - 10:00",
-    title: "Manish Chavan",
-    subtitle: "Cardiology Consultation",
-    status: "In Progress",
-  },
-  {
-    id: 3,
-    time: "10:15 - 10:45",
-    title: "Sonakshi Jaiswal",
-    subtitle: "Blood Test Results",
-    status: "Scheduled",
-  },
-  {
-    id: 4,
-    time: "11:00 - 11:30",
-    title: "Disha Mangesh",
-    subtitle: "Follow-up Exam",
-    status: "Scheduled",
-  },
-];
-
-const UPCOMING = [
-  {
-    id: 1,
-    name: "Santosh Agrawal",
-    reason: "Hypertension Monitoring",
-    date: "Jun 16",
-    tag: "3rd Session",
-  },
-  {
-    id: 2,
-    name: "Jayesh Patel",
-    reason: "Echo Cardiogram Results",
-    date: "Jun 17",
-    tag: "Final Review",
-  },
-  {
-    id: 3,
-    name: "Mina Kumar",
-    reason: "General Health Check",
-    date: "Jun 18",
-    tag: "Annual",
-  },
-];
-
 const TONE_STYLES = {
   teal: { bg: "icon-box-3d", icon: "text-white", ring: "ring-emerald-100" },
   emerald: { bg: "icon-box-3d", icon: "text-white", ring: "ring-emerald-100" },
@@ -195,6 +76,128 @@ const TONE_STYLES = {
 
 export default function Dashboard() {
   const [modal, setModal] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchAppointments = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/appointments");
+      const json = await res.json();
+      if (json.success) {
+        setAppointments(json.data);
+      }
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const updateAppointmentStatus = async (id, status, extraData = {}) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/appointments/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, ...extraData })
+      });
+      if (res.ok) {
+        fetchAppointments(); // refresh
+      }
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
+  };
+
+  // Compute dynamic data
+  const totalCount = appointments.length;
+  const pendingCount = appointments.filter(a => a.status === 'Pending').length;
+  const approvedCount = appointments.filter(a => a.status === 'Approved' || a.status === 'Confirmed').length;
+  
+  // Today's date in format like "2026-09-23" or whatever format is used in preferredDate.
+  // Actually preferredDate is stored as string from input type="date", usually "YYYY-MM-DD".
+  const today = new Date().toISOString().split('T')[0]; 
+  const todaysTotal = appointments.filter(a => a.preferredDate === today).length;
+
+  const STATS = [
+    {
+      id: "total",
+      label: "Total Appointments",
+      value: totalCount.toString(),
+      icon: CalendarClock,
+      tone: "teal",
+      footer: (
+        <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium whitespace-nowrap">
+          <TrendingUp size={13} className="shrink-0" /> Live from Database
+        </span>
+      ),
+    },
+    {
+      id: "pending",
+      label: "Pending Requests",
+      value: pendingCount.toString(),
+      icon: AlertTriangle,
+      tone: "rose",
+      tag: pendingCount > 0 ? "Action Required" : null,
+      footer: <span className="text-xs text-slate-400 whitespace-nowrap">New unreviewed cases</span>,
+    },
+    {
+      id: "approved",
+      label: "Approved",
+      value: approvedCount.toString(),
+      icon: CheckCircle2,
+      tone: "emerald",
+      footer: <span className="text-xs text-slate-400 whitespace-nowrap">Confirmed overall</span>,
+    },
+    {
+      id: "today",
+      label: "Today's Total",
+      value: todaysTotal.toString(),
+      icon: CalendarClock,
+      tone: "slate",
+      footer: <span className="text-xs text-slate-400 whitespace-nowrap">Scheduled for today</span>,
+    },
+  ];
+
+  // For requests panel (show pending/rescheduled ones that need attention)
+  const REQUESTS = appointments
+    .filter(a => a.status === 'Pending' || a.status === 'Rescheduled')
+    .slice(0, 5) // top 5
+    .map(a => ({
+      id: a._id,
+      name: a.fullName,
+      date: `${a.preferredDate}, ${a.preferredTime}`,
+      reason: a.reasonForVisit,
+      status: a.status.toLowerCase(), // 'pending', 'rescheduled'
+    }));
+
+  // For today's schedule
+  const SCHEDULE = appointments
+    .filter(a => a.preferredDate === today && (a.status === 'Approved' || a.status === 'Confirmed'))
+    .sort((a, b) => a.preferredTime.localeCompare(b.preferredTime))
+    .map(a => ({
+      id: a._id,
+      time: a.preferredTime,
+      title: a.fullName,
+      subtitle: a.reasonForVisit,
+      status: "Scheduled", // or compute "In Progress" based on current time
+    }));
+
+  // For upcoming appointments
+  const UPCOMING = appointments
+    .filter(a => a.preferredDate > today && (a.status === 'Approved' || a.status === 'Confirmed'))
+    .sort((a, b) => a.preferredDate.localeCompare(b.preferredDate))
+    .slice(0, 10)
+    .map(a => ({
+      id: a._id,
+      name: a.fullName,
+      reason: a.reasonForVisit,
+      date: a.preferredDate,
+      tag: a.preferredTime, // repurpose tag to show time
+    }));
 
   return (
     <ModalContext.Provider value={setModal}>
@@ -218,18 +221,26 @@ export default function Dashboard() {
           }
         `}</style>
         <main className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1400px] mx-auto">
-          <StatsRow />
-
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2">
-              <RequestsPanel />
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <p className="text-emerald-700 font-medium">Loading Dashboard Data...</p>
             </div>
-            <div>
-              <SchedulePanel />
-            </div>
-          </div>
+          ) : (
+            <>
+              <StatsRow stats={STATS} />
 
-          <UpcomingPanel />
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="xl:col-span-2">
+                  <RequestsPanel requests={REQUESTS} updateStatus={updateAppointmentStatus} />
+                </div>
+                <div>
+                  <SchedulePanel schedule={SCHEDULE} today={today} />
+                </div>
+              </div>
+
+              <UpcomingPanel upcoming={UPCOMING} />
+            </>
+          )}
         </main>
 
         <DetailModal modal={modal} onClose={() => setModal(null)} />
@@ -238,10 +249,10 @@ export default function Dashboard() {
   );
 }
 
-function StatsRow() {
+function StatsRow({ stats }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {STATS.map((stat, i) => {
+      {stats.map((stat, i) => {
         const Icon = stat.icon;
         const tone = TONE_STYLES[stat.tone];
         return (
@@ -280,37 +291,29 @@ function StatsRow() {
 const STATUS_BADGE = {
   pending: "bg-amber-50 text-amber-600",
   urgent: "bg-rose-50 text-rose-600",
+  rescheduled: "bg-blue-50 text-blue-600",
   approved: "bg-emerald-50 text-emerald-600",
 };
 
-function RequestsPanel() {
-  const [requests, setRequests] = useState(REQUESTS);
+function RequestsPanel({ requests: initialRequests, updateStatus }) {
   const [showAll, setShowAll] = useState(false);
 
-  const visibleRequests = showAll ? requests : requests.slice(0, 3);
+  const visibleRequests = showAll ? initialRequests : initialRequests.slice(0, 3);
 
-  const handleApprove = (id) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "approved" } : r))
-    );
-  };
-
-  const handleDecline = (id) => {
-    setRequests((prev) => prev.filter((r) => r.id !== id));
-  };
+  const handleApprove = (id) => updateStatus(id, "Approved");
+  const handleDecline = (id) => updateStatus(id, "Rejected");
 
   const handleReschedule = (id) => {
-    const current = requests.find((r) => r.id === id);
+    const current = initialRequests.find((r) => r.id === id);
     const newDate = window.prompt(
-      "Enter new date & time (e.g. Oct 28, 10:00 AM)",
+      "Enter new date & time (e.g. YYYY-MM-DD, HH:MM AM/PM)",
       current?.date ?? ""
     );
     if (newDate && newDate.trim()) {
-      setRequests((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, date: newDate.trim(), status: "pending" } : r
-        )
-      );
+      const parts = newDate.split(",");
+      const datePart = parts[0]?.trim() || "";
+      const timePart = parts[1]?.trim() || "";
+      updateStatus(id, "Rescheduled", { preferredDate: datePart, preferredTime: timePart });
     }
   };
 
@@ -328,12 +331,14 @@ function RequestsPanel() {
         >
           Recent Appointment Requests
         </h2>
-        <button
-          onClick={() => setShowAll((s) => !s)}
-          className="text-sm font-medium text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
-        >
-          {showAll ? "Show Less" : "View All"} <ArrowUpRight size={14} />
-        </button>
+        {initialRequests.length > 3 && (
+          <button
+            onClick={() => setShowAll((s) => !s)}
+            className="text-sm font-medium text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
+          >
+            {showAll ? "Show Less" : "View All"} <ArrowUpRight size={14} />
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto relative">
@@ -377,7 +382,7 @@ function RequestsPanel() {
                     <td className="px-4 py-4 text-slate-500 whitespace-nowrap">{r.reason}</td>
                     <td className="px-4 py-4">
                       <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_BADGE[r.status]}`}
+                        className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_BADGE[r.status] || STATUS_BADGE.pending}`}
                       >
                         {r.status}
                       </span>
@@ -453,7 +458,7 @@ function Avatar({ name }) {
   );
 }
 
-function SchedulePanel() {
+function SchedulePanel({ schedule, today }) {
   const showModal = useShowModal();
   return (
     <motion.div
@@ -470,14 +475,17 @@ function SchedulePanel() {
           Today's Schedule
         </h2>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Jun 15, 2026</span>
+          <span className="text-xs text-slate-400">{today}</span>
           <ScheduleOptionsMenu />
         </div>
       </div>
 
       <ol className="relative pl-5">
         <span className="absolute left-[7px] top-1 bottom-1 w-px bg-emerald-100" />
-        {SCHEDULE.map((item, i) => (
+        {schedule.length === 0 && (
+          <p className="text-sm text-slate-400 italic py-4">No appointments scheduled for today.</p>
+        )}
+        {schedule.map((item, i) => (
           <motion.li
             key={item.id}
             initial={{ opacity: 0, x: -8 }}
@@ -523,7 +531,7 @@ function SchedulePanel() {
   );
 }
 
-function UpcomingPanel() {
+function UpcomingPanel({ upcoming }) {
   const scrollRef = React.useRef(null);
   const showModal = useShowModal();
 
@@ -545,57 +553,63 @@ function UpcomingPanel() {
         >
           Upcoming Appointments
         </h2>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => scroll(-1)}
-            className="w-8 h-8 rounded-full border border-emerald-100 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center transition-colors"
-          >
-            <ChevronLeft size={15} />
-          </button>
-          <button
-            onClick={() => scroll(1)}
-            className="w-8 h-8 rounded-full border border-emerald-100 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center transition-colors"
-          >
-            <ChevronRight size={15} />
-          </button>
-        </div>
+        {upcoming.length > 0 && (
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => scroll(-1)}
+              className="w-8 h-8 rounded-full border border-emerald-100 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center transition-colors"
+            >
+              <ChevronLeft size={15} />
+            </button>
+            <button
+              onClick={() => scroll(1)}
+              className="w-8 h-8 rounded-full border border-emerald-100 text-slate-400 hover:text-emerald-600 hover:border-emerald-300 flex items-center justify-center transition-colors"
+            >
+              <ChevronRight size={15} />
+            </button>
+          </div>
+        )}
       </div>
 
-      <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto pb-1 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none]"
-        style={{ scrollbarWidth: "none" }}
-      >
-        {UPCOMING.map((u, i) => (
-          <motion.div
-            key={u.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.35 + i * 0.06 }}
-            whileHover={{ y: -3 }}
-            onClick={() =>
-              showModal({
-                title: u.name,
-                lines: [u.reason, u.date, u.tag],
-              })
-            }
-            className="min-w-[85%] xs:min-w-[260px] sm:min-w-[240px] flex-1 border border-emerald-50 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-emerald-200 hover:shadow-[0_6px_18px_rgba(16,185,129,0.08)] transition-all"
-          >
-            <Avatar name={u.name} />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-slate-700 truncate">{u.name}</p>
-              <p className="text-xs text-slate-400 truncate">{u.reason}</p>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-[11px] text-slate-400">{u.date}</span>
-                <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                  {u.tag}
-                </span>
+      {upcoming.length === 0 ? (
+        <p className="text-sm text-slate-400 italic pb-2 text-center">No upcoming appointments found.</p>
+      ) : (
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto pb-1 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none]"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {upcoming.map((u, i) => (
+            <motion.div
+              key={u.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.35 + i * 0.06 }}
+              whileHover={{ y: -3 }}
+              onClick={() =>
+                showModal({
+                  title: u.name,
+                  lines: [u.reason, u.date, u.tag],
+                })
+              }
+              className="min-w-[85%] xs:min-w-[260px] sm:min-w-[240px] flex-1 border border-emerald-50 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-emerald-200 hover:shadow-[0_6px_18px_rgba(16,185,129,0.08)] transition-all"
+            >
+              <Avatar name={u.name} />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-slate-700 truncate">{u.name}</p>
+                <p className="text-xs text-slate-400 truncate">{u.reason}</p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="text-[11px] text-slate-400">{u.date}</span>
+                  <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                    {u.tag}
+                  </span>
+                </div>
               </div>
-            </div>
-            <ChevronRight size={16} className="text-slate-300 shrink-0" />
-          </motion.div>
-        ))}
-      </div>
+              <ChevronRight size={16} className="text-slate-300 shrink-0" />
+            </motion.div>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }

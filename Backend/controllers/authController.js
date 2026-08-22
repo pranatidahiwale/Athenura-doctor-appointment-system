@@ -112,3 +112,19 @@ export const updateDoctorProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Get Public Schedule (For patient booking side)
+export const getPublicSchedule = async (req, res) => {
+  try {
+    // For now, since it's a single clinic, we just fetch the first doctor
+    const doctor = await Doctor.findOne().select("schedule");
+    
+    if (!doctor || !doctor.schedule) {
+      return res.status(404).json({ message: "Doctor schedule not found." });
+    }
+
+    res.status(200).json({ schedule: doctor.schedule });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

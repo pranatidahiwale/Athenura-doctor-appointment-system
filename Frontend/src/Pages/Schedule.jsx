@@ -16,10 +16,8 @@ import {
   Stethoscope
 } from 'lucide-react';
 
-// Import the updated data structures
+// Import the remaining static data structures
 import { 
-  weeklyScheduleData, 
-  timeSlotsData, 
   clinicHolidaysData, 
   doctorScheduleInfo, 
   scheduleHeroData, 
@@ -29,18 +27,34 @@ import {
 
 export default function SchedulePage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  
+  const [doctorSchedule, setDoctorSchedule] = useState(null);
+  const [weeklySchedule, setWeeklySchedule] = useState([]);
+  const [timeSlots, setTimeSlots] = useState({ morning: [], afternoon: [], evening: [] });
+  const [isTodayClosed, setIsTodayClosed] = useState(false);
 
-  // Automatically scroll karwane wala code yahan se hata diya gaya hai
   useEffect(() => {
     const fetchScheduleData = async () => {
       setLoading(true);
       setError(null);
       try {
+        const response = await fetch('http://localhost:5000/api/doctors/public-schedule');
+        const data = await response.json();
+        
+        if (data.schedule) {
+          setDoctorSchedule(data.schedule);
+          generateWeeklySchedule(data.schedule);
+          generateTodaySlots(data.schedule);
+        } else {
+          throw new Error("Failed to load schedule from server.");
+        }
+        
         setLoading(false);
       } catch (err) {
+        console.error(err);
         setError(err.message || 'An unexpected error occurred while loading schedule data.');
         setLoading(false);
       }
@@ -48,6 +62,114 @@ export default function SchedulePage() {
 
     fetchScheduleData();
   }, []);
+
+  const generateWeeklySchedule = (schedule) => {
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const shortDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    
+    let earliestStart = "09:00 AM";
+    let latestEnd = "05:00 PM";
+    
+    if (schedule.morningSession?.enabled) {
+      earliestStart = schedule.morningSession.startTime;
+      if (!schedule.eveningSession?.enabled) {
+        latestEnd = schedule.morningSession.endTime;
+      }
+    }
+    if (schedule.eveningSession?.enabled) {
+      latestEnd = schedule.eveningSession.endTime;
+      if (!schedule.morningSession?.enabled) {
+        earliestStart = schedule.eveningSession.startTime;
+      }
+    }
+
+    const weekly = days.map((fullDay, index) => {
+      const shortDay = shortDays[index];
+      const isActive = schedule.activeDays.includes(shortDay);
+      
+      if (isActive) {
+        return {
+          day: fullDay,
+          opening: earliestStart,
+          closing: latestEnd,
+          status: 'Available'
+        };
+      } else {
+        return {
+          day: fullDay,
+          opening: '-',
+          closing: '-',
+          status: 'Closed'
+        };
+      }
+    });
+    
+    setWeeklySchedule(weekly);
+  };
+
+  const generateTodaySlots = (schedule) => {
+    const today = new Date();
+    const shortDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const todayShort = shortDays[today.getDay()];
+    
+    if (!schedule.activeDays.includes(todayShort)) {
+      setIsTodayClosed(true);
+      setTimeSlots({ morning: [], afternoon: [], evening: [] });
+      return;
+    }
+    
+    setIsTodayClosed(false);
+    
+    const slotDur = parseInt(schedule.slotDuration) || 30;
+    const buffer = parseInt(schedule.bufferTime) || 0;
+    
+    const timeToMinutes = (timeStr) => {
+      if (!timeStr) return 0;
+      const [time, period] = timeStr.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+      if (period === 'PM' && hours !== 12) hours += 12;
+      if (period === 'AM' && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    };
+    
+    const minutesToTime = (mins) => {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      const period = h >= 12 ? 'PM' : 'AM';
+      const formattedH = h % 12 === 0 ? 12 : h % 12;
+      const formattedM = m.toString().padStart(2, '0');
+      return `${formattedH.toString().padStart(2, '0')}:${formattedM} ${period}`;
+    };
+
+    const generatedSlots = { morning: [], afternoon: [], evening: [] };
+    const addSessionSlots = (session) => {
+      if (!session || !session.enabled) return;
+      
+      const startMins = timeToMinutes(session.startTime);
+      const endMins = timeToMinutes(session.endTime);
+      
+      let currentMins = startMins;
+      while (currentMins + slotDur <= endMins) {
+        const timeStr = minutesToTime(currentMins);
+        
+        // Categorize
+        if (currentMins < 12 * 60) {
+          generatedSlots.morning.push({ time: timeStr, available: true });
+        } else if (currentMins < 16 * 60) {
+          generatedSlots.afternoon.push({ time: timeStr, available: true });
+        } else {
+          generatedSlots.evening.push({ time: timeStr, available: true });
+        }
+        
+        currentMins += (slotDur + buffer);
+      }
+    };
+
+    addSessionSlots(schedule.morningSession);
+    addSessionSlots(schedule.eveningSession);
+    
+    setTimeSlots(generatedSlots);
+  };
 
   const handleSlotSelect = (slotObj) => {
     if (slotObj.available) {
@@ -80,7 +202,7 @@ export default function SchedulePage() {
           <h3 className="text-xl font-extrabold text-slate-900 mb-2 tracking-tight">Unable to Load Schedule</h3>
           <p className="text-sm text-slate-600 mb-8 leading-relaxed font-normal">{error}</p>
           <button 
-            onClick={() => setError(null)} 
+            onClick={() => window.location.reload()} 
             className="w-full py-3.5 bg-[#009D95] text-white rounded-2xl text-sm font-bold hover:bg-[#00857D] transition-all duration-300 shadow-lg shadow-[#009D95]/25 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer active:scale-95"
           >
             Try Again
@@ -194,7 +316,7 @@ export default function SchedulePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-sm">
-                  {weeklyScheduleData.map((item, index) => {
+                  {weeklySchedule.map((item, index) => {
                     const isAvailable = item.status === 'Available' || item.status === 'Extended Hours';
                     return (
                       <tr key={index} className="hover:bg-slate-100/60 transition-colors duration-150">
@@ -236,94 +358,110 @@ export default function SchedulePage() {
                 </div>
               </div>
 
-              <div className="space-y-8">
-                {/* Morning Sessions */}
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">
-                    <Sun className="w-4 h-4 text-amber-500" />
-                    Morning Sessions
+              {isTodayClosed ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-center">
+                  <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mb-4 text-rose-500">
+                    <CalendarX className="w-8 h-8" />
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    {timeSlotsData.morning.map((slotObj, idx) => {
-                      const isSelected = selectedSlot === slotObj.time;
-                      return (
-                        <button
-                          key={idx}
-                          disabled={!slotObj.available}
-                          onClick={() => handleSlotSelect(slotObj)}
-                          className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
-                            !slotObj.available
-                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
-                              : isSelected
-                              ? 'bg-[#009D95] text-white border-[#009D95] shadow-lg shadow-[#009D95]/30 ring-2 ring-[#009D95]/20 scale-105 cursor-pointer'
-                              : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-[#009D95]/50 hover:text-[#009D95] hover:-translate-y-0.5 cursor-pointer shadow-xs'
-                          }`}
-                        >
-                          {slotObj.time}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-2">Clinic is Closed Today</h4>
+                  <p className="text-sm text-slate-600 max-w-md">The doctor is not available for consultation today. Please check the weekly schedule above and book an appointment for an upcoming active day.</p>
                 </div>
+              ) : (
+                <div className="space-y-8">
+                  {/* Morning Sessions */}
+                  {timeSlots.morning.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">
+                      <Sun className="w-4 h-4 text-amber-500" />
+                      Morning Sessions
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {timeSlots.morning.map((slotObj, idx) => {
+                        const isSelected = selectedSlot === slotObj.time;
+                        return (
+                          <button
+                            key={idx}
+                            disabled={!slotObj.available}
+                            onClick={() => handleSlotSelect(slotObj)}
+                            className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
+                              !slotObj.available
+                                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
+                                : isSelected
+                                ? 'bg-[#009D95] text-white border-[#009D95] shadow-lg shadow-[#009D95]/30 ring-2 ring-[#009D95]/20 scale-105 cursor-pointer'
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-[#009D95]/50 hover:text-[#009D95] hover:-translate-y-0.5 cursor-pointer shadow-xs'
+                            }`}
+                          >
+                            {slotObj.time}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  )}
 
-                {/* Afternoon Sessions */}
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">
-                    <Sun className="w-4 h-4 text-amber-600" />
-                    Afternoon Sessions
+                  {/* Afternoon Sessions */}
+                  {timeSlots.afternoon.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">
+                      <Sun className="w-4 h-4 text-amber-600" />
+                      Afternoon Sessions
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {timeSlots.afternoon.map((slotObj, idx) => {
+                        const isSelected = selectedSlot === slotObj.time;
+                        return (
+                          <button
+                            key={idx}
+                            disabled={!slotObj.available}
+                            onClick={() => handleSlotSelect(slotObj)}
+                            className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
+                              !slotObj.available
+                                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
+                                : isSelected
+                                ? 'bg-[#009D95] text-white border-[#009D95] shadow-lg shadow-[#009D95]/30 ring-2 ring-[#009D95]/20 scale-105 cursor-pointer'
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-[#009D95]/50 hover:text-[#009D95] hover:-translate-y-0.5 cursor-pointer shadow-xs'
+                            }`}
+                          >
+                            {slotObj.time}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    {timeSlotsData.afternoon.map((slotObj, idx) => {
-                      const isSelected = selectedSlot === slotObj.time;
-                      return (
-                        <button
-                          key={idx}
-                          disabled={!slotObj.available}
-                          onClick={() => handleSlotSelect(slotObj)}
-                          className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
-                            !slotObj.available
-                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
-                              : isSelected
-                              ? 'bg-[#009D95] text-white border-[#009D95] shadow-lg shadow-[#009D95]/30 ring-2 ring-[#009D95]/20 scale-105 cursor-pointer'
-                              : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-[#009D95]/50 hover:text-[#009D95] hover:-translate-y-0.5 cursor-pointer shadow-xs'
-                          }`}
-                        >
-                          {slotObj.time}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                  )}
 
-                {/* Evening Sessions */}
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">
-                    <Moon className="w-4 h-4 text-indigo-500" />
-                    Evening Sessions
+                  {/* Evening Sessions */}
+                  {timeSlots.evening.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">
+                      <Moon className="w-4 h-4 text-indigo-500" />
+                      Evening Sessions
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {timeSlots.evening.map((slotObj, idx) => {
+                        const isSelected = selectedSlot === slotObj.time;
+                        return (
+                          <button
+                            key={idx}
+                            disabled={!slotObj.available}
+                            onClick={() => handleSlotSelect(slotObj)}
+                            className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
+                              !slotObj.available
+                                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
+                                : isSelected
+                                ? 'bg-[#009D95] text-white border-[#009D95] shadow-lg shadow-[#009D95]/30 ring-2 ring-[#009D95]/20 scale-105 cursor-pointer'
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-[#009D95]/50 hover:text-[#009D95] hover:-translate-y-0.5 cursor-pointer shadow-xs'
+                            }`}
+                          >
+                            {slotObj.time}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    {timeSlotsData.evening.map((slotObj, idx) => {
-                      const isSelected = selectedSlot === slotObj.time;
-                      return (
-                        <button
-                          key={idx}
-                          disabled={!slotObj.available}
-                          onClick={() => handleSlotSelect(slotObj)}
-                          className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
-                            !slotObj.available
-                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
-                              : isSelected
-                              ? 'bg-[#009D95] text-white border-[#009D95] shadow-lg shadow-[#009D95]/30 ring-2 ring-[#009D95]/20 scale-105 cursor-pointer'
-                              : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-[#009D95]/50 hover:text-[#009D95] hover:-translate-y-0.5 cursor-pointer shadow-xs'
-                          }`}
-                        >
-                          {slotObj.time}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-5 bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-inner">

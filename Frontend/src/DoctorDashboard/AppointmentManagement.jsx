@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ClipboardList,
@@ -33,58 +33,7 @@ const FONT_IMPORT = `
 }
 `;
 
-const patients = [
-  {
-    id: "PT-8821",
-    name: "Sakshi Joshi",
-    date: "Oct 24, 2024",
-    time: "10:30 AM",
-    reason: "Post-surgery follow-up (Knee replacement)",
-    status: "Pending",
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces",
-  },
-  {
-    id: "PT-1244",
-    name: "Manish Chavan",
-    date: "Oct 24, 2024",
-    time: "02:15 PM",
-    reason: "Annual physical examination",
-    status: "Approved",
-    avatar:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=faces",
-  },
-  {
-    id: "PT-5562",
-    name: "Easha Rajvansh",
-    date: "Oct 25, 2024",
-    time: "11:45 AM",
-    reason: "Blood test results discussion",
-    status: "Rejected",
-    avatar:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=faces",
-  },
-  {
-    id: "PT-3390",
-    name: "Devansh Iyer",
-    date: "Oct 26, 2024",
-    time: "09:00 AM",
-    reason: "ECG review & medication adjustment",
-    status: "Rescheduled",
-    avatar:
-      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=faces",
-  },
-  {
-    id: "PT-7710",
-    name: "Priya Nair",
-    date: "Oct 26, 2024",
-    time: "04:30 PM",
-    reason: "Routine cardiac screening",
-    status: "Approved",
-    avatar:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=faces",
-  },
-];
+// Patients will be fetched from API
 
 const statusStyles = {
   Pending: { bg: "#FFF4E0", fg: "#B4690E", dot: "#F0A93B" },
@@ -95,32 +44,7 @@ const statusStyles = {
 
 const filters = ["All", "Pending", "Approved", "Rejected", "Rescheduled"];
 
-const stats = [
-  {
-    label: "Total Requests",
-    value: "48",
-    icon: ClipboardList,
-    tone: "primary",
-  },
-  {
-    label: "Approved Today",
-    value: "24",
-    icon: CheckCircle2,
-    tone: "accent",
-  },
-  {
-    label: "Rescheduled",
-    value: "8",
-    icon: RefreshCcw,
-    tone: "muted",
-  },
-  {
-    label: "Cancellation Rate",
-    value: "4.2%",
-    icon: TrendingDown,
-    tone: "warn",
-  },
-];
+// Stats will be computed dynamically inside the component
 
 function StatusPill({ status }) {
   const s = statusStyles[status];
@@ -161,57 +85,95 @@ function HeartbeatDivider() {
 }
 
 export default function AppointmentManagement() {
-  const [patientList, setPatientList] = useState(patients);
+  const [patientList, setPatientList] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [query, setQuery] = useState("");
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [page, setPage] = useState(1);
   const [historyModal, setHistoryModal] = useState(null);
   const [rescheduleModal, setRescheduleModal] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleApprove = (id) => {
-    setPatientList((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "Approved" } : p))
-    );
+  const fetchAppointments = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/appointments");
+      const json = await res.json();
+      if (json.success) {
+        const formatted = json.data.map(app => ({
+          _id: app._id,
+          id: `PT-${app._id.slice(-4).toUpperCase()}`,
+          name: app.fullName,
+          date: app.preferredDate,
+          time: app.preferredTime,
+          reason: app.reasonForVisit,
+          status: app.status,
+          avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces"
+        }));
+        setPatientList(formatted);
+      }
+    } catch (err) {
+      console.error("Error fetching appointments", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCancel = (id) => {
-    setPatientList((prev) => prev.filter((p) => p.id !== id));
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const updateStatus = async (id, status, extraData = {}) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/appointments/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, ...extraData })
+      });
+      if (res.ok) fetchAppointments();
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
   };
+
+  const handleApprove = (id) => updateStatus(id, "Approved");
+  const handleCancel = (id) => updateStatus(id, "Rejected");
+  const handleRebook = (id) => updateStatus(id, "Pending");
 
   const handleReschedule = (id) => {
-    const current = patientList.find((p) => p.id === id);
-    setRescheduleModal({ id, date: current?.date ?? "", time: current?.time ?? "" });
+    const current = patientList.find((p) => p._id === id);
+    setRescheduleModal({ _id: id, id: current?.id, date: current?.date ?? "", time: current?.time ?? "" });
   };
 
   const confirmReschedule = () => {
-    setPatientList((prev) =>
-      prev.map((p) =>
-        p.id === rescheduleModal.id
-          ? { ...p, date: rescheduleModal.date, time: rescheduleModal.time, status: "Rescheduled" }
-          : p
-      )
-    );
+    updateStatus(rescheduleModal._id, "Rescheduled", {
+      preferredDate: rescheduleModal.date,
+      preferredTime: rescheduleModal.time
+    });
     setRescheduleModal(null);
-  };
-
-  const handleRebook = (id) => {
-    setPatientList((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "Pending" } : p))
-    );
   };
 
   const filtered = useMemo(() => {
     return patientList.filter((p) => {
-      const matchesFilter =
-        activeFilter === "All" ? true : p.status === activeFilter;
-      const matchesQuery =
-        query.trim() === "" ||
+      const matchesFilter = activeFilter === "All" ? true : p.status === activeFilter;
+      const matchesQuery = query.trim() === "" ||
         p.name.toLowerCase().includes(query.toLowerCase()) ||
         p.id.toLowerCase().includes(query.toLowerCase());
       return matchesFilter && matchesQuery;
     });
   }, [patientList, activeFilter, query]);
+
+  const totalRequests = patientList.length;
+  const approvedToday = patientList.filter(p => p.status === "Approved").length; // Note: doesn't strictly check 'today' date here but enough for UI
+  const rescheduled = patientList.filter(p => p.status === "Rescheduled").length;
+  const canceledCount = patientList.filter(p => p.status === "Rejected").length;
+  const cancelRate = totalRequests ? ((canceledCount / totalRequests) * 100).toFixed(1) + "%" : "0%";
+
+  const dynamicStats = [
+    { label: "Total Requests", value: totalRequests.toString(), icon: ClipboardList, tone: "primary" },
+    { label: "Approved", value: approvedToday.toString(), icon: CheckCircle2, tone: "accent" },
+    { label: "Rescheduled", value: rescheduled.toString(), icon: RefreshCcw, tone: "muted" },
+    { label: "Cancellation Rate", value: cancelRate, icon: TrendingDown, tone: "warn" },
+  ];
 
   return (
     <div
@@ -246,7 +208,7 @@ export default function AppointmentManagement() {
             <p className="mt-1.5 text-[14.5px]" style={{ color: "#63796F" }}>
               You have{" "}
               <span className="font-semibold" style={{ color: "#0B6E4F" }}>
-                12 pending
+                {patientList.filter(p => p.status === 'Pending').length} pending
               </span>{" "}
               appointment requests for today.
             </p>
@@ -294,7 +256,7 @@ export default function AppointmentManagement() {
         </motion.div>
 
         <div className="grid grid-cols-1 xs:grid-cols-2 xl:grid-cols-4 gap-4 mb-3">
-          {stats.map((s, i) => {
+          {dynamicStats.map((s, i) => {
             const Icon = s.icon;
             return (
               <motion.div
@@ -457,7 +419,7 @@ export default function AppointmentManagement() {
                               >
                                 <History size={15} strokeWidth={2.1} />
                               </ActionIcon>
-                              <ActionIcon title="Rebook" onClick={() => handleRebook(p.id)}>
+                              <ActionIcon title="Rebook" onClick={() => handleRebook(p._id)}>
                                 <CalendarClock size={15} strokeWidth={2.1} />
                               </ActionIcon>
                             </>
@@ -466,21 +428,21 @@ export default function AppointmentManagement() {
                               <ActionIcon
                                 title="Approve"
                                 tone="accent"
-                                onClick={() => handleApprove(p.id)}
+                                onClick={() => handleApprove(p._id)}
                               >
                                 <Check size={15} strokeWidth={2.4} />
                               </ActionIcon>
                               <ActionIcon
                                 title="Reschedule"
-                                onClick={() => handleReschedule(p.id)}
+                                onClick={() => handleReschedule(p._id)}
                               >
                                 <CalendarClock size={15} strokeWidth={2.1} />
                               </ActionIcon>
-                              <ActionIcon
-                                title="Cancel"
-                                tone="danger"
-                                onClick={() => handleCancel(p.id)}
-                              >
+                                <ActionIcon
+                                  title="Cancel"
+                                  tone="danger"
+                                  onClick={() => handleCancel(p._id)}
+                                >
                                 <X size={15} strokeWidth={2.4} />
                               </ActionIcon>
                             </>
@@ -507,7 +469,7 @@ export default function AppointmentManagement() {
             style={{ borderTop: "1px solid #DCEAE3", background: "#FBFEFC" }}
           >
             <p className="text-[12.5px]" style={{ color: "#63796F" }}>
-              Showing 1–10 of 48 requests
+              Showing {filtered.length > 0 ? (page - 1) * 10 + 1 : 0}–{Math.min(page * 10, filtered.length)} of {filtered.length} requests
             </p>
             <div className="flex items-center gap-1.5">
               <PageArrow disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>

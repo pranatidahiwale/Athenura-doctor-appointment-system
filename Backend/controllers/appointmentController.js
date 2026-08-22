@@ -69,3 +69,38 @@ export const getAppointments = async (req, res) => {
     });
   }
 };
+
+// @desc    Update appointment status (Approve, Reject, Reschedule, etc.)
+// @route   PUT /api/appointments/:id/status
+export const updateAppointmentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, preferredDate, preferredTime } = req.body;
+
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Appointment not found',
+      });
+    }
+
+    if (status) appointment.status = status;
+    if (preferredDate) appointment.preferredDate = preferredDate;
+    if (preferredTime) appointment.preferredTime = preferredTime;
+
+    const updatedAppointment = await appointment.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Appointment updated successfully',
+      data: updatedAppointment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};

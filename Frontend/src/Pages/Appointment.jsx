@@ -1,4 +1,4 @@
- import React, { useState } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle2, 
   PhoneCall, 
@@ -39,11 +39,77 @@ const Appointment = () => {
     contactNumber: mockDoctor.contactNumber
   };
 
-  const availableSlots = [
-    ...timeSlotsData.morning.map(s => s.time),
-    ...timeSlotsData.afternoon.map(s => s.time),
-    ...timeSlotsData.evening.map(s => s.time)
-  ];
+  const [doctorSchedule, setDoctorSchedule] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [dateError, setDateError] = useState("");
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/doctors/public-schedule')
+      .then(res => res.json())
+      .then(data => {
+        if (data.schedule) setDoctorSchedule(data.schedule);
+      })
+      .catch(err => console.error("Error fetching schedule:", err));
+  }, []);
+
+  const generateSlotsForDate = (dateString, schedule) => {
+    if (!dateString || !schedule) return [];
+    
+    const dateObj = new Date(dateString);
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const dayOfWeek = dayNames[dateObj.getDay()];
+    
+    if (!schedule.activeDays.includes(dayOfWeek)) {
+      setDateError(`Doctor is not available on ${dayOfWeek}s.`);
+      return [];
+    }
+    
+    setDateError("");
+    
+    const slots = [];
+    const slotDur = parseInt(schedule.slotDuration) || 30;
+    const buffer = parseInt(schedule.bufferTime) || 0;
+    
+    const timeToMinutes = (timeStr) => {
+      if (!timeStr) return 0;
+      const [time, period] = timeStr.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+      if (period === 'PM' && hours !== 12) hours += 12;
+      if (period === 'AM' && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    };
+    
+    const minutesToTime = (mins) => {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      const period = h >= 12 ? 'PM' : 'AM';
+      const formattedH = h % 12 === 0 ? 12 : h % 12;
+      const formattedM = m.toString().padStart(2, '0');
+      return `${formattedH.toString().padStart(2, '0')}:${formattedM} ${period}`;
+    };
+
+    const addSessionSlots = (session) => {
+      if (!session || !session.enabled) return;
+      
+      const startMins = timeToMinutes(session.startTime);
+      const endMins = timeToMinutes(session.endTime);
+      
+      let currentMins = startMins;
+      while (currentMins + slotDur <= endMins) {
+        slots.push(minutesToTime(currentMins));
+        currentMins += (slotDur + buffer);
+      }
+    };
+
+    addSessionSlots(schedule.morningSession);
+    addSessionSlots(schedule.eveningSession);
+    
+    if (slots.length === 0) {
+       setDateError("No slots available for the selected day based on session timings.");
+    }
+    
+    return slots;
+  };
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -56,6 +122,19 @@ const Appointment = () => {
     reasonForVisit: '',
     additionalNotes: ''
   });
+
+  useEffect(() => {
+    if (formData.preferredDate && doctorSchedule) {
+      const generatedSlots = generateSlotsForDate(formData.preferredDate, doctorSchedule);
+      setAvailableSlots(generatedSlots);
+      if (!generatedSlots.includes(formData.preferredTime)) {
+        setFormData(prev => ({ ...prev, preferredTime: '' }));
+      }
+    } else {
+      setAvailableSlots([]);
+      setDateError("");
+    }
+  }, [formData.preferredDate, doctorSchedule]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -300,28 +379,36 @@ const Appointment = () => {
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">
                     Available Time Slot <span className="text-red-500">*</span>
                   </label>
-                  <p className="text-[12px] text-slate-500 mb-3">Select one of the available consultation intervals for your session.</p>
                   
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {availableSlots.map((slot, index) => {
-                      const isSelected = formData.preferredTime === slot;
-                      return (
-                        <button
-                          type="button"
-                          key={index}
-                          onClick={() => handleSlotSelect(slot)}
-                          className={`py-3 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 border ${
-                            isSelected 
-                              ? 'bg-[#0D9488] text-white border-[#0D9488] shadow-md scale-[1.02]' 
-                              : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50/50'
-                          }`}
-                        >
-                          <Clock size={14} />
-                          {slot}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {!formData.preferredDate ? (
+                     <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Please select an Appointment Date first to view available slots.</p>
+                  ) : dateError ? (
+                     <p className="text-[12px] text-red-500 mb-3 bg-red-50 p-3 rounded-lg border border-red-200">{dateError}</p>
+                  ) : (
+                    <>
+                      <p className="text-[12px] text-slate-500 mb-3">Select one of the available consultation intervals for your session.</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {availableSlots.map((slot, index) => {
+                          const isSelected = formData.preferredTime === slot;
+                          return (
+                            <button
+                              type="button"
+                              key={index}
+                              onClick={() => handleSlotSelect(slot)}
+                              className={`py-3 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 border ${
+                                isSelected 
+                                  ? 'bg-[#0D9488] text-white border-[#0D9488] shadow-md scale-[1.02]' 
+                                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50/50'
+                              }`}
+                            >
+                              <Clock size={14} />
+                              {slot}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Service / Reason for Visit */}
@@ -358,8 +445,18 @@ const Appointment = () => {
                   <button 
                     type="button"
                     onClick={() => {
-                      if (!formData.fullName || !formData.phoneNumber || !formData.preferredDate || !formData.preferredTime || !formData.reasonForVisit) {
-                        alert('Please fill out all required fields before proceeding.');
+                      const missing = [];
+                      if (!formData.fullName) missing.push("Full Name");
+                      if (!formData.phoneNumber) missing.push("Phone Number");
+                      if (!formData.emailAddress) missing.push("Email Address");
+                      if (!formData.age) missing.push("Age");
+                      if (!formData.gender) missing.push("Gender");
+                      if (!formData.preferredDate) missing.push("Appointment Date");
+                      if (!formData.preferredTime) missing.push("Time Slot");
+                      if (!formData.reasonForVisit) missing.push("Reason for Visit");
+                      
+                      if (missing.length > 0) {
+                        alert('Please fill out the following required fields:\n- ' + missing.join('\n- '));
                         return;
                       }
                       setCurrentStep(2);
