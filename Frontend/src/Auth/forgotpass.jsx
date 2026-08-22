@@ -89,7 +89,7 @@ function EmailStep({ email, setEmail, error, onSubmit }) {
             <input
               type="text"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value.toLowerCase())}
               placeholder="Registered Email Address"
               className="w-full bg-transparent text-sm text-white placeholder-gray-500 outline-none"
             />
