@@ -14,40 +14,103 @@ import {
   ArrowLeft,
   Sparkles,
   MapPin,
-  Star
+  Star,
+  Award
 } from 'lucide-react';
-import { mockDoctor, timeSlotsData } from '../Data/doctorData.js';
 
 const Appointment = () => {
-  
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [referenceId, setReferenceId] = useState('');
   
-  // Use mock doctor data imported from doctardata.js
-  const doctorData = {
-    name: mockDoctor.name,
-    specialization: mockDoctor.specialization,
-    clinic: mockDoctor.clinic,
-    experience: mockDoctor.experience,
-    qualification: mockDoctor.qualification,
-    rating: mockDoctor.rating,
-    reviews: mockDoctor.reviews,
-    clinicAddress: mockDoctor.clinicAddress,
-    consultationHours: mockDoctor.consultationHours,
-    contactNumber: mockDoctor.contactNumber
-  };
+  // Dynamic Doctor State
+  const [doctorData, setDoctorData] = useState({
+    name: 'Loading...',
+    specialization: '',
+    experience: '',
+    qualification: '',
+    medicalLicenseNo: '',
+    rating: '5.0',
+    reviews: 0,
+    clinicAddress: '',
+    consultationHours: '',
+    contactNumber: ''
+  });
 
   const [doctorSchedule, setDoctorSchedule] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [dateError, setDateError] = useState("");
 
+  // Get today's date in YYYY-MM-DD format for default selection
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phoneNumber: '',
+    emailAddress: '',
+    age: '',
+    gender: '',
+    preferredDate: getTodayDateString(), // Default to today so slots show up immediately!
+    preferredTime: '',
+    reasonForVisit: '',
+    additionalNotes: ''
+  });
+
+  // Fetch Logged-in Doctor Profile & Schedule from Backend
   useEffect(() => {
+    fetch('http://localhost:5000/api/doctors/profile', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        const doc = data.doctor || data;
+        if (doc) {
+          setDoctorData(prev => ({
+            ...prev,
+            name: doc.name || doc.fullName || 'Dr. Ridhi',
+            specialization: doc.specialization || '',
+            experience: doc.experience ? `${doc.experience} Years Exp` : '0+ Years Exp',
+            qualification: doc.qualification || 'MBBS',
+            medicalLicenseNo: doc.medicalLicenseNo || doc.licenseNo || '444',
+            rating: doc.rating || '4.9',
+            reviews: doc.reviewsCount || 480,
+            clinicAddress: doc.clinicAddress || doc.address || 'Clinic Location',
+            contactNumber: doc.contactNumber || doc.phone || '7890765457'
+          }));
+        }
+      })
+      .catch(err => console.error("Error fetching doctor profile:", err));
+
     fetch('http://localhost:5000/api/doctors/public-schedule')
       .then(res => res.json())
       .then(data => {
-        if (data.schedule) setDoctorSchedule(data.schedule);
+        if (data.schedule) {
+          setDoctorSchedule(data.schedule);
+          
+          // Dynamically format consultation hours for the card sidebar
+          if (data.schedule.activeDays) {
+            const daysStr = data.schedule.activeDays.join(', ');
+            let timeStr = '';
+            if (data.schedule.morningSession?.enabled) {
+              timeStr = `${data.schedule.morningSession.startTime} - ${data.schedule.morningSession.endTime}`;
+            } else if (data.schedule.afternoonSession?.enabled) {
+              timeStr = `${data.schedule.afternoonSession.startTime} - ${data.schedule.afternoonSession.endTime}`;
+            }
+            setDoctorData(prev => ({
+              ...prev,
+              consultationHours: timeStr ? `${daysStr}, ${timeStr}` : daysStr
+            }));
+          }
+        }
       })
       .catch(err => console.error("Error fetching schedule:", err));
   }, []);
@@ -59,13 +122,24 @@ const Appointment = () => {
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const dayOfWeek = dayNames[dateObj.getDay()];
     
-    if (!schedule.activeDays.includes(dayOfWeek)) {
+    // Check active days dynamically
+    if (schedule.activeDays && !schedule.activeDays.includes(dayOfWeek)) {
       setDateError(`Doctor is not available on ${dayOfWeek}s.`);
       return [];
     }
     
     setDateError("");
     
+    // If backend stores explicit custom slots
+    if (schedule.customSlots && schedule.customSlots[dayOfWeek]) {
+      return schedule.customSlots[dayOfWeek];
+    }
+    
+    if (schedule.slots && Array.isArray(schedule.slots)) {
+      return schedule.slots;
+    }
+
+    // Dynamic Fallback Generation based on session timings
     const slots = [];
     const slotDur = parseInt(schedule.slotDuration) || 30;
     const buffer = parseInt(schedule.bufferTime) || 0;
@@ -73,9 +147,10 @@ const Appointment = () => {
     const timeToMinutes = (timeStr) => {
       if (!timeStr) return 0;
       const [time, period] = timeStr.split(' ');
+      if (!time || !period) return 0;
       let [hours, minutes] = time.split(':').map(Number);
-      if (period === 'PM' && hours !== 12) hours += 12;
-      if (period === 'AM' && hours === 12) hours = 0;
+      if (period.toUpperCase() === 'PM' && hours !== 12) hours += 12;
+      if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
       return hours * 60 + minutes;
     };
     
@@ -90,7 +165,6 @@ const Appointment = () => {
 
     const addSessionSlots = (session) => {
       if (!session || !session.enabled) return;
-      
       const startMins = timeToMinutes(session.startTime);
       const endMins = timeToMinutes(session.endTime);
       
@@ -101,8 +175,9 @@ const Appointment = () => {
       }
     };
 
-    addSessionSlots(schedule.morningSession);
-    addSessionSlots(schedule.eveningSession);
+    if (schedule.morningSession) addSessionSlots(schedule.morningSession);
+    if (schedule.afternoonSession) addSessionSlots(schedule.afternoonSession);
+    if (schedule.eveningSession) addSessionSlots(schedule.eveningSession);
     
     if (slots.length === 0) {
        setDateError("No slots available for the selected day based on session timings.");
@@ -110,18 +185,6 @@ const Appointment = () => {
     
     return slots;
   };
-
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
-    emailAddress: '',
-    age: '',
-    gender: '',
-    preferredDate: '',
-    preferredTime: '',
-    reasonForVisit: '',
-    additionalNotes: ''
-  });
 
   useEffect(() => {
     if (formData.preferredDate && doctorSchedule) {
@@ -151,7 +214,7 @@ const Appointment = () => {
     }));
   };
 
- const handleSubmitAppointment = async (e) => {
+  const handleSubmitAppointment = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMessage('');
@@ -165,7 +228,7 @@ const Appointment = () => {
         body: JSON.stringify(formData),
       });
 
-      const textResponse = await response.text(); // Get raw text first to avoid parsing crashes
+      const textResponse = await response.text(); 
       let result;
       
       try {
@@ -179,7 +242,6 @@ const Appointment = () => {
         throw new Error(result.message || result.error || 'Failed to book appointment');
       }
 
-      // Safely check for reference ID or fallback to a placeholder
       const refId = result.data?._id || result.data?.id || 'SUCCESS-' + Math.floor(Math.random() * 100000);
       setReferenceId(refId);
       setCurrentStep(3);
@@ -193,7 +255,6 @@ const Appointment = () => {
 
   return (
     <div className="font-['Poppins'] bg-gradient-to-br from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0] text-[#0F172A] min-h-screen pb-20 box-border selection:bg-[#0D9488] selection:text-white">
-      
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 pt-6">
         
         {/* Hero Section */}
@@ -222,50 +283,37 @@ const Appointment = () => {
         {/* Stepper Header */}
         <div className="mb-10 bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            {/* Step 1 */}
             <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${currentStep === 1 ? 'bg-teal-50 border border-teal-200 shadow-sm' : 'bg-slate-50 opacity-70'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 1 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
-                1
-              </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 1 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>1</div>
               <div>
                 <p className="text-[12px] uppercase tracking-wider font-semibold text-slate-500">Step 1</p>
                 <h4 className="text-[15px] font-bold text-slate-900">Patient Details</h4>
               </div>
             </div>
 
-            {/* Step 2 */}
             <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${currentStep === 2 ? 'bg-teal-50 border border-teal-200 shadow-sm' : 'bg-slate-50 opacity-70'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 2 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
-                2
-              </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 2 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>2</div>
               <div>
                 <p className="text-[12px] uppercase tracking-wider font-semibold text-slate-500">Step 2</p>
                 <h4 className="text-[15px] font-bold text-slate-900">Review & Confirm</h4>
               </div>
             </div>
 
-            {/* Step 3 */}
             <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${currentStep === 3 ? 'bg-teal-50 border border-teal-200 shadow-sm' : 'bg-slate-50 opacity-70'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 3 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
-                3
-              </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentStep === 3 ? 'bg-[#0D9488] text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>3</div>
               <div>
                 <p className="text-[12px] uppercase tracking-wider font-semibold text-slate-500">Step 3</p>
                 <h4 className="text-[15px] font-bold text-slate-900">Pending Confirmation</h4>
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Main Content: Two Column Layout */}
+        {/* Main Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: Interactive Flow Steps */}
           <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-200/50 border border-slate-200/80">
             
-            {/* STEP 1: PATIENT FORM */}
+            {/* STEP 1 */}
             {currentStep === 1 && (
               <form onSubmit={(e) => { e.preventDefault(); }} className="space-y-6">
                 <div>
@@ -276,7 +324,6 @@ const Appointment = () => {
                 <hr className="border-slate-100 my-4" />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Full Name */}
                   <div>
                     <label className="block text-[13px] font-semibold text-slate-700 mb-2">Full Name <span className="text-red-500">*</span></label>
                     <div className="relative">
@@ -292,7 +339,6 @@ const Appointment = () => {
                     </div>
                   </div>
 
-                  {/* Phone Number */}
                   <div>
                     <label className="block text-[13px] font-semibold text-slate-700 mb-2">Phone Number <span className="text-red-500">*</span></label>
                     <div className="relative">
@@ -308,7 +354,6 @@ const Appointment = () => {
                     </div>
                   </div>
 
-                  {/* Email Address */}
                   <div>
                     <label className="block text-[13px] font-semibold text-slate-700 mb-2">Email Address <span className="text-red-500">*</span></label>
                     <div className="relative">
@@ -324,7 +369,6 @@ const Appointment = () => {
                     </div>
                   </div>
 
-                  {/* Age */}
                   <div>
                     <label className="block text-[13px] font-semibold text-slate-700 mb-2">Age <span className="text-red-500">*</span></label>
                     <div className="relative">
@@ -342,7 +386,6 @@ const Appointment = () => {
                     </div>
                   </div>
 
-                  {/* Gender */}
                   <div>
                     <label className="block text-[13px] font-semibold text-slate-700 mb-2">Gender <span className="text-red-500">*</span></label>
                     <select 
@@ -358,7 +401,6 @@ const Appointment = () => {
                     </select>
                   </div>
 
-                  {/* Appointment Date */}
                   <div>
                     <label className="block text-[13px] font-semibold text-slate-700 mb-2">Appointment Date <span className="text-red-500">*</span></label>
                     <div className="relative">
@@ -381,12 +423,14 @@ const Appointment = () => {
                   </label>
                   
                   {!formData.preferredDate ? (
-                     <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Please select an Appointment Date first to view available slots.</p>
+                    <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Please select an Appointment Date first to view available slots.</p>
                   ) : dateError ? (
-                     <p className="text-[12px] text-red-500 mb-3 bg-red-50 p-3 rounded-lg border border-red-200">{dateError}</p>
+                    <p className="text-[12px] text-red-500 mb-3 bg-red-50 p-3 rounded-lg border border-red-200">{dateError}</p>
+                  ) : availableSlots.length === 0 ? (
+                    <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Loading or no time slots available for this date.</p>
                   ) : (
                     <>
-                      <p className="text-[12px] text-slate-500 mb-3">Select one of the available consultation intervals for your session.</p>
+                      <p className="text-[12px] text-slate-500 mb-3">Select one of the available consultation intervals configured by the doctor.</p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {availableSlots.map((slot, index) => {
                           const isSelected = formData.preferredTime === slot;
@@ -411,7 +455,6 @@ const Appointment = () => {
                   )}
                 </div>
 
-                {/* Service / Reason for Visit */}
                 <div className="pt-2">
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">Service / Reason for Visit <span className="text-red-500">*</span></label>
                   <input 
@@ -424,7 +467,6 @@ const Appointment = () => {
                   />
                 </div>
 
-                {/* Additional Notes */}
                 <div>
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">Additional Notes (Optional)</label>
                   <div className="relative">
@@ -440,7 +482,6 @@ const Appointment = () => {
                   </div>
                 </div>
 
-                {/* Submit Action */}
                 <div className="pt-4 flex justify-end">
                   <button 
                     type="button"
@@ -475,93 +516,106 @@ const Appointment = () => {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-[22px] font-extrabold text-[#0F172A] mb-1">Review Your Appointment</h2>
-                  <p className="text-[14px] text-slate-500">Verify all entered information carefully before submitting your booking request.</p>
+                  <p className="text-[14px] text-slate-500">Please verify your details before confirming submission.</p>
                 </div>
 
-                <hr className="border-slate-100 my-4" />
-
                 {errorMessage && (
-                  <div className="p-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl">
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
                     {errorMessage}
                   </div>
                 )}
 
-                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-6">
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-1.5">
-                      <User size={14} /> Patient Information
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                      <div>
-                        <span className="text-slate-400 text-xs block">Full Name</span>
-                        <strong className="text-slate-800">{formData.fullName}</strong>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 text-xs block">Phone Number</span>
-                        <strong className="text-slate-800">{formData.phoneNumber}</strong>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 text-xs block">Email Address</span>
-                        <strong className="text-slate-800">{formData.emailAddress}</strong>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 text-xs block">Age & Gender</span>
-                        <strong className="text-slate-800">{formData.age} yrs, {formData.gender}</strong>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 text-xs block">Date & Time</span>
-                        <strong className="text-slate-800">{formData.preferredDate} at {formData.preferredTime}</strong>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 text-xs block">Reason for Visit</span>
-                        <strong className="text-slate-800">{formData.reasonForVisit}</strong>
-                      </div>
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200/80 space-y-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-slate-500 block text-xs">Full Name</span>
+                      <strong className="text-slate-800 text-base">{formData.fullName}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-xs">Phone Number</span>
+                      <strong className="text-slate-800 text-base">{formData.phoneNumber}</strong>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-slate-500 block text-xs">Email Address</span>
+                      <strong className="text-slate-800">{formData.emailAddress}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-xs">Age & Gender</span>
+                      <strong className="text-slate-800">{formData.age} yrs, {formData.gender}</strong>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200">
+                    <div>
+                      <span className="text-slate-500 block text-xs">Appointment Date</span>
+                      <strong className="text-teal-700">{formData.preferredDate || 'Not selected'}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-xs">Time Slot</span>
+                      <strong className="text-teal-700">{formData.preferredTime || 'Not selected'}</strong>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-500 block text-xs">Reason for Visit</span>
+                    <strong className="text-slate-800">{formData.reasonForVisit}</strong>
+                  </div>
+
+                  {formData.additionalNotes && (
+                    <div>
+                      <span className="text-slate-500 block text-xs">Additional Notes</span>
+                      <p className="text-slate-700 text-xs mt-1 bg-white p-3 rounded-lg border border-slate-200">{formData.additionalNotes}</p>
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between pt-4">
-                  <button 
+                <div className="flex justify-between pt-4">
+                  <button
                     type="button"
                     onClick={() => setCurrentStep(1)}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all text-sm"
                   >
                     <ArrowLeft size={16} />
                     Back to Edit
                   </button>
 
-                  <button 
+                  <button
                     type="button"
                     onClick={handleSubmitAppointment}
                     disabled={loading}
-                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl text-sm shadow-lg shadow-teal-600/20 transition-all disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl shadow-lg shadow-teal-600/20 transition-all text-sm disabled:opacity-50 cursor-pointer"
                   >
-                    {loading ? 'Submitting...' : 'Confirm Appointment Request'}
-                    <ArrowRight size={16} />
+                    {loading ? 'Submitting...' : 'Confirm & Book Appointment'}
+                    <CheckCircle2 size={16} />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: REQUEST SUBMITTED / CONFIRMATION */}
+            {/* STEP 3: SUCCESS CONFIRMATION */}
             {currentStep === 3 && (
-              <div className="space-y-6 text-center py-6">
-                <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner mb-4">
-                  <CheckCircle2 size={42} />
+              <div className="text-center py-8 space-y-6">
+                <div className="w-20 h-20 bg-teal-100 text-[#0D9488] rounded-full flex items-center justify-center mx-auto shadow-inner">
+                  <CheckCircle2 size={40} />
                 </div>
 
-                <h2 className="text-[26px] font-extrabold text-[#0F172A]">Appointment Request Submitted</h2>
-                <p className="text-[15px] text-slate-600 max-w-[500px] mx-auto">
-                  Your appointment request has been submitted successfully and is now waiting for doctor confirmation.
-                </p>
-
-                <div className="inline-block bg-teal-50 border border-teal-200 px-6 py-3 rounded-2xl my-4">
-                  <span className="text-xs text-teal-700 block font-medium">Reference Tracking ID</span>
-                  <strong className="text-sm text-teal-900 tracking-wide font-medium">{referenceId}</strong>
+                <div className="space-y-2">
+                  <h2 className="text-[26px] font-extrabold text-[#0F172A]">Appointment Successfully Booked!</h2>
+                  <p className="text-sm text-slate-500 max-w-md mx-auto">
+                    Your request has been registered with our backend. We have sent a confirmation email with your visit details.
+                  </p>
                 </div>
 
-                <div className="pt-6">
-                  <button 
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 inline-block max-w-xs mx-auto">
+                  <span className="text-xs text-slate-500 block">Reference ID</span>
+                  <strong className="text-teal-700 text-base font-mono">{referenceId}</strong>
+                </div>
+
+                <div className="pt-4">
+                  <button
                     type="button"
                     onClick={() => {
                       setFormData({
@@ -570,14 +624,14 @@ const Appointment = () => {
                         emailAddress: '',
                         age: '',
                         gender: '',
-                        preferredDate: '',
+                        preferredDate: getTodayDateString(),
                         preferredTime: '',
                         reasonForVisit: '',
                         additionalNotes: ''
                       });
                       setCurrentStep(1);
                     }}
-                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl text-sm shadow-lg shadow-teal-600/20 transition-all"
+                    className="px-8 py-3 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-xl text-sm transition-all shadow-md"
                   >
                     Book Another Appointment
                   </button>
@@ -587,84 +641,72 @@ const Appointment = () => {
 
           </div>
 
-          {/* Right Column: Doctor Profile & Clinic Information Sidebar */}
-          <div className="lg:col-span-4 space-y-6">
-            
-            {/* Doctor Info Card */}
-            <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-200/80">
-              <div className="flex items-center gap-4 pb-5 border-b border-slate-100">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-[#0F766E] flex items-center justify-center text-white font-bold text-xl shadow-md">
-                  DR
-                </div>
-                <div>
-                  <h3 className="text-[18px] font-bold text-slate-900">{doctorData.name}</h3>
-                  <p className="text-[13px] text-teal-700 font-medium">{doctorData.specialization}</p>
-                </div>
+          {/* Right Sidebar: Dynamic Doctor Card */}
+          <div className="lg:col-span-4 bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-200/80 sticky top-6">
+            <div className="flex items-center gap-4 pb-6 border-b border-slate-100">
+              <div className="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center text-[#0D9488] font-bold text-xl shadow-inner">
+                <Stethoscope size={28} />
               </div>
-
-              <div className="pt-5 space-y-4 text-sm text-slate-600">
-                <div className="flex items-start gap-3">
-                  <Stethoscope size={18} className="text-teal-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-xs text-slate-400 block">Qualification</span>
-                    <strong className="text-slate-800">{doctorData.qualification}</strong>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <MapPin size={18} className="text-teal-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-xs text-slate-400 block">Clinic Address</span>
-                    <strong className="text-slate-800">{doctorData.clinicAddress}</strong>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Clock size={18} className="text-teal-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-xs text-slate-400 block">Consultation Hours</span>
-                    <strong className="text-slate-800">{doctorData.consultationHours}</strong>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <PhoneCall size={18} className="text-teal-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-xs text-slate-400 block">Contact Number</span>
-                    <strong className="text-slate-800">{doctorData.contactNumber}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-amber-500 font-bold text-sm">
-                  <Star size={16} className="fill-amber-400 text-amber-400" />
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">{doctorData.name}</h3>
+                <p className="text-xs font-semibold text-[#0D9488]">
+                  {doctorData.specialization || 'Specialist'}
+                </p>
+                <div className="flex items-center gap-1 mt-1 text-xs text-amber-500 font-semibold">
+                  <Star size={12} fill="currentColor" />
                   <span>{doctorData.rating}</span>
-                  <span className="text-slate-400 font-normal text-xs">({doctorData.reviews} reviews)</span>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  <ShieldCheck size={14} /> Verified
+                  <span className="text-slate-400 font-normal">({doctorData.reviews} reviews)</span>
                 </div>
               </div>
             </div>
 
-            {/* Support / Help Card */}
-            <div className="bg-gradient-to-br from-teal-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl">
-              <h4 className="text-base font-bold mb-2">Need Immediate Assistance?</h4>
-              <p className="text-slate-300 text-xs leading-relaxed mb-4">
-                If you are experiencing a severe medical emergency, please call emergency services immediately or visit the nearest hospital emergency room.
-              </p>
-              <div className="inline-flex items-center gap-2 text-teal-300 text-xs font-semibold">
-                <Phone size={14} /> 24/7 Helpline: 1-800-HEALTH
+            <div className="py-6 space-y-4 text-sm border-b border-slate-100">
+              <div className="flex items-start gap-3">
+                <Award size={18} className="text-slate-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block text-xs text-slate-500 uppercase tracking-wider">Qualification & License</strong>
+                  <span className="text-slate-700 text-xs block">{doctorData.qualification}</span>
+                  <span className="text-slate-500 text-[11px] block">License No: {doctorData.medicalLicenseNo}</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <MapPin size={18} className="text-slate-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block text-xs text-slate-500 uppercase tracking-wider">Clinic Address</strong>
+                  <span className="text-slate-700 text-xs">{doctorData.clinicAddress}</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Clock size={18} className="text-slate-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block text-xs text-slate-500 uppercase tracking-wider">Consultation Hours</strong>
+                  <span className="text-slate-700 text-xs">{doctorData.consultationHours || 'Loading schedule...'}</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <PhoneCall size={18} className="text-slate-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block text-xs text-slate-500 uppercase tracking-wider">Contact Number</strong>
+                  <span className="text-slate-700 text-xs">{doctorData.contactNumber}</span>
+                </div>
               </div>
             </div>
 
+            <div className="pt-6">
+              <div className="p-4 rounded-2xl bg-teal-50/50 border border-teal-100 flex items-center gap-3">
+                <ShieldCheck size={24} className="text-[#0D9488] shrink-0" />
+                <p className="text-xs text-slate-600">
+                  <strong className="text-slate-800 block font-semibold">Verified Secure Booking</strong>
+                  Your patient records are encrypted and handled safely.
+                </p>
+              </div>
+            </div>
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 };

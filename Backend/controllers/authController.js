@@ -123,6 +123,7 @@ export const updateDoctorProfile = async (req, res) => {
 // Get Public Schedule (For patient booking side)
  // Get Public Schedule (For patient booking side)
  // Get Public Schedule (For patient booking side)
+ // Get Public Schedule (For patient booking side)
 export const getPublicSchedule = async (req, res) => {
   try {
     const { email, id } = req.query;
@@ -145,6 +146,9 @@ export const getPublicSchedule = async (req, res) => {
 
     res.status(200).json({ 
       doctorName: doctor.fullName,
+      specialization: doctor.specialization || '', // Added specialization here!
+      qualification: doctor.qualification || 'MBBS',
+      experience: doctor.experience || '',
       clinicName: doctor.clinicName,
       clinicAddress: doctor.clinicAddress,
       schedule: doctor.schedule 
