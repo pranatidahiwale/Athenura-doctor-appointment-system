@@ -64,6 +64,7 @@ const Appointment = () => {
   });
 
   // Fetch Logged-in Doctor Profile & Schedule from Backend
+  // Fetch Logged-in Doctor Profile & Schedule from Backend
   useEffect(() => {
     fetch('http://localhost:5000/api/doctors/profile', {
       headers: {
@@ -80,11 +81,12 @@ const Appointment = () => {
             specialization: doc.specialization || '',
             experience: doc.experience ? `${doc.experience} Years Exp` : '0+ Years Exp',
             qualification: doc.qualification || 'MBBS',
-            medicalLicenseNo: doc.medicalLicenseNo || doc.licenseNo || '444',
+            // FIXED: Match MongoDB schema field names (medicalRegistrationNo and phoneNumber)
+            medicalLicenseNo: doc.medicalRegistrationNo || doc.medicalLicenseNo || doc.licenseNo || '444',
             rating: doc.rating || '4.9',
             reviews: doc.reviewsCount || 480,
             clinicAddress: doc.clinicAddress || doc.address || 'Clinic Location',
-            contactNumber: doc.contactNumber || doc.phone || '7890765457'
+            contactNumber: doc.phoneNumber || doc.contactNumber || doc.phone || '7890765457'
           }));
         }
       })
@@ -96,7 +98,6 @@ const Appointment = () => {
         if (data.schedule) {
           setDoctorSchedule(data.schedule);
           
-          // Dynamically format consultation hours for the card sidebar
           if (data.schedule.activeDays) {
             const daysStr = data.schedule.activeDays.join(', ');
             let timeStr = '';
@@ -708,6 +709,7 @@ const Appointment = () => {
         </div>
       </div>
     </div>
+
   );
 };
 
