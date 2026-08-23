@@ -23,7 +23,7 @@ function Field({ label, value, onChange, type = "text", highlight, hint, placeho
       </p>
       <input
         type={type}
-        value={value}
+        value={value || ""}
         onChange={(e) => onChange && onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium outline-none transition-colors"
@@ -153,17 +153,12 @@ export default function ProfileSettings() {
   const [medicalRegistrationNo, setMedicalRegistrationNo] = useState("");
   const [clinicAddress, setClinicAddress] = useState("");
   const [fee, setFee] = useState("");
-  const [title, setTitle] = useState(
-    () => localStorage.getItem("doctorTitle") || ""
-  );
-  const [photo, setPhoto] = useState(
-    "https://i.ibb.co/bRyPh259/Atharv.png"
-  );
+  const [title, setTitle] = useState("");
+  const [photo, setPhoto] = useState("https://i.ibb.co/bRyPh259/Atharv.png");
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const fileInputRef = React.useRef(null);
 
-  // Fetch profile and authentication data from backend on load
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -175,19 +170,17 @@ export default function ProfileSettings() {
         },
       });
       const data = await response.json();
-      if (response.ok) {
-        // Pre-fill fields coming from signup/login info
+      if (response.ok && data) {
         setFullName(data.fullName || "");
         setEmail(data.email || "");
         setPhoneNumber(data.phoneNumber || "");
-
-        // Other fields remain blank or use whatever is stored in the database
         setSpecialization(data.specialization || "");
         setYears(data.years || "");
         setMedicalRegistrationNo(data.medicalRegistrationNo || "");
         setClinicAddress(data.clinicAddress || "");
         setFee(data.fee || "");
-        setTitle(data.title || "");
+        setTitle(data.title || localStorage.getItem("doctorTitle") || "");
+        if (data.photo) setPhoto(data.photo);
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -221,6 +214,7 @@ export default function ProfileSettings() {
         clinicAddress,
         fee,
         title,
+        photo,
       };
 
       const response = await fetch("http://localhost:5000/api/doctors/profile", {

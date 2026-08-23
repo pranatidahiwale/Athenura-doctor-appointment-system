@@ -88,6 +88,7 @@ export const getDoctorProfile = async (req, res) => {
 };
 
 // Update Doctor Profile Controller
+ // Update Doctor Profile Controller
 export const updateDoctorProfile = async (req, res) => {
   try {
     const updates = { ...req.body };
@@ -95,15 +96,9 @@ export const updateDoctorProfile = async (req, res) => {
     // Prevent updating password through this route for security
     delete updates.password;
 
-    // Handle nested schedule payload coming from the frontend dashboard
-    let updateData = updates;
-    if (updates.schedule) {
-      updateData = { schedule: updates.schedule };
-    }
-
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       req.user.id,
-      { $set: updateData },
+      { $set: updates },
       { new: true, runValidators: true }
     ).select("-password");
 

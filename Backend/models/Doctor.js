@@ -8,6 +8,12 @@ const doctorSchema = new mongoose.Schema({
   clinicAddress: { type: String, required: true },
   medicalRegistrationNo: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  specialization: { type: String, default: "" },
+  years: { type: String, default: "" },
+  fee: { type: String, default: "" },
+  title: { type: String, default: "" },
+  photo: { type: String, default: "" },
+
   schedule: {
     activeDays: { type: [String], default: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
     morningSession: {
