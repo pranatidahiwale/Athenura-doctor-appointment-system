@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   CheckCircle2, 
   PhoneCall, 
@@ -49,6 +50,21 @@ const Appointment = () => {
   const [doctorSchedule, setDoctorSchedule] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [dateError, setDateError] = useState("");
+  const location = useLocation();
+
+  // Retrieve selected time and date from router state, with localStorage fallback for deployment
+  const passedTime = location.state?.selectedTime || localStorage.getItem('selectedTimeSlot');
+  const passedDate = location.state?.selectedDate || localStorage.getItem('selectedDate');
+
+  // Save to localStorage if passed via state so it persists across refreshes or production reloads
+  useEffect(() => {
+    if (location.state?.selectedTime) {
+      localStorage.setItem('selectedTimeSlot', location.state.selectedTime);
+    }
+    if (location.state?.selectedDate) {
+      localStorage.setItem('selectedDate', location.state.selectedDate);
+    }
+  }, [location.state]);
 
   // Get today's date in YYYY-MM-DD format for default selection
   const getTodayDateString = () => {
@@ -59,14 +75,14 @@ const Appointment = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const [formData, setFormData] = useState({
+   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
     emailAddress: '',
     age: '',
     gender: '',
-    preferredDate: getTodayDateString(),
-    preferredTime: '',
+    preferredDate: passedDate || getTodayDateString(),
+    preferredTime: passedTime || '',
     reasonForVisit: '',
     additionalNotes: ''
   });
@@ -453,6 +469,7 @@ const Appointment = () => {
                 </div>
 
                 {/* Time Slot Selection Component */}
+                {/* Time Slot Selection Component */}
                 <div className="pt-4">
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">
                     Available Time Slot <span className="text-red-500">*</span>
@@ -466,30 +483,35 @@ const Appointment = () => {
                     <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Loading or no time slots available for this date.</p>
                   ) : (
                     <>
-                      <p className="text-[12px] text-slate-500 mb-3">Select one of the available consultation intervals configured by the doctor.</p>
+                      <p className="text-[12px] text-slate-500 mb-3">
+                        {passedTime ? "Showing your pre-selected time slot from the schedule:" : "Select one of the available consultation intervals configured by the doctor."}
+                      </p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {availableSlots.map((slot, index) => {
-                          const isSelected = formData.preferredTime === slot;
-                          return (
-                            <button
-                              type="button"
-                              key={index}
-                              onClick={() => handleSlotSelect(slot)}
-                              className={`py-3 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 border ${
-                                isSelected 
-                                  ? 'bg-[#0D9488] text-white border-[#0D9488] shadow-md scale-[1.02]' 
-                                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50/50'
-                              }`}
-                            >
-                              <Clock size={14} />
-                              {slot}
-                            </button>
-                          );
+                        {availableSlots
+                          .filter(slot => !passedTime || slot === passedTime) // <-- THIS LINE FILTERS IT TO ONLY SHOW THE CHOSEN SLOT
+                          .map((slot, index) => {
+                            const isSelected = formData.preferredTime === slot;
+                            return (
+                              <button
+                                type="button"
+                                key={index}
+                                onClick={() => handleSlotSelect(slot)}
+                                className={`py-3 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 border ${
+                                  isSelected 
+                                    ? 'bg-[#0D9488] text-white border-[#0D9488] shadow-md scale-[1.02]' 
+                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50/50'
+                                }`}
+                              >
+                                <Clock size={14} />
+                                {slot}
+                              </button>
+                            );
                         })}
                       </div>
                     </>
                   )}
                 </div>
+                
 
                 <div className="pt-2">
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">Service / Reason for Visit <span className="text-red-500">*</span></label>
