@@ -16,10 +16,10 @@ const Footer = () => {
   return (
     <footer className="w-full bg-black border-t border-slate-800 px-6 sm:px-10 lg:px-12 pt-14 pb-8 font-[Poppins,sans-serif]">
       
-      {/* Main Footer - 4 Equal/Balanced Columns */}
+      
       <div className="mx-auto max-w-[1250px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
 
-        {/* Column 1: Logo, About & Socials */}
+        
         <div>
           {/*Logo*/}
           <div className="flex items-center -mt-6 -ml-2 mb-2">
@@ -223,6 +223,20 @@ const Footer = () => {
             © 2026 ATHENURA. All rights reserved.
           </p>
 
+          {/* Developed By - Center */}
+    <p className="text-[12px] text-slate-500 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+      Developed and Designed by{" "}
+      <a
+        href="https://www.athenura.in/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-teal-400 hover:text-teal-300 transition-colors font-medium"
+      >
+        Athenura
+      </a>
+    </p>
+
+
           {/* Legal Links */}
           <div className="flex flex-wrap items-center gap-6">
             <Link
@@ -232,19 +246,21 @@ const Footer = () => {
               Privacy Policy
             </Link>
 
-            <a
-              href="#"
-              className="text-[12px] text-slate-400 hover:text-teal-400 transition-colors"
-            >
+            <Link
+              to="/terms-of-service"
+               className="text-[12px] text-slate-400 hover:text-teal-400 transition-colors"
+              >
               Terms of Service
-            </a>
+                </Link>
 
-            <a
-              href="#"
-              className="text-[12px] text-slate-400 hover:text-teal-400 transition-colors"
-            >
-              HIPAA Compliance
-            </a>
+            <Link
+             to="/hipaa-compliance"
+           className="text-[12px] text-slate-400 hover:text-teal-400 transition-colors"
+              >
+            HIPAA Compliance
+           </Link>
+
+           
           </div>
 
         </div>

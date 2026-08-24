@@ -21,6 +21,9 @@ import Dashboard from "./DoctorDashboard/Dashboard";
 import AppointmentManagement from "./DoctorDashboard/AppointmentManagement";
 import Schedule from "./DoctorDashboard/Schedule";
 import ProfileSettings from "./DoctorDashboard/ProfileSettings";
+import PrivacyPolicy from "./Components/PrivacyPolicy";
+import TermsOfService from "./Components/TermsOfService";
+import HIPAACompliance from "./Components/HIPAACompliance";
 
 // ScrollToTop utility component
 function ScrollToTop() {
@@ -64,7 +67,13 @@ function App() {
         <Route path="/testimonials" element={<PageLayout><Testimonials /></PageLayout>} />
         <Route path="/schedule" element={<PageLayout><SchedulePage /></PageLayout>} />
         <Route path="/appointment" element={<PageLayout><Appointment /></PageLayout>} />
-
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/hipaa-compliance"  element={<HIPAACompliance />}/>
+  
+    
+    
+  
         
         <Route path="/doctor-dashboard" element={<DoctorsDashboard />}>
           <Route index element={<Dashboard />} />
