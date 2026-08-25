@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   CheckCircle2, 
   PhoneCall, 
@@ -52,6 +53,19 @@ const Appointment = () => {
   const [doctorSchedule, setDoctorSchedule] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [dateError, setDateError] = useState("");
+  const location = useLocation();
+
+  // Effect to catch query parameters like ?slot=09:00%20AM
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const slotParam = params.get('slot');
+    if (slotParam) {
+      setFormData(prev => ({
+        ...prev,
+        preferredTime: slotParam
+      }));
+    }
+  }, [location.search]);
 
   // Get today's date in YYYY-MM-DD format for default selection
   const getTodayDateString = () => {
@@ -80,6 +94,7 @@ const Appointment = () => {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
+
     })
       .then(res => res.json())
       .then(data => {
@@ -531,17 +546,27 @@ const Appointment = () => {
                 </div>
 
                 {/* Time Slot Selection Component */}
+                 {/* Time Slot Selection Component */}
                 <div className="pt-4">
                   <label className="block text-[13px] font-semibold text-slate-700 mb-2">
-                    Available Time Slot <span className="text-red-500">*</span>
+                    Selected Time Slot <span className="text-red-500">*</span>
                   </label>
                   
-                  {!formData.preferredDate ? (
+                  {formData.preferredTime && new URLSearchParams(location.search).get('slot') ? (
+                    /* If a slot was passed directly via URL, lock and display just that slot */
+                    <div className="flex items-center gap-3">
+                      <div className="py-3 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 bg-[#0D9488] text-white border-[#0D9488] shadow-md">
+                        <Clock size={14} />
+                        {formData.preferredTime}
+                      </div>
+                      <span className="text-xs text-slate-500 italic">Slot pre-selected from your schedule.</span>
+                    </div>
+                  ) : !formData.preferredDate ? (
                     <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Please select an Appointment Date first to view available slots.</p>
                   ) : dateError ? (
                     <p className="text-[12px] text-red-500 mb-3 bg-red-50 p-3 rounded-lg border border-red-200">{dateError}</p>
                   ) : availableSlots.length === 0 ? (
-                    <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">Loading or no time slots available for this date.</p>
+                    <p className="text-[12px] text-slate-500 mb-3 bg-slate-50 p-3 rounded-lg border border-red-200">Loading or no time slots available for this date.</p>
                   ) : (
                     <>
                       <p className="text-[12px] text-slate-500 mb-3">Select one of the available consultation intervals configured by the doctor.</p>

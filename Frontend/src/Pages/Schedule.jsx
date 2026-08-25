@@ -179,10 +179,9 @@ export default function SchedulePage() {
     }
   };
 
-  const handleDirectBookingTrigger = () => {
-    navigate('/appointment', { state: { selectedTime: selectedSlot } });
+ const handleDirectBookingTrigger = () => {
+    navigate(`/appointment?slot=${encodeURIComponent(selectedSlot)}`);
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center animate-fade-in" style={{ fontFamily: "'Poppins', sans-serif" }}>
