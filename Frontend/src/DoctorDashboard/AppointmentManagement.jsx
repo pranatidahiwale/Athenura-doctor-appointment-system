@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
+  CalendarPlus,
 } from "lucide-react";
 
 const FONT_IMPORT = `
@@ -94,6 +95,12 @@ export default function AppointmentManagement() {
   const [rescheduleModal, setRescheduleModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [holidays, setHolidays] = useState([]);
+  const [showHolidayModal, setShowHolidayModal] = useState(false);
+  const [holidayForm, setHolidayForm] = useState({ name: "", date: "", description: "" });
+  const [isSavingHoliday, setIsSavingHoliday] = useState(false);
+  const [showHolidaySuccess, setShowHolidaySuccess] = useState(false);
+
   const fetchAppointments = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/appointments");
@@ -118,8 +125,21 @@ export default function AppointmentManagement() {
     }
   };
 
+  const fetchHolidays = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/holidays");
+      const json = await res.json();
+      if (json.success) {
+        setHolidays(json.data);
+      }
+    } catch (err) {
+      console.error("Error fetching holidays", err);
+    }
+  };
+
   useEffect(() => {
     fetchAppointments();
+    fetchHolidays();
   }, []);
 
   const updateStatus = async (id, status, extraData = {}) => {
@@ -150,6 +170,35 @@ export default function AppointmentManagement() {
       preferredTime: rescheduleModal.time
     });
     setRescheduleModal(null);
+  };
+
+  const handleCreateHoliday = async (e) => {
+    e.preventDefault();
+    if (!holidayForm.name.trim() || !holidayForm.date) return;
+    setIsSavingHoliday(true);
+
+    // Add to local list immediately (frontend-only, no backend dependency)
+    const newHoliday = { ...holidayForm, _id: Date.now().toString() };
+    setHolidays((prev) => [...prev, newHoliday]);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/holidays", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(holidayForm),
+      });
+      if (res.ok) {
+        await fetchHolidays();
+      }
+    } catch (err) {
+      console.error("Backend not reachable, holiday saved locally only", err);
+    } finally {
+      setIsSavingHoliday(false);
+      setHolidayForm({ name: "", date: "", description: "" });
+      setShowHolidayModal(false);
+      setShowHolidaySuccess(true);
+      setTimeout(() => setShowHolidaySuccess(false), 2200);
+    }
   };
 
   const filtered = useMemo(() => {
@@ -214,7 +263,7 @@ export default function AppointmentManagement() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <motion.button
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.97 }}
@@ -246,11 +295,25 @@ export default function AppointmentManagement() {
               whileHover={{ y: -1, boxShadow: "0 10px 24px rgba(11,110,79,0.28)" }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setShowScheduleModal(true)}
-              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white whitespace-nowrap"
               style={{ background: "#0B6E4F" }}
             >
               <Plus size={16} strokeWidth={2.4} />
               Schedule New
+            </motion.button>
+            <motion.button
+              type="button"
+              whileHover={{ y: -1, boxShadow: "0 10px 24px rgba(12,111,80,0.28)" }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                console.log("Create Holiday clicked");
+                setShowHolidayModal(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white whitespace-nowrap relative z-30 pointer-events-auto cursor-pointer"
+              style={{ background: "#0c6f50" }}
+            >
+              <CalendarPlus size={16} strokeWidth={2.4} />
+              Create Holiday
             </motion.button>
           </div>
         </motion.div>
@@ -668,6 +731,113 @@ export default function AppointmentManagement() {
                   Confirm Reschedule
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showHolidayModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(14,39,31,0.4)", backdropFilter: "blur(2px)" }}
+            onClick={() => setShowHolidayModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto"
+            >
+              <button
+                onClick={() => setShowHolidayModal(false)}
+                className="absolute top-4 right-4"
+                style={{ color: "#8AA398" }}
+              >
+                <X size={18} />
+              </button>
+              <h3
+                className="text-lg sm:text-xl font-semibold mb-4 pr-6"
+                style={{ fontFamily: "'Fraunces', serif", color: "#0E271F" }}
+              >
+                Create Clinic Holiday
+              </h3>
+              <form className="space-y-3" onSubmit={handleCreateHoliday}>
+                <input
+                  required
+                  value={holidayForm.name}
+                  onChange={(e) => setHolidayForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="Holiday name"
+                  className="w-full rounded-lg px-3 py-2.5 text-[13.5px] outline-none"
+                  style={{ border: "1px solid #DCEAE3", color: "#0E271F" }}
+                />
+                <input
+                  required
+                  type="date"
+                  value={holidayForm.date}
+                  onChange={(e) => setHolidayForm((f) => ({ ...f, date: e.target.value }))}
+                  className="w-full rounded-lg px-3 py-2.5 text-[13.5px] outline-none"
+                  style={{ border: "1px solid #DCEAE3", color: "#0E271F" }}
+                />
+                <textarea
+                  value={holidayForm.description}
+                  onChange={(e) => setHolidayForm((f) => ({ ...f, description: e.target.value }))}
+                  placeholder="Description (optional)"
+                  rows={2}
+                  className="w-full rounded-lg px-3 py-2.5 text-[13.5px] outline-none resize-none"
+                  style={{ border: "1px solid #DCEAE3", color: "#0E271F" }}
+                />
+                <button
+                  type="submit"
+                  disabled={isSavingHoliday}
+                  className="w-full rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white mt-2 disabled:opacity-60"
+                  style={{ background: "#0c6f50" }}
+                >
+                  {isSavingHoliday ? "Saving..." : "Add Holiday"}
+                </button>
+              </form>
+
+              {holidays.length > 0 && (
+                <div className="mt-5 pt-4" style={{ borderTop: "1px solid #ECF3EF" }}>
+                  <p
+                    className="text-[11px] font-bold uppercase tracking-wider mb-2.5"
+                    style={{ color: "#8AA398" }}
+                  >
+                    Upcoming Holidays
+                  </p>
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {holidays.map((h) => (
+                      <div
+                        key={h._id || h.date + h.name}
+                        className="flex items-start justify-between gap-2 rounded-lg px-3 py-2"
+                        style={{ background: "#FBFEFC", border: "1px solid #ECF3EF" }}
+                      >
+                        <div className="min-w-0">
+                          <p className="text-[12.5px] font-semibold truncate" style={{ color: "#0E271F" }}>
+                            {h.name}
+                          </p>
+                          {h.description && (
+                            <p className="text-[11.5px] truncate" style={{ color: "#8AA398" }}>
+                              {h.description}
+                            </p>
+                          )}
+                        </div>
+                        <span
+                          className="text-[10.5px] font-bold px-2 py-1 rounded-md shrink-0"
+                          style={{ color: "#C43D3D", background: "#FDEAEA" }}
+                        >
+                          {h.date}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
