@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 import {
   ShieldCheck,
   Lock,
@@ -168,6 +170,8 @@ const PolicyAccordionItem = ({ section, isOpen, onToggle, index }) => {
   const Icon = section.icon;
 
   return (
+
+
     <motion.div
       id={section.id}
       initial={{ opacity: 0, y: 24 }}
@@ -250,6 +254,9 @@ const PrivacyPolicy = () => {
   };
 
   return (
+<>
+  <Navbar />
+
     <div className="w-full bg-[#f3f6ff] font-[Poppins,sans-serif] text-[#16263D] overflow-x-hidden text-[16px]" ref={topRef}>
       {/* ================= HERO ================= */}
       <section className="relative w-full border-t border-blue-100 overflow-hidden bg-gradient-to-br from-[#F7F9FC] via-[#EFF6F5] to-[#E6F1EE]">
@@ -387,8 +394,11 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-    </div>
-  );
+   </div>
+
+<Footer />
+</>
+);
 };
 
 export default PrivacyPolicy;

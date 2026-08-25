@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 import {
   ShieldCheck,
   Lock,
@@ -645,6 +647,9 @@ const ComplianceContactSection = () => (
 ------------------------------------------------------------------------- */
 export default function HIPAACompliancePage() {
   return (
+<>
+  <Navbar />
+
     <div className="hip-root min-h-screen" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
       <GlobalStyles />
       <style>{`.hip-root { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; } .hip-root h1, .hip-root h2, .hip-root h3, .font-serif { font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif; }`}</style>
@@ -653,7 +658,10 @@ export default function HIPAACompliancePage() {
       <SafeguardsSection />
       <PatientRightsSection />
       <BreachSection />
-      <ComplianceContactSection />
+            <ComplianceContactSection />
     </div>
-  );
+
+    <Footer />
+  </>
+);
 }
