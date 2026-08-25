@@ -1,4 +1,4 @@
-import Appointment from '../models/Appointment.js';
+ import Appointment from '../models/Appointment.js';
 
 // @desc    Book a new appointment (Client side - No Auth)
 // @route   POST /api/appointments/book
@@ -66,6 +66,32 @@ export const getAppointments = async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: error.message 
+    });
+  }
+};
+
+// @desc    Get a single appointment by ID (For checking status via Reference ID)
+// @route   GET /api/appointments/:id
+export const getAppointmentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Appointment not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: appointment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 };
