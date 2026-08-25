@@ -260,6 +260,7 @@ const Appointment = () => {
         throw new Error("Server returned an invalid response format (not JSON). Check backend terminal.");
       }
 
+      // If backend sends status 400 (e.g. duplicate active appointment or missing fields)
       if (!response.ok) {
         throw new Error(result.message || result.error || 'Failed to book appointment');
       }
@@ -268,10 +269,11 @@ const Appointment = () => {
       const refId = appointmentObj?._id || appointmentObj?.id || 'SUCCESS-' + Math.floor(Math.random() * 100000);
       setReferenceId(refId);
       setAppointmentDetails(appointmentObj);
-      setCurrentStep(3);
+      setCurrentStep(3); // Moves to status step only if successful
     } catch (err) {
       console.error("Booking error:", err);
-      setErrorMessage(err.message);
+      setErrorMessage(err.message); // Displays "You already have an active appointment." cleanly
+      setCurrentStep(2); // Keeps user on review step so they can see the error message clearly
     } finally {
       setLoading(false);
     }

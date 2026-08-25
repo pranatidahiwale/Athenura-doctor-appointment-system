@@ -24,10 +24,26 @@ export const bookAppointment = async (req, res) => {
       });
     }
 
+    // Check if an active appointment already exists for this email or phone number
+    const existingAppointment = await Appointment.findOne({
+      $or: [
+        { emailAddress: emailAddress.toLowerCase().trim() },
+        { phoneNumber: phoneNumber.trim() }
+      ],
+      status: { $ne: 'Cancelled' } // Allow booking if their previous appointment was cancelled
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        success: false,
+        message: 'You already have an active appointment.'
+      });
+    }
+
     const newAppointment = new Appointment({
       fullName,
-      phoneNumber,
-      emailAddress,
+      phoneNumber: phoneNumber.trim(),
+      emailAddress: emailAddress.toLowerCase().trim(),
       age,
       gender,
       preferredDate,
