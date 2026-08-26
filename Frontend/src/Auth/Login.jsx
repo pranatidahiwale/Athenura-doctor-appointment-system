@@ -1,5 +1,7 @@
  import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase";
 import {
   Plus,
   Mail,
@@ -90,9 +92,30 @@ export default function MedicaCareLogin() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
-  };
+  const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const idToken = await result.user.getIdToken();
+
+    const response = await fetch("http://localhost:5000/api/doctors/google-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("token", data.token);
+      navigate("/doctor-dashboard");
+    } else {
+      alert(data.message || "Google login failed");
+    }
+  } catch (err) {
+    console.error("Google login error:", err);
+    alert("Google sign-in failed. Please try again.");
+  }
+};
 
   const handleAppleLogin = () => {
     // Redirects to backend Apple OAuth route

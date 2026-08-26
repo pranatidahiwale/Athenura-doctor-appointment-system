@@ -1,6 +1,7 @@
  import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Doctor from "../models/Doctor.js";
+import admin from "../firebaseAdmin.js";
 
 // Doctor Signup Controller
 export const signupDoctor = async (req, res) => {
@@ -150,5 +151,61 @@ export const getPublicSchedule = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Google Sign-In Controller
+export const googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ message: "No ID token provided." });
+    }
+
+    // Verify the token with Firebase
+    const decodedToken = await admin.verifyIdToken(idToken);
+    const { email, name, uid } = decodedToken;
+
+    // Check if doctor already exists
+    let doctor = await Doctor.findOne({ email });
+
+    if (!doctor) {
+      // Create a partial account — profile incomplete
+      doctor = new Doctor({
+        fullName: name || "Unnamed Doctor",
+        email,
+        authProvider: "google",
+        googleId: uid,
+        isProfileComplete: false,
+      });
+      await doctor.save();
+    } else if (doctor.authProvider === "local") {
+      // Existing local account with same email — link Google to it
+      doctor.googleId = uid;
+      await doctor.save();
+    }
+
+    // Generate JWT Token (same as your normal login)
+    const token = jwt.sign(
+      { id: doctor._id },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({
+      message: "Google login successful",
+      token,
+      doctor: {
+        id: doctor._id,
+        fullName: doctor.fullName,
+        email: doctor.email,
+        clinicName: doctor.clinicName || "",
+        isProfileComplete: doctor.isProfileComplete,
+      },
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(500).json({ message: "Google authentication failed", error: error.message });
   }
 };
