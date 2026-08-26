@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutGrid,
@@ -344,13 +345,13 @@ export default function SidebarNavbar({
 
 function Logo({ compact }) {
   return (
-    <div className="flex items-center min-w-0">
+    <Link to="/" className="flex items-center min-w-0 cursor-pointer">
       <img
         src={logo1}
         alt="Athenura"
         className={compact ? "h-8 w-auto object-contain" : "h-10 w-auto object-contain"}
       />
-    </div>
+    </Link>
   );
 }
 
