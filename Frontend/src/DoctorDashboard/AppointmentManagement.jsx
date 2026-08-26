@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Search,
   CalendarPlus,
+  Eye,
 } from "lucide-react";
 
 const FONT_IMPORT = `
@@ -92,6 +93,7 @@ export default function AppointmentManagement() {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [page, setPage] = useState(1);
   const [historyModal, setHistoryModal] = useState(null);
+  const [detailsModal, setDetailsModal] = useState(null);
   const [rescheduleModal, setRescheduleModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -110,9 +112,14 @@ export default function AppointmentManagement() {
           _id: app._id,
           id: `PT-${app._id.slice(-4).toUpperCase()}`,
           name: app.fullName,
+          phone: app.phoneNumber,
+          email: app.email,
+          age: app.age,
+          gender: app.gender,
           date: app.preferredDate,
           time: app.preferredTime,
           reason: app.reasonForVisit,
+          notes: app.additionalNotes,
           status: app.status,
           avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces"
         }));
@@ -474,6 +481,12 @@ export default function AppointmentManagement() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-1.5 opacity-90 group-hover:opacity-100">
+                          <ActionIcon
+                            title="View details"
+                            onClick={() => setDetailsModal(p)}
+                          >
+                            <Eye size={15} strokeWidth={2.1} />
+                          </ActionIcon>
                           {p.status === "Rejected" ? (
                             <>
                               <ActionIcon
@@ -672,6 +685,54 @@ export default function AppointmentManagement() {
       </AnimatePresence>
 
       <AnimatePresence>
+        {detailsModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(14,39,31,0.4)", backdropFilter: "blur(2px)" }}
+            onClick={() => setDetailsModal(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto"
+            >
+              <button
+                onClick={() => setDetailsModal(null)}
+                className="absolute top-4 right-4"
+                style={{ color: "#8AA398" }}
+              >
+                <X size={18} />
+              </button>
+              <h3
+                className="text-lg sm:text-xl font-semibold mb-4 pr-6"
+                style={{ fontFamily: "'Fraunces', serif", color: "#0E271F" }}
+              >
+                Appointment Details
+              </h3>
+              <div className="space-y-2.5 text-[13.5px]" style={{ color: "#3F5B50" }}>
+                <DetailRow label="Full Name" value={detailsModal.name} />
+                <DetailRow label="Phone Number" value={detailsModal.phone} />
+                <DetailRow label="Email Address" value={detailsModal.email} />
+                <DetailRow label="Age" value={detailsModal.age} />
+                <DetailRow label="Gender" value={detailsModal.gender} />
+                <DetailRow label="Appointment Date" value={detailsModal.date} />
+                <DetailRow label="Available Time Slot" value={detailsModal.time} />
+                <DetailRow label="Service / Reason for Visit" value={detailsModal.reason} />
+                <DetailRow label="Additional Notes" value={detailsModal.notes} />
+                <DetailRow label="Status" value={detailsModal.status} />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {rescheduleModal && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -842,6 +903,25 @@ export default function AppointmentManagement() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function DetailRow({ label, value }) {
+  return (
+    <div
+      className="flex items-start justify-between gap-3 rounded-lg px-3 py-2"
+      style={{ background: "#FBFEFC", border: "1px solid #ECF3EF" }}
+    >
+      <span
+        className="text-[11px] font-bold uppercase tracking-wide shrink-0"
+        style={{ color: "#8AA398" }}
+      >
+        {label}
+      </span>
+      <span className="text-[13px] font-medium text-right" style={{ color: "#0E271F" }}>
+        {value || "—"}
+      </span>
     </div>
   );
 }
