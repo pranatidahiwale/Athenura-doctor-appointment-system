@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
+import logo1 from "../assets/logo1.png";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -120,6 +121,17 @@ export default function MedicaCareLogin() {
     <div className="min-h-screen w-full bg-white font-sans antialiased">
       <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
         <div className="relative z-10 flex w-full flex-col justify-center bg-gradient-to-br from-white to-cyan-50 px-6 py-10 sm:px-10 lg:w-[45%] lg:px-16 lg:py-16">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="mb-8 lg:mb-10"
+          >
+            <Link to="/">
+              <img src={logo1} alt="Athenura" className="h-20 w-auto" />
+            </Link>
+          </motion.div>
+
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}

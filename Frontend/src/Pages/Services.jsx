@@ -200,6 +200,7 @@ export default function HealthcarePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showAllSpecializations, setShowAllSpecializations] = useState(false);
   const [selectedSpec, setSelectedSpec] = useState(null);
+  const [activeCard, setActiveCard] = useState(null);
   const [showFullImage, setShowFullImage] = useState(false);
 
   useEffect(() => {
@@ -513,7 +514,8 @@ export default function HealthcarePage() {
                   delay: isNewlyRevealed ? (idx - 5) * 0.06 : idx * 0.08,
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative w-full h-[380px] rounded-3xl overflow-hidden"
+                onClick={() => setActiveCard(activeCard === idx ? null : idx)}
+                className={`group relative w-full h-[380px] rounded-3xl overflow-hidden cursor-pointer ${activeCard === idx ? "is-active" : ""}`}
                 style={{ boxShadow: neoShadow.rest, border: "1px solid rgba(255,255,255,0.6)" }}
               >
                 <img
@@ -524,7 +526,12 @@ export default function HealthcarePage() {
 
                 <div
                   className="absolute inset-0 transition-all duration-500 ease-out"
-                  style={{ background: "linear-gradient(180deg, rgba(11,42,36,0) 40%, rgba(11,42,36,0.55) 75%, rgba(11,42,36,0.85) 100%)" }}
+                  style={{
+                    background:
+                      activeCard === idx
+                        ? "linear-gradient(180deg, rgba(11,42,36,0) 40%, rgba(11,42,36,0.55) 75%, rgba(11,42,36,0.85) 100%)"
+                        : "linear-gradient(180deg, rgba(11,42,36,0) 40%, rgba(11,42,36,0.55) 75%, rgba(11,42,36,0.85) 100%)",
+                  }}
                 />
 
                 <motion.div
@@ -544,14 +551,21 @@ export default function HealthcarePage() {
                     {item.title}
                   </h3>
 
-                  <div className="grid transition-all duration-500 ease-out grid-rows-[0fr] opacity-0 group-hover:grid-rows-[1fr] group-hover:opacity-100">
+                  <div
+                    className={`grid transition-all duration-500 ease-out group-hover:grid-rows-[1fr] group-hover:opacity-100 ${
+                      activeCard === idx ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
+                  >
                     <div className="overflow-hidden">
                       <p className="text-[13px] leading-relaxed mb-3" style={{ color: "#DCEAE5" }}>
                         {item.shortDesc}
                       </p>
 
                       <button
-                        onClick={() => setSelectedSpec(idx)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedSpec(idx);
+                        }}
                         className="self-start inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full text-sm font-semibold cursor-pointer"
                         style={{
                           background: `linear-gradient(145deg, #ffffff, ${colors.paper})`,
