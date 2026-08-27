@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+ import React, { useState } from "react";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Phone,
@@ -90,10 +91,11 @@ const ContactHeroBackground = () => (
 /* ================= PAGE ================= */
 
 const Contact = () => {
+  // Mapping state keys to match backend schema properties: fullName, phoneNumber, emailAddress, subject, message
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    fullName: "",
+    phoneNumber: "",
+    emailAddress: "",
     subject: SUBJECTS[0],
     message: "",
   });
@@ -105,25 +107,30 @@ const Contact = () => {
 
   const validate = () => {
     const next = {};
-    if (!form.name.trim()) next.name = "Please enter your name";
-    if (!form.email.trim()) next.email = "Please enter your email";
-    else if (!/^\S+@\S+\.\S+$/.test(form.email))
-      next.email = "Enter a valid email address";
+    if (!form.fullName.trim()) next.fullName = "Please enter your name";
+    if (!form.emailAddress.trim()) next.emailAddress = "Please enter your email";
+    else if (!/^\S+@\S+\.\S+$/.test(form.emailAddress))
+      next.emailAddress = "Enter a valid email address";
     if (!form.message.trim()) next.message = "Please add a short message";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setStatus("submitting");
-    // Simulated submission — wire this up to your backend / email service.
-    setTimeout(() => {
+    try {
+      // POST request to backend API endpoint
+      await axios.post("http://localhost:5000/api/contact", form);
       setStatus("success");
-      setForm({ name: "", email: "", phone: "", subject: SUBJECTS[0], message: "" });
-    }, 1100);
+      setForm({ fullName: "", phoneNumber: "", emailAddress: "", subject: SUBJECTS[0], message: "" });
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      setStatus("idle");
+      alert("Failed to send message. Please make sure the backend server is running.");
+    }
   };
 
   return (
@@ -295,14 +302,14 @@ const Contact = () => {
                           />
                           <input
                             type="text"
-                            value={form.name}
-                            onChange={update("name")}
+                            value={form.fullName}
+                            onChange={update("fullName")}
                             placeholder="Jane Doe"
                             className={`${inputClasses} pl-10`}
                           />
                         </div>
-                        {errors.name && (
-                          <span className="text-[12px] text-[#D9534F]">{errors.name}</span>
+                        {errors.fullName && (
+                          <span className="text-[12px] text-[#D9534F]">{errors.fullName}</span>
                         )}
                       </Field>
 
@@ -314,8 +321,8 @@ const Contact = () => {
                           />
                           <input
                             type="tel"
-                            value={form.phone}
-                            onChange={update("phone")}
+                            value={form.phoneNumber}
+                            onChange={update("phoneNumber")}
                             placeholder="+91 98765 43210"
                             className={`${inputClasses} pl-10`}
                           />
@@ -331,14 +338,14 @@ const Contact = () => {
                         />
                         <input
                           type="email"
-                          value={form.email}
-                          onChange={update("email")}
+                          value={form.emailAddress}
+                          onChange={update("emailAddress")}
                           placeholder="jane@example.com"
                           className={`${inputClasses} pl-10`}
                         />
                       </div>
-                      {errors.email && (
-                        <span className="text-[12px] text-[#D9534F]">{errors.email}</span>
+                      {errors.emailAddress && (
+                        <span className="text-[12px] text-[#D9534F]">{errors.emailAddress}</span>
                       )}
                     </Field>
 

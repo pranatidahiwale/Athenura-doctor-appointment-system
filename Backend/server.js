@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import appointmentRoutes from './routes/appointmentRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 import holidayRoutes from './routes/holidayRoutes.js';
 
@@ -26,6 +27,7 @@ app.use("/api/doctors", authRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/holidays', holidayRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Database Connection & Server Start
 const PORT = process.env.PORT || 5000;
