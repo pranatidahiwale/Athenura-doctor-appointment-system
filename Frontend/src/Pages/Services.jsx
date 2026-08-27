@@ -513,68 +513,65 @@ export default function HealthcarePage() {
                   delay: isNewlyRevealed ? (idx - 5) * 0.06 : idx * 0.08,
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative w-full h-[320px] rounded-3xl overflow-hidden flex flex-col"
-                style={{
-                  background: `linear-gradient(145deg, #ffffff, ${colors.paper})`,
-                  boxShadow: neoShadow.rest,
-                  border: "1px solid rgba(255,255,255,0.6)",
-                }}
+                className="group relative w-full h-[380px] rounded-3xl overflow-hidden"
+                style={{ boxShadow: neoShadow.rest, border: "1px solid rgba(255,255,255,0.6)" }}
               >
-                <div className="relative w-full h-[42%] shrink-0 overflow-hidden">
-                  <div
-                    className="absolute top-0 right-0 w-[62%] h-full overflow-hidden"
-                    style={{ borderRadius: "0 24px 0 60px", boxShadow: neoShadow.inset }}
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110"
-                    />
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-110"
+                />
+
+                <div
+                  className="absolute inset-0 transition-all duration-500 ease-out"
+                  style={{ background: "linear-gradient(180deg, rgba(11,42,36,0) 40%, rgba(11,42,36,0.55) 75%, rgba(11,42,36,0.85) 100%)" }}
+                />
+
+                <motion.div
+                  whileHover={{ scale: 1.08 }}
+                  className="absolute top-4 left-5 w-12 h-12 shrink-0 aspect-square rounded-full flex items-center justify-center z-10"
+                  style={{
+                    background: `linear-gradient(145deg, ${colors.mid}, ${colors.deep})`,
+                    boxShadow: neoShadow.iconRest,
+                    border: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  <Icon size={20} color="#fff" strokeWidth={2} />
+                </motion.div>
+
+                <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-2 z-10">
+                  <h3 style={fontDisplay} className="text-lg font-semibold leading-tight mb-1.5 text-white">
+                    {item.title}
+                  </h3>
+
+                  <div className="grid transition-all duration-500 ease-out grid-rows-[0fr] opacity-0 group-hover:grid-rows-[1fr] group-hover:opacity-100">
+                    <div className="overflow-hidden">
+                      <p className="text-[13px] leading-relaxed mb-3" style={{ color: "#DCEAE5" }}>
+                        {item.shortDesc}
+                      </p>
+
+                      <button
+                        onClick={() => setSelectedSpec(idx)}
+                        className="self-start inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full text-sm font-semibold cursor-pointer"
+                        style={{
+                          background: `linear-gradient(145deg, #ffffff, ${colors.paper})`,
+                          color: colors.deep,
+                          boxShadow: "5px 5px 12px rgba(0,0,0,0.25)",
+                        }}
+                      >
+                        {item.title.split(" ")[0]}
+                        <span
+                          className="w-7 h-7 rounded-full flex items-center justify-center"
+                          style={{
+                            background: `linear-gradient(145deg, ${colors.mid}, ${colors.deep})`,
+                            boxShadow: "3px 3px 8px rgba(9,32,27,0.35)",
+                          }}
+                        >
+                          <ArrowRight size={13} color="#fff" />
+                        </span>
+                      </button>
+                    </div>
                   </div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.08, boxShadow: neoShadow.iconHover }}
-                    className="absolute top-4 left-5 w-12 h-12 shrink-0 aspect-square rounded-full flex items-center justify-center z-10"
-                    style={{
-                      background: `linear-gradient(145deg, ${colors.mid}, ${colors.deep})`,
-                      boxShadow: neoShadow.iconRest,
-                      border: "1px solid rgba(255,255,255,0.15)",
-                    }}
-                  >
-                    <Icon size={20} color="#fff" strokeWidth={2} />
-                  </motion.div>
-                </div>
-
-                <div className="relative flex-1 flex flex-col justify-between px-5 pt-4 pb-4">
-                  <div>
-                    <h3 style={fontDisplay} className="text-lg font-semibold leading-tight mb-1.5">
-                      {item.title}
-                    </h3>
-                    <p className="text-[13px] leading-relaxed line-clamp-3" style={{ color: "#5B6B65" }}>
-                      {item.shortDesc}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => setSelectedSpec(idx)}
-                    className="mt-3 self-start inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full text-sm font-semibold cursor-pointer"
-                    style={{
-                      background: `linear-gradient(145deg, #ffffff, ${colors.paper})`,
-                      color: colors.deep,
-                      boxShadow: "5px 5px 12px rgba(163,177,171,0.4), -5px -5px 12px rgba(255,255,255,0.9)",
-                    }}
-                  >
-                    {item.title.split(" ")[0]}
-                    <span
-                      className="w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{
-                        background: `linear-gradient(145deg, ${colors.mid}, ${colors.deep})`,
-                        boxShadow: "3px 3px 8px rgba(9,32,27,0.35), -2px -2px 6px rgba(60,140,120,0.35)",
-                      }}
-                    >
-                      <ArrowRight size={13} color="#fff" />
-                    </span>
-                  </button>
                 </div>
               </motion.div>
             );
