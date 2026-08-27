@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ctaImg from "../assets/services/cta.png";
-import servicesData from "../Data/servicesData";
+import axios from "axios";
+import * as LucideIcons from "lucide-react";
 import card1Video from "../assets/services/card1.mp4";
 import card2Video from "../assets/services/card2.mp4";
 import card3Video from "../assets/services/card3.mp4";
@@ -201,6 +202,19 @@ export default function HealthcarePage() {
   const [showAllSpecializations, setShowAllSpecializations] = useState(false);
   const [selectedSpec, setSelectedSpec] = useState(null);
   const [showFullImage, setShowFullImage] = useState(false);
+  const [servicesData, setServicesData] = useState([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/services");
+        setServicesData(response.data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    fetchServices();
+  }, []);
 
   useEffect(() => {
     if (selectedSpec !== null) {
@@ -492,7 +506,7 @@ export default function HealthcarePage() {
         >
           <AnimatePresence initial={false} mode="popLayout">
           {(showAllSpecializations ? servicesData : servicesData.slice(0, 5)).map((item, idx) => {
-            const Icon = item.icon;
+            const Icon = LucideIcons[item.iconName] || LucideIcons.Heart;
             const isNewlyRevealed = idx >= 5;
             return (
               <motion.div
@@ -755,7 +769,7 @@ export default function HealthcarePage() {
                   className="grid place-items-center w-12 h-12 shrink-0 aspect-square rounded-full text-white mb-4"
                   style={{ background: `linear-gradient(145deg, ${colors.mid}, ${colors.deep})`, boxShadow: neoShadow.iconRest }}
                 >
-                  {React.createElement(servicesData[selectedSpec].icon, { size: 20 })}
+                  {React.createElement(LucideIcons[servicesData[selectedSpec].iconName] || LucideIcons.Heart, { size: 20 })}
                 </span>
                 <h3 style={fontDisplay} className="text-2xl font-semibold mb-2">
                   {servicesData[selectedSpec].title}
