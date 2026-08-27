@@ -29,7 +29,7 @@ import {
   Users,
   ShieldCheck,
 } from "lucide-react";
-import { patientJourneysDetailed, patientReviews } from "../Data/Testimonials-data";
+
 import reviewVideo from "../assets/testimonial/review.mp4";
 import testinlsVideo from "../assets/testimonial/testinls.mp4";
 
@@ -368,6 +368,31 @@ export default function Testimonials() {
     text: "",
   });
   const [testimonialSubmitted, setTestimonialSubmitted] = useState(false);
+  const [patientJourneysDetailed, setPatientJourneysDetailed] = useState([]);
+  const [patientReviews, setPatientReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [journeysRes, reviewsRes] = await Promise.all([
+          fetch('http://localhost:5000/api/testimonials/journeys'),
+          fetch('http://localhost:5000/api/testimonials/reviews')
+        ]);
+        if (journeysRes.ok && reviewsRes.ok) {
+          const journeysData = await journeysRes.json();
+          const reviewsData = await reviewsRes.json();
+          setPatientJourneysDetailed(journeysData);
+          setPatientReviews(reviewsData);
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = selectedJourney !== null ? "hidden" : "";
@@ -655,14 +680,18 @@ export default function Testimonials() {
 
           <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             <AnimatePresence initial={false} mode="popLayout">
-              {(showAllJourneys ? patientJourneysDetailed : patientJourneysDetailed.slice(0, 5)).map((j, i) => (
-                <JourneyCard
-                  key={j.id}
-                  journey={j}
-                  index={i}
-                  onClick={() => setSelectedJourney(patientJourneysDetailed.indexOf(j))}
-                />
-              ))}
+              {loading ? (
+                <div className="col-span-full text-center text-teal-600 font-semibold py-10">Loading patient journeys...</div>
+              ) : (
+                (showAllJourneys ? patientJourneysDetailed : patientJourneysDetailed.slice(0, 5)).map((j, i) => (
+                  <JourneyCard
+                    key={j.id || i}
+                    journey={j}
+                    index={i}
+                    onClick={() => setSelectedJourney(patientJourneysDetailed.indexOf(j))}
+                  />
+                ))
+              )}
             </AnimatePresence>
           </motion.div>
 
@@ -695,9 +724,13 @@ export default function Testimonials() {
             </p>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {patientReviews.slice(0, visibleReviews).map((r, i) => (
-              <ReviewCard key={i} review={r} i={i} />
-            ))}
+            {loading ? (
+               <div className="col-span-full text-center text-teal-600 font-semibold py-10">Loading reviews...</div>
+            ) : (
+              patientReviews.slice(0, visibleReviews).map((r, i) => (
+                <ReviewCard key={i} review={r} i={i} />
+              ))
+            )}
           </div>
 
           {visibleReviews < patientReviews.length && (

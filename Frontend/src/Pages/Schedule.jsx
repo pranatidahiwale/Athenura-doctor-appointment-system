@@ -18,7 +18,6 @@ import {
 
 // Import the remaining static data structures
 import { 
-  clinicHolidaysData, 
   doctorScheduleInfo, 
   scheduleHeroData, 
   appointmentSummaryData, 
@@ -35,6 +34,8 @@ export default function SchedulePage() {
   const [weeklySchedule, setWeeklySchedule] = useState([]);
   const [timeSlots, setTimeSlots] = useState({ morning: [], afternoon: [], evening: [] });
   const [isTodayClosed, setIsTodayClosed] = useState(false);
+  const [clinicHolidaysData, setClinicHolidaysData] = useState([]);
+  const [loadingHolidays, setLoadingHolidays] = useState(true);
 
   useEffect(() => {
     const fetchScheduleData = async () => {
@@ -61,6 +62,23 @@ export default function SchedulePage() {
     };
 
     fetchScheduleData();
+  }, []);
+
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/holidays');
+        if (response.ok) {
+          const data = await response.json();
+          setClinicHolidaysData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching holidays:", error);
+      } finally {
+        setLoadingHolidays(false);
+      }
+    };
+    fetchHolidays();
   }, []);
 
  const generateWeeklySchedule = (schedule) => {
@@ -507,20 +525,24 @@ export default function SchedulePage() {
               </div>
 
               <div className="space-y-4">
-                {clinicHolidaysData.map((holiday, idx) => (
-                  <div 
-                    key={idx}
-                    className="p-4.5 rounded-2xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[#009D95]/40 hover:bg-slate-100/80 group shadow-xs"
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h4 className="font-extrabold text-xs text-slate-900 group-hover:text-[#009D95] transition-colors">{holiday.name}</h4>
-                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg flex-shrink-0 shadow-xs">
-                        {holiday.date}
-                      </span>
+                {loadingHolidays ? (
+                  <div className="text-center text-teal-600 font-semibold py-4">Loading holidays...</div>
+                ) : (
+                  clinicHolidaysData.map((holiday, idx) => (
+                    <div 
+                      key={holiday._id || idx}
+                      className="p-4.5 rounded-2xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[#009D95]/40 hover:bg-slate-100/80 group shadow-xs"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h4 className="font-extrabold text-xs text-slate-900 group-hover:text-[#009D95] transition-colors">{holiday.name}</h4>
+                        <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg flex-shrink-0 shadow-xs">
+                          {holiday.date}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed font-normal">{holiday.description}</p>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed font-normal">{holiday.description}</p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
