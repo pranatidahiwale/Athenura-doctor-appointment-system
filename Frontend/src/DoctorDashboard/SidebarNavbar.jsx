@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+
 import {
   LayoutGrid,
   CalendarDays,
   ClipboardList,
   Settings,
+  MessageSquare,
   Menu,
   X,
   Bell,
@@ -13,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+
 import logo1 from "../assets/logo1.png";
 
 const NAV_ITEMS = [
@@ -20,6 +23,15 @@ const NAV_ITEMS = [
   { id: "appointments", label: "Appointments", icon: CalendarDays },
   { id: "schedule", label: "Schedule Management", icon: ClipboardList },
   { id: "profile", label: "Profile Settings", icon: Settings },
+
+
+ {
+    id: "contactmessage",
+    label: "Contact Messages",
+    icon: MessageSquare,
+  },
+
+  
 ];
 
 export default function SidebarNavbar({

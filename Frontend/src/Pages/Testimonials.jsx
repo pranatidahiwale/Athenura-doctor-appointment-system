@@ -1136,10 +1136,50 @@ export default function Testimonials() {
                     </p>
 
                     <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        setTestimonialSubmitted(true);
-                      }}
+                     onSubmit={async (e) => {
+                     e.preventDefault();
+
+                        try {
+                      const response = await fetch(
+                      "http://localhost:5000/api/testimonials/reviews",
+                      {
+                        method: "POST",
+                       headers: {
+                      "Content-Type": "application/json",
+                        },
+                     body: JSON.stringify({
+                    name: testimonialData.name,
+                    role: testimonialData.role,
+                    rating: testimonialData.rating,
+                    text: testimonialData.text,
+                    }),
+                    }
+                    );
+
+              if (!response.ok) {
+                throw new Error("Failed to submit testimonial");
+                  }
+
+              const newReview = await response.json();
+
+    // New review immediately show in UI
+    setPatientReviews((prev) => [newReview, ...prev]);
+
+    setTestimonialSubmitted(true);
+
+    // Reset form
+    setTestimonialData({
+      name: "",
+      role: "",
+      rating: 5,
+      text: "",
+    });
+
+  } catch (error) {
+    console.error("Error submitting testimonial:", error);
+    alert("Failed to submit testimonial. Please try again.");
+  }
+}}
                       className="space-y-3"
                     >
                       <div>

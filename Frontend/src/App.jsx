@@ -24,6 +24,7 @@ import ProfileSettings from "./DoctorDashboard/ProfileSettings";
 import PrivacyPolicy from "./Components/PrivacyPolicy";
 import TermsOfService from "./Components/TermsOfService";
 import HIPAACompliance from "./Components/HIPAACompliance";
+import ContactMessage from "./DoctorDashboard/ContactMessage";
 
 // ScrollToTop utility component
 function ScrollToTop() {
@@ -80,6 +81,7 @@ function App() {
           <Route path="appointments" element={<AppointmentManagement />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="profile" element={<ProfileSettings />} />
+          <Route path="contactmessage" element={<ContactMessage />} />
         </Route>
       </Routes>
     </div>
