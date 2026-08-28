@@ -154,7 +154,7 @@ export const getPublicSchedule = async (req, res) => {
   }
 };
 
-// Google Sign-In Controller
+ // Google Sign-In Controller
 export const googleLogin = async (req, res) => {
   try {
     const { idToken } = req.body;
@@ -163,8 +163,8 @@ export const googleLogin = async (req, res) => {
       return res.status(400).json({ message: "No ID token provided." });
     }
 
-    // Verify the token with Firebase
-    const decodedToken = await admin.verifyIdToken(idToken);
+    // FIX: Add .auth() here
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { email, name, uid } = decodedToken;
 
     // Check if doctor already exists
@@ -186,7 +186,7 @@ export const googleLogin = async (req, res) => {
       await doctor.save();
     }
 
-    // Generate JWT Token (same as your normal login)
+    // Generate JWT Token
     const token = jwt.sign(
       { id: doctor._id },
       process.env.JWT_SECRET || "your_jwt_secret",
@@ -209,3 +209,5 @@ export const googleLogin = async (req, res) => {
     res.status(500).json({ message: "Google authentication failed", error: error.message });
   }
 };
+ 
+     
