@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -207,6 +208,7 @@ const FaqItem = ({ item, isOpen, onToggle, index, meta }) => {
 /* ================= PAGE ================= */
 
 const FAQ = () => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("appointments");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState("f1");
@@ -415,19 +417,24 @@ const FAQ = () => {
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative overflow-hidden flex w-full items-center justify-center gap-3 rounded-[12px] bg-[#006B63] px-7 py-4 text-[15px] font-semibold text-white shadow-[0_8px_25px_rgba(0,107,99,0.25)] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,107,99,0.35)]"
+            type="button"
+            onClick={() => navigate("/appointment")}
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative overflow-hidden flex w-full items-center justify-center gap-3 rounded-[12px] bg-[#006B63] px-7 py-4 text-[15px] font-semibold text-white shadow-[0_8px_25px_rgba(0,107,99,0.25)] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,107,99,0.35)]"
             >
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-              <CalendarDays size={18} strokeWidth={2.2} />
-              <span>Book Appointment</span>
-              <ArrowRight
-                size={18}
+             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+
+             <CalendarDays size={18} strokeWidth={2.2} />
+
+             <span>Book Appointment</span>
+
+                <ArrowRight
+                  size={18}
                 strokeWidth={2.5}
-                className="transform transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </motion.button>
+               className="transform transition-transform duration-300 group-hover:translate-x-1"
+                     />
+                 </motion.button>
           </div>
         </motion.div>
       </section>

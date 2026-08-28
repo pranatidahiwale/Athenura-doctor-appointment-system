@@ -376,8 +376,8 @@ export default function Testimonials() {
     const fetchData = async () => {
       try {
         const [journeysRes, reviewsRes] = await Promise.all([
-          fetch('http://localhost:5000/api/testimonials/journeys'),
-          fetch('http://localhost:5000/api/testimonials/reviews')
+          fetch('https://athenura-doctor-appointment-system.onrender.com/api/testimonials/journeys'),
+          fetch('https://athenura-doctor-appointment-system.onrender.com/api/testimonials/reviews')
         ]);
         if (journeysRes.ok && reviewsRes.ok) {
           const journeysData = await journeysRes.json();
@@ -1141,7 +1141,7 @@ export default function Testimonials() {
 
                         try {
                       const response = await fetch(
-                      "http://localhost:5000/api/testimonials/reviews",
+                      "https://athenura-doctor-appointment-system.onrender.com/api/testimonials/reviews",
                       {
                         method: "POST",
                        headers: {

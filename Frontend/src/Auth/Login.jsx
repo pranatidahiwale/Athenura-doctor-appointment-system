@@ -74,7 +74,11 @@ export default function MedicaCareLogin() {
     if (!validate()) return;
   
     try {
-      const response = await fetch(`${API_BASE_URL}/api/doctors/login`, {
+
+      
+
+      const response = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/doctors/login", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,11 +105,15 @@ export default function MedicaCareLogin() {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
-      const response = await fetch(`${API_BASE_URL}/api/doctors/google-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
+
+     
+
+    const response = await fetch("hhttps://athenura-doctor-appointment-system.onrender.com/api/doctors/google-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+
 
       const data = await response.json();
 
@@ -137,11 +145,15 @@ export default function MedicaCareLogin() {
             className="mb-8 lg:mb-10"
           >
             <Link to="/">
+
               <img
                src="/logo1.png"
                alt="Athenura Logo"
                className="h-20 w-auto object-contain"
               />
+
+              <img src={logo1} alt="Athenura" className="h-20 w-auto" />
+
             </Link>
           </motion.div>
 

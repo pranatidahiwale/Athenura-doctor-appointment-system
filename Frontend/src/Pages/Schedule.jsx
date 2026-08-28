@@ -42,7 +42,7 @@ export default function SchedulePage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:5000/api/doctors/public-schedule');
+        const response = await fetch('https://athenura-doctor-appointment-system.onrender.com/api/doctors/public-schedule');
         const data = await response.json();
         
         if (data.schedule) {
@@ -67,7 +67,7 @@ export default function SchedulePage() {
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/holidays');
+        const response = await fetch('https://athenura-doctor-appointment-system.onrender.com/api/holidays');
         if (response.ok) {
           const data = await response.json();
           setClinicHolidaysData(data);

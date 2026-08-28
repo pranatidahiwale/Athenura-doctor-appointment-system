@@ -105,7 +105,7 @@ export default function AppointmentManagement() {
 
   const fetchAppointments = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/appointments");
+      const res = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/appointments");
       const json = await res.json();
       if (json.success) {
         const formatted = json.data.map(app => ({
@@ -134,7 +134,7 @@ export default function AppointmentManagement() {
 
   const fetchHolidays = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/holidays");
+      const res = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/holidays");
       const json = await res.json();
       if (json.success) {
         setHolidays(json.data);
@@ -151,7 +151,7 @@ export default function AppointmentManagement() {
 
   const updateStatus = async (id, status, extraData = {}) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${id}/status`, {
+      const res = await fetch(`https://athenura-doctor-appointment-system.onrender.com/api/appointments/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, ...extraData })
@@ -189,7 +189,7 @@ export default function AppointmentManagement() {
     setHolidays((prev) => [...prev, newHoliday]);
 
     try {
-      const res = await fetch("http://localhost:5000/api/holidays", {
+      const res = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/holidays", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(holidayForm),

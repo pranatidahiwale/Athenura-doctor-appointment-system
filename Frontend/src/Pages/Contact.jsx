@@ -1,4 +1,5 @@
- import React, { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -74,6 +75,7 @@ const inputClasses =
 /* ================= HERO BACKGROUND ================= */
 
 const ContactHeroBackground = () => (
+  
   <div className="pointer-events-none absolute inset-0">
     <img
       src="https://images.unsplash.com/photo-1758691462848-31a39258dbd8?auto=format&fit=crop&w=1600&q=80"
@@ -92,6 +94,7 @@ const ContactHeroBackground = () => (
 
 const Contact = () => {
   // Mapping state keys to match backend schema properties: fullName, phoneNumber, emailAddress, subject, message
+    const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: "",
     phoneNumber: "",
@@ -496,22 +499,28 @@ const Contact = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="w-full lg:w-auto flex justify-start lg:justify-end"
             >
-              <motion.button
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative overflow-hidden flex w-full lg:w-auto min-w-[280px] items-center justify-center gap-3 rounded-[12px] bg-white px-8 py-4 text-[16px] font-semibold text-[#006B63] shadow-[0_8px_25px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
-              >
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F4F3] text-[#006B63] transition-colors duration-300 group-hover:bg-[#006B63] group-hover:text-white">
-                  <CalendarDays size={18} strokeWidth={2.2} />
-                </div>
-                <span>Book Appointment</span>
-                <ArrowRight
-                  size={18}
-                  strokeWidth={2.5}
-                  className="transforsm transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </motion.button>
+              
+                <motion.button
+                     type="button"
+                      onClick={() => navigate("/appointment")}
+                     whileHover={{ scale: 1.03, y: -2 }}
+                     whileTap={{ scale: 0.98 }}
+                    className="group relative overflow-hidden flex w-full lg:w-auto min-w-[280px] items-center justify-center gap-3 rounded-[12px] bg-white px-8 py-4 text-[16px] font-semibold text-[#006B63] shadow-[0_8px_25px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
+                       >
+                     <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F4F3] text-[#006B63] transition-colors duration-300 group-hover:bg-[#006B63] group-hover:text-white">
+                      <CalendarDays size={18} strokeWidth={2.2} />
+                   </div>
+
+                  <span>Book Appointment</span>
+
+                      <ArrowRight
+            size={18}
+    strokeWidth={2.5}
+    className="transform transition-transform duration-300 group-hover:translate-x-1"
+  />
+</motion.button>
             </motion.div>
           </div>
         </motion.div>

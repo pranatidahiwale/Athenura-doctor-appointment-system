@@ -26,7 +26,7 @@ const ContactMessage = () => {
   const fetchMessages = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/api/contact");
+      const response = await axios.get("https://athenura-doctor-appointment-system.onrender.com/api/contact");
       // Assuming your backend returns an array of messages or an object containing them
       const data = Array.isArray(response.data) ? response.data : response.data.data || [];
       

@@ -90,7 +90,7 @@ const Appointment = () => {
 
   // Fetch Logged-in Doctor Profile & Schedule from Backend
   useEffect(() => {
-    fetch('http://localhost:5000/api/doctors/profile', {
+    fetch('https://athenura-doctor-appointment-system.onrender.com/api/doctors/profile', {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -116,7 +116,7 @@ const Appointment = () => {
       })
       .catch(err => console.error("Error fetching doctor profile:", err));
 
-    fetch('http://localhost:5000/api/doctors/public-schedule')
+    fetch('https://athenura-doctor-appointment-system.onrender.com/api/doctors/public-schedule')
       .then(res => res.json())
       .then(data => {
         if (data.schedule) {
@@ -242,7 +242,7 @@ const Appointment = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/appointments/book', {
+      const response = await fetch('https://athenura-doctor-appointment-system.onrender.com/api/appointments/book', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +284,7 @@ const Appointment = () => {
     if (!id) return;
     setFetchingAppointment(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/appointments/${id}`);
+      const response = await fetch(`https://athenura-doctor-appointment-system.onrender.com/api/appointments/${id}`);
       if (response.ok) {
         const result = await response.json();
         const appt = result.data || result.appointment || result;

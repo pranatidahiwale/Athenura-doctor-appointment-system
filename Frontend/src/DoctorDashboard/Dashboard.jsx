@@ -81,7 +81,7 @@ export default function Dashboard() {
 
   const fetchAppointments = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/appointments");
+      const res = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/appointments");
       const json = await res.json();
       if (json.success) {
         setAppointments(json.data);
@@ -99,7 +99,7 @@ export default function Dashboard() {
 
   const updateAppointmentStatus = async (id, status, extraData = {}) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${id}/status`, {
+      const res = await fetch(`https://athenura-doctor-appointment-system.onrender.com/api/appointments/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, ...extraData })

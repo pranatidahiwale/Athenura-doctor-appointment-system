@@ -162,7 +162,7 @@ export default function ProfileSettings() {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+      const response = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/doctors/profile", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -217,7 +217,7 @@ export default function ProfileSettings() {
         photo,
       };
 
-      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+      const response = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/doctors/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -243,7 +243,7 @@ export default function Schedule() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+      const response = await fetch("http://:5000/api/doctors/profile", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -292,7 +292,7 @@ export default function Schedule() {
         }
       };
 
-      const response = await fetch("http://localhost:5000/api/doctors/profile", {
+      const response = await fetch("https://athenura-doctor-appointment-system.onrender.com/api/doctors/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
