@@ -12,16 +12,19 @@ let adminAuth;
 
 try {
   let serviceAccount;
+  
+  // 1. Check Render's secret files path first (/etc/secrets/serviceAccountKey.json)
+  const renderSecretPath = "/etc/secrets/serviceAccountKey.json";
+  
+  // 2. Check local path for development on your computer
   const localKeyPath = path.join(__dirname, "serviceAccountKey.json");
 
-  // Check if the local serviceAccountKey.json file exists (works great locally and if pushed)
-  if (existsSync(localKeyPath)) {
+  if (existsSync(renderSecretPath)) {
+    serviceAccount = JSON.parse(readFileSync(renderSecretPath, "utf-8"));
+  } else if (existsSync(localKeyPath)) {
     serviceAccount = JSON.parse(readFileSync(localKeyPath, "utf-8"));
-  } else if (process.env.FIREBASE_SERVICE_KEY) {
-    // Fallback to environment variable if file isn't found
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_KEY);
   } else {
-    throw new Error("Service account key file or environment variable not found.");
+    throw new Error("Service account key file not found in secrets or locally.");
   }
 
   initializeApp({
