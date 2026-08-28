@@ -52,7 +52,7 @@ export default function Login() {
 
   const sendTokenToBackend = async (idToken) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/doctors/google-login`, {
+      const response = await fetch(`${API_BASE_URL}/api/doctors/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
@@ -97,7 +97,7 @@ export default function Login() {
     if (!validate()) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/doctors/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/doctors/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

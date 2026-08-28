@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:5000";
 import {
   Plus,
   Pencil,
@@ -20,8 +23,6 @@ const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
 `;
 
-const STORAGE_KEY = "doctorServices";
-
 const emptyForm = {
   title: "",
   image: "",
@@ -34,20 +35,6 @@ const emptyForm = {
   doctorsAvailable: "",
   consultationFee: "",
 };
-
-function loadServices() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveServices(list) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event("doctorServicesChange"));
-}
 
 export default function DoctorServices() {
   const [services, setServices] = useState([]);
@@ -96,7 +83,15 @@ export default function DoctorServices() {
   };
 
   useEffect(() => {
-    setServices(loadServices());
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/services`);
+        setServices(response.data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    fetchServices();
   }, []);
 
   const openAddModal = () => {
@@ -106,7 +101,7 @@ export default function DoctorServices() {
   };
 
   const openEditModal = (service) => {
-    setEditingId(service.id);
+    setEditingId(service._id);
     setForm({
       title: service.title || "",
       image: service.image || "",
@@ -122,47 +117,47 @@ export default function DoctorServices() {
     setShowFormModal(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
     if (!form.title.trim() || !form.image.trim()) return;
     setIsSubmitting(true);
 
     const payload = {
-      title: form.title.trim(),
-      image: form.image.trim(),
-      shortDesc: form.shortDesc.trim(),
-      overview: form.overview.trim(),
+      title: String(form.title || "").trim(),
+      image: String(form.image || "").trim(),
+      shortDesc: String(form.shortDesc || "").trim(),
+      overview: String(form.overview || "").trim(),
       keyServices: form.keyServices
-        .map((k) => k.trim())
+        .map((k) => String(k || "").trim())
         .filter(Boolean),
-      duration: form.duration.trim(),
-      availability: form.availability.trim(),
-      avgRating: form.avgRating.trim(),
-      doctorsAvailable: form.doctorsAvailable.trim(),
-      consultationFee: form.consultationFee.trim(),
+      duration: String(form.duration || "").trim(),
+      availability: String(form.availability || "").trim(),
+      avgRating: String(form.avgRating || "").trim() || 0,
+      doctorsAvailable: String(form.doctorsAvailable || "").trim() || 0,
+      consultationFee: String(form.consultationFee || "").trim(),
     };
 
-    let updated;
-    if (editingId) {
-      updated = services.map((s) =>
-        s.id === editingId ? { ...s, ...payload } : s
-      );
-    } else {
-      updated = [...services, { id: Date.now().toString(), ...payload }];
-    }
-
     try {
-      saveServices(updated);
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      
+      let updated;
+      if (editingId) {
+        const res = await axios.put(`${API_BASE_URL}/api/services/${editingId}`, payload, config);
+        updated = services.map((s) => (s._id === editingId ? res.data : s));
+      } else {
+        const res = await axios.post(`${API_BASE_URL}/api/services`, payload, config);
+        updated = [...services, res.data];
+      }
+      
       setServices(updated);
       setShowFormModal(false);
       setForm(emptyForm);
       setEditingId(null);
     } catch (err) {
       console.error("Failed to save service:", err);
-      alert(
-        "Couldn't save this service. The image you uploaded is likely too large for local storage. Please use a smaller image or an image URL instead."
-      );
+      alert("Couldn't save this service. Please ensure the backend is running.");
     } finally {
       setIsSubmitting(false);
     }
@@ -187,12 +182,20 @@ export default function DoctorServices() {
     });
   };
 
-  const handleDelete = (id) => {
-    const updated = services.filter((s) => s.id !== id);
-    setServices(updated);
-    saveServices(updated);
-    setConfirmDeleteId(null);
-    if (viewService?.id === id) setViewService(null);
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${API_BASE_URL}/api/services/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const updated = services.filter((s) => s._id !== id);
+      setServices(updated);
+      setConfirmDeleteId(null);
+      if (viewService?._id === id) setViewService(null);
+    } catch (err) {
+      console.error("Failed to delete service:", err);
+      alert("Failed to delete service.");
+    }
   };
 
   return (
@@ -254,7 +257,7 @@ export default function DoctorServices() {
             <AnimatePresence initial={false}>
               {services.map((s, idx) => (
                 <motion.div
-                  key={s.id}
+                  key={s._id}
                   layout
                   initial={{ opacity: 0, y: 24, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -267,7 +270,7 @@ export default function DoctorServices() {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.4, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
                   onClick={() => setViewService(s)}
-                  className="group relative w-full aspect-[3/4] rounded-3xl overflow-hidden cursor-pointer"
+                  className="group relative w-full h-[380px] rounded-3xl overflow-hidden cursor-pointer"
                   style={{
                     boxShadow: "8px 8px 20px rgba(163,177,171,0.45), -8px -8px 20px rgba(255,255,255,0.9)",
                     border: "1px solid rgba(255,255,255,0.6)",
@@ -316,7 +319,7 @@ export default function DoctorServices() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setConfirmDeleteId(s.id);
+                        setConfirmDeleteId(s._id);
                       }}
                       title="Delete"
                       className="h-8 w-8 rounded-full flex items-center justify-center bg-white/90"
@@ -741,7 +744,7 @@ export default function DoctorServices() {
                     Edit
                   </button>
                   <button
-                    onClick={() => setConfirmDeleteId(viewService.id)}
+                    onClick={() => setConfirmDeleteId(viewService._id)}
                     className="flex-1 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
                     style={{ background: "#C43D3D" }}
                   >

@@ -137,7 +137,7 @@ export default function HealthcarePage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("https://athenura-doctor-appointment-system.onrender.com/api/services");
+        const response = await axios.get("http://localhost:5000/api/services");
         setServicesData(response.data);
       } catch (error) {
         console.error("Error fetching services:", error);
