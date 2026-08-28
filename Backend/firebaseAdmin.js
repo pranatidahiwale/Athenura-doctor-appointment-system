@@ -5,10 +5,15 @@ import { getAuth } from "firebase-admin/auth";
 let adminAuth;
 
 try {
-  // Fixes potential newline escaping issues from Render environment variables
-  const rawKey = process.env.FIREBASE_SERVICE_KEY;
-  const fixedKey = rawKey.includes("\\n") ? rawKey.replace(/\\n/g, "\n") : rawKey;
-  const serviceAccount = JSON.parse(fixedKey);
+  // Cleans up any weird control characters or broken formatting from the environment variable paste
+  let rawKey = process.env.FIREBASE_SERVICE_KEY.trim();
+  
+  // If it accidentally got wrapped in extra quotes, remove them
+  if (rawKey.startsWith('"') && rawKey.endsWith('"')) {
+    rawKey = rawKey.slice(1, -1);
+  }
+
+  const serviceAccount = JSON.parse(rawKey);
 
   initializeApp({
     credential: cert(serviceAccount),
