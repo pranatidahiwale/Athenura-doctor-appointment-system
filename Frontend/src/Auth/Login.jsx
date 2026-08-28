@@ -1,6 +1,6 @@
- import React, { useState, useEffect } from "react";
+ import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import {
   Plus,
@@ -49,24 +49,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
-
-  // Handle the authentication result when Google redirects back to the app
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          const idToken = await result.user.getIdToken();
-          await sendTokenToBackend(idToken);
-        }
-      } catch (err) {
-        console.error("Google redirect handling error:", err);
-        alert("Google authentication failed during redirect.");
-      }
-    };
-
-    handleRedirectResult();
-  }, [navigate]);
 
   const sendTokenToBackend = async (idToken) => {
     try {
@@ -137,11 +119,12 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-      // Uses redirect to bypass mobile/desktop popup block restrictions
-      await signInWithRedirect(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      await sendTokenToBackend(idToken);
     } catch (err) {
-      console.error("Google login error:", err);
-      alert("Google sign-in failed to initialize.");
+      console.error("Google login popup error:", err);
+      alert("Google sign-in failed. Please try again.");
     }
   };
 
