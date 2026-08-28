@@ -68,30 +68,34 @@ export default function MedicaCareLogin() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  
+  try {
+    // Replace "http://localhost:5000" with your live backend URL later if needed
+    const response = await fetch("http://localhost:5000/api/doctors/google-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Pass your token or payload here (e.g., Firebase ID token or Google credential)
+      body: JSON.stringify({ 
+        token: /* your token variable here */ 
+      }),
+    });
 
-    if (!validate()) return;
-
-    try {
-      const response = await fetch(`${API_URL}/api/doctors/google-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-            navigate("/doctor-dashboard"); 
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Something went wrong. Please check if your backend server is running.");
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log("Login successful:", data);
+      // Handle successful login (e.g., save token, redirect user)
+    } else {
+      console.error("Login failed:", data.message);
     }
-  };
+    
+  } catch (error) {
+    console.error("Network or server error:", error);
+  }
+};
 
   const handleGoogleLogin = async () => {
     try {
