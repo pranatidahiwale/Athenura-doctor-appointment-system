@@ -14,7 +14,7 @@ import DoctorHero from "../assets/Hero-section/Hero-Img.png";
 const Hero = () => {
   return (
     <section className="relative min-h-[650px] sm:min-h-[700px] lg:min-h-[750px] overflow-hidden flex items-center font-['Poppins',sans-serif] -mt-[80px]">
-      {/* Full Background Image covering the entire hero section with mobile-optimized object positioning */}
+      
       <img
         src={DoctorHero}
         alt="Doctor"
@@ -48,7 +48,7 @@ const Hero = () => {
               </span>
             </h1>
 
-            {/* Buttons - Side-by-side layout specifically optimized for mobile and up */}
+            
             <div className="mt-6 sm:mt-8 flex flex-row gap-2 sm:gap-4 w-full sm:w-auto">
               <Link
                 to="/appointment"
