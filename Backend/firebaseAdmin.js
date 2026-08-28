@@ -5,8 +5,10 @@ import { getAuth } from "firebase-admin/auth";
 let adminAuth;
 
 try {
-  // Parse the single-line JSON string from Render's environment variable
-  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_KEY);
+  // Fixes potential newline escaping issues from Render environment variables
+  const rawKey = process.env.FIREBASE_SERVICE_KEY;
+  const fixedKey = rawKey.includes("\\n") ? rawKey.replace(/\\n/g, "\n") : rawKey;
+  const serviceAccount = JSON.parse(fixedKey);
 
   initializeApp({
     credential: cert(serviceAccount),
