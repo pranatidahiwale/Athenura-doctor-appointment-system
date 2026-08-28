@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Settings,
   MessageSquare,
+  Stethoscope,
   Menu,
   X,
   Bell,
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutGrid },
   { id: "appointments", label: "Appointments", icon: CalendarDays },
   { id: "schedule", label: "Schedule Management", icon: ClipboardList },
+  { id: "services", label: "Services", icon: Stethoscope },
   { id: "profile", label: "Profile Settings", icon: Settings },
 
 
@@ -43,6 +45,7 @@ export default function SidebarNavbar({
   userAvatar = "https://i.ibb.co/bRyPh259/Atharv.png",
   notificationCount = 0,
   onHelpClick,
+  onLogout,
 }) {
   const [activeId, setActiveId] = useState(activeIdProp || items[0]?.id);
   const [collapsed, setCollapsed] = useState(false);
@@ -342,6 +345,7 @@ export default function SidebarNavbar({
                     userRole={userRole}
                     onNavigate={handleSelect}
                     onClose={() => setProfileOpen(false)}
+                    onLogout={onLogout}
                   />
                 </motion.div>
               </>
@@ -453,7 +457,7 @@ function NotificationPanel({ notifications }) {
   );
 }
 
-function ProfileMenu({ userName, userRole, onNavigate, onClose }) {
+function ProfileMenu({ userName, userRole, onNavigate, onClose, onLogout }) {
   return (
     <div className="py-2">
       <div className="px-4 py-2.5 border-b border-emerald-50">
@@ -472,6 +476,7 @@ function ProfileMenu({ userName, userRole, onNavigate, onClose }) {
       <button
         onClick={() => {
           onClose?.();
+          onLogout?.();
         }}
         className="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors"
       >
