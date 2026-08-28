@@ -1,6 +1,6 @@
- import React, { useState } from "react";
+ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import {
   Plus,
@@ -42,13 +42,53 @@ const fieldVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-export default function MedicaCareLogin() {
+export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Handle the authentication result when Google redirects back to the app
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const idToken = await result.user.getIdToken();
+          await sendTokenToBackend(idToken);
+        }
+      } catch (err) {
+        console.error("Google redirect handling error:", err);
+        alert("Google authentication failed during redirect.");
+      }
+    };
+
+    handleRedirectResult();
+  }, [navigate]);
+
+  const sendTokenToBackend = async (idToken) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/doctors/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/doctor-dashboard");
+      } else {
+        alert(data.message || "Google login failed on server.");
+      }
+    } catch (err) {
+      console.error("Backend error:", err);
+      alert("Something went wrong connecting to the server.");
+    }
+  };
 
   const validate = () => {
     const newErrors = {};
@@ -97,26 +137,11 @@ export default function MedicaCareLogin() {
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken();
-
-      const response = await fetch(`${BACKEND_URL}/api/doctors/google-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/doctor-dashboard");
-      } else {
-        alert(data.message || "Google login failed");
-      }
+      // Uses redirect to bypass mobile/desktop popup block restrictions
+      await signInWithRedirect(auth, googleProvider);
     } catch (err) {
       console.error("Google login error:", err);
-      alert("Google sign-in failed. Please try again.");
+      alert("Google sign-in failed to initialize.");
     }
   };
 
