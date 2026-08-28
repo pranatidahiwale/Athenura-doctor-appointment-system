@@ -171,7 +171,7 @@ export default function ProfileSettings() {
       });
       const data = await response.json();
       if (response.ok && data) {
-        setFullName(data.fullName || "");
+        setFullName(data.fullName || localStorage.getItem("doctorName") || "");
         setEmail(data.email || "");
         setPhoneNumber(data.phoneNumber || "");
         setSpecialization(data.specialization || "");
@@ -228,7 +228,11 @@ export default function ProfileSettings() {
 
       if (response.ok) {
         localStorage.setItem("doctorTitle", title);
+        localStorage.setItem("doctorName", fullName);
+        localStorage.setItem("doctorPhoto", photo);
         window.dispatchEvent(new Event("doctorTitleChange"));
+        window.dispatchEvent(new Event("doctorNameChange"));
+        window.dispatchEvent(new Event("doctorPhotoChange"));
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
       } else {
