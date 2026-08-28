@@ -83,7 +83,7 @@ export default function MedicaCareLogin() {
       
       if (response.ok) {
         localStorage.setItem("token", data.token);
-                navigate("/doctor-dashboard"); 
+            navigate("/doctor-dashboard"); 
       } else {
         alert(data.message);
       }
@@ -94,29 +94,36 @@ export default function MedicaCareLogin() {
   };
 
   const handleGoogleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const idToken = await result.user.getIdToken();
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
 
-    const response = await fetch("http://localhost:5000/api/doctors/google-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
-    });
+      const response = await fetch("http://localhost:5000/api/doctors/google-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      navigate("/doctor-dashboard");
-    } else {
-      alert(data.message || "Google login failed");
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/doctor-dashboard");
+      } else {
+        alert(data.message || "Google login failed");
+      }
+    } catch (err) {
+      // Gracefully handle popup cancellation or closure by the user
+      if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
+        console.log("Google popup was closed or cancelled by the user.");
+        return;
+      }
+      
+      console.error("Google login error:", err);
+      alert("Google sign-in failed. Please try again.");
     }
-  } catch (err) {
-    console.error("Google login error:", err);
-    alert("Google sign-in failed. Please try again.");
-  }
-};
+  };
+
   return (
     <div className="min-h-screen w-full bg-white font-sans antialiased">
       <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
