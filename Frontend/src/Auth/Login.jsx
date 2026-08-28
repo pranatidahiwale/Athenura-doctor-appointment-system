@@ -17,7 +17,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 // Replace with your deployed backend URL or use an environment variable
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://athenura-doctor-appointment-system.onrender.com";
+const API_BASE_URL = "https://athenura-doctor-appointment-system.onrender.com";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
