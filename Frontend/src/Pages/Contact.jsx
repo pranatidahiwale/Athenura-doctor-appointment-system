@@ -123,7 +123,7 @@ const Contact = () => {
     setStatus("submitting");
     try {
       // POST request to backend API endpoint
-      await axios.post("http://localhost:5000/api/contact", form);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/contact`, form);
       setStatus("success");
       setForm({ fullName: "", phoneNumber: "", emailAddress: "", subject: SUBJECTS[0], message: "" });
     } catch (error) {
@@ -509,7 +509,7 @@ const Contact = () => {
                 <ArrowRight
                   size={18}
                   strokeWidth={2.5}
-                  className="transform transition-transform duration-300 group-hover:translate-x-1"
+                  className="transforsm transition-transform duration-300 group-hover:translate-x-1"
                 />
               </motion.button>
             </motion.div>
