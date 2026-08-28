@@ -89,7 +89,6 @@ export const getDoctorProfile = async (req, res) => {
 };
 
 // Update Doctor Profile Controller
- // Update Doctor Profile Controller
 export const updateDoctorProfile = async (req, res) => {
   try {
     const updates = { ...req.body };
@@ -117,9 +116,6 @@ export const updateDoctorProfile = async (req, res) => {
 };
 
 // Get Public Schedule (For patient booking side)
- // Get Public Schedule (For patient booking side)
- // Get Public Schedule (For patient booking side)
- // Get Public Schedule (For patient booking side)
 export const getPublicSchedule = async (req, res) => {
   try {
     const { email, id } = req.query;
@@ -142,7 +138,7 @@ export const getPublicSchedule = async (req, res) => {
 
     res.status(200).json({ 
       doctorName: doctor.fullName,
-      specialization: doctor.specialization || '', // Added specialization here!
+      specialization: doctor.specialization || '',
       qualification: doctor.qualification || 'MBBS',
       experience: doctor.experience || '',
       clinicName: doctor.clinicName,
@@ -154,7 +150,7 @@ export const getPublicSchedule = async (req, res) => {
   }
 };
 
- // Google Sign-In Controller
+// Google Sign-In Controller
 export const googleLogin = async (req, res) => {
   try {
     const { idToken } = req.body;
@@ -163,7 +159,6 @@ export const googleLogin = async (req, res) => {
       return res.status(400).json({ message: "No ID token provided." });
     }
 
-    // FIX: Add .auth() here
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { email, name, uid } = decodedToken;
 
@@ -171,7 +166,7 @@ export const googleLogin = async (req, res) => {
     let doctor = await Doctor.findOne({ email });
 
     if (!doctor) {
-      // Create a partial account — profile incomplete
+      // Create a partial account without initializing medicalRegistrationNo as null
       doctor = new Doctor({
         fullName: name || "Unnamed Doctor",
         email,
@@ -209,5 +204,3 @@ export const googleLogin = async (req, res) => {
     res.status(500).json({ message: "Google authentication failed", error: error.message });
   }
 };
- 
-     
