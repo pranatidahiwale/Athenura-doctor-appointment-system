@@ -15,7 +15,7 @@ import {
   Calendar,
   TrendingUp,
 } from "lucide-react";
-import logo1 from "../assets/logo1.png";
+
 
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
@@ -169,7 +169,11 @@ export default function MedicaCareRegister() {
             className="mb-8 lg:mb-10"
           >
             <Link to="/">
-              <img src={logo1} alt="MedicaCare" className="h-20 w-auto" />
+               <img
+              src="/logo1.png"
+              alt="Athenura Logo"
+             className="h-20 w-auto object-contain"
+                />
             </Link>
           </motion.div>
 

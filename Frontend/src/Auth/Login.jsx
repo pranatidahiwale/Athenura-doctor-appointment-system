@@ -128,7 +128,11 @@ export default function MedicaCareLogin() {
             className="mb-8 lg:mb-10"
           >
             <Link to="/">
-              <img src={logo1} alt="Athenura" className="h-20 w-auto" />
+              <img
+             src="/logo1.png"
+             alt="Athenura Logo"
+             className="h-20 w-auto object-contain"
+            />
             </Link>
           </motion.div>
 

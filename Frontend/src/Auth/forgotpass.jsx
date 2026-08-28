@@ -14,7 +14,7 @@ import {
   CheckCircle2,
   KeyRound,
 } from "lucide-react";
-import logo1 from "../assets/logo1.png";
+ 
 import { Link } from "react-router-dom";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
@@ -371,7 +371,11 @@ export default function MedicaCareForgotPassword() {
             className="mb-10 lg:mb-14"
           >
             <Link to="/">
-              <img src={logo1} alt="MedicaCare" className="h-20 w-auto" />
+              <img
+            src="/logo1.png"
+            alt="Athenura Logo"
+            className="h-20 w-auto object-contain"
+            />
             </Link>
           </motion.div>
 

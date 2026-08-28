@@ -109,78 +109,7 @@ const whyIconVariant = (idx) => ({
   },
 });
 
-const specializations = [
-  {
-    icon: Users,
-    title: "General Consultation",
-    desc: "Comprehensive check-ups and everyday health guidance from our primary care physicians.",
-  },
-  {
-    icon: Heart,
-    title: "Cardiology",
-    desc: "Heart health screening, ECGs, and long-term cardiac care from experienced specialists.",
-  },
-  {
-    icon: ScanLine,
-    title: "Diagnostic Imaging",
-    desc: "MRI, CT, and ultrasound imaging with fast, accurate reporting for confident diagnoses.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Preventive Care",
-    desc: "Screenings and vaccination programs designed to catch concerns before they grow.",
-  },
-  {
-    icon: Baby,
-    title: "Pediatrics",
-    desc: "Gentle, attentive care for infants through teens, from checkups to growth tracking.",
-  },
-  {
-    icon: Dumbbell,
-    title: "Sports Medicine",
-    desc: "Injury recovery and performance care for athletes at every level of activity.",
-  },
-  {
-    icon: Brain,
-    title: "Neurology",
-    desc: "Diagnosis and treatment for conditions affecting the brain, spine, and nervous system.",
-  },
-  {
-    icon: Bone,
-    title: "Orthopedics",
-    desc: "Care for bones, joints, and muscles, from fractures to long-term mobility issues.",
-  },
-  {
-    icon: Eye,
-    title: "Ophthalmology",
-    desc: "Complete eye care, vision testing, and treatment for common and complex eye conditions.",
-  },
-  {
-    icon: Smile,
-    title: "Dental Care",
-    desc: "Routine cleanings, fillings, and oral health checkups for the whole family.",
-  },
-  {
-    icon: Pill,
-    title: "Pharmacy",
-    desc: "On-site prescription fulfillment and medication guidance from licensed pharmacists.",
-  },
-  {
-    icon: Syringe,
-    title: "Vaccination",
-    desc: "Routine immunizations and travel vaccines for children and adults alike.",
-  },
-  {
-    icon: Microscope,
-    title: "Pathology & Lab Tests",
-    desc: "Accurate lab diagnostics and blood work with quick turnaround on results.",
-  },
-  {
-    icon: Ear,
-    title: "ENT Care",
-    desc: "Treatment for ear, nose, and throat conditions from allergies to hearing concerns.",
-  },
-];
+
 
 const heroFeatures = [
   { icon: Users, title: "Expert Doctors", desc: "Experienced & trusted professionals" },
