@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScheduleBgImg from '../assets/Sheadule-Section/Sheadule-Bg-Img.png';
 import { 
@@ -232,7 +232,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 selection:bg-[#009D95]/30 selection:text-[#009D95]" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="min-h-screen bg-slate-50 text-slate-800 selection:bg-[#009D95]/30 selection:text-[#009D95] overflow-x-hidden" style={{ fontFamily: "'Poppins', sans-serif" }}>
       
       {/* Hero Section */}
       <section className="relative h-[52vh] min-h-[460px] w-full overflow-hidden flex items-center">
@@ -242,7 +242,7 @@ export default function SchedulePage() {
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 hover:scale-100 transition-transform duration-1000 ease-out"
         />
         
-        <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full z-10">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 w-full z-10">
           <div className="max-w-2xl animate-fade-in-up">
             <div className="inline-flex items-center gap-2.5 py-1.5 px-4 rounded-full bg-white/90 backdrop-blur-xl text-slate-800 border border-slate-200 text-xs font-semibold uppercase tracking-wider mb-5 shadow-lg shadow-black/5">
               <Sparkles className="w-3.5 h-3.5 text-[#009D95] animate-pulse" />
@@ -273,8 +273,8 @@ export default function SchedulePage() {
       <main className="py-14 lg:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
         {/* Doctor Info Banner */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 mb-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 transition-all duration-300 hover:shadow-2xl hover:border-slate-300">
-          <div className="flex items-center gap-5 sm:gap-6">
+        <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-5 sm:p-10 mb-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 transition-all duration-300 hover:shadow-2xl hover:border-slate-300">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6 w-full lg:w-auto">
             <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-teal-50 text-[#009D95] flex items-center justify-center flex-shrink-0 transition-transform duration-300 hover:scale-105 shadow-inner border border-teal-100">
               <Stethoscope className="w-9 h-9 sm:w-10 sm:h-10" />
             </div>
@@ -289,7 +289,7 @@ export default function SchedulePage() {
               <p className="text-xs text-slate-500 font-medium">Duration: {doctorScheduleInfo.consultationDuration} | Mode: {doctorScheduleInfo.consultationMode}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 px-5 py-3 rounded-2xl text-emerald-700 text-xs font-bold shadow-sm">
+          <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 px-5 py-3 rounded-2xl text-emerald-700 text-xs font-bold shadow-sm self-start lg:self-auto">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-xs shadow-emerald-500" />
             {doctorScheduleInfo.clinicStatus}
           </div>
@@ -324,7 +324,7 @@ export default function SchedulePage() {
           </div>
           
           <div className="overflow-x-auto p-4 sm:p-6">
-            <div className="bg-slate-50/60 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-slate-50/60 rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-w-[550px] sm:min-w-full">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
@@ -365,7 +365,7 @@ export default function SchedulePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" id="appointments">
           
           {/* Today's Available Slots (Span 8) */}
-          <div className="lg:col-span-8 bg-white backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl">
+          <div className="lg:col-span-8 bg-white backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-5 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl">
             <div>
               <div className="flex items-center gap-3.5 mb-8 pb-5 border-b border-slate-200">
                 <div className="p-3 bg-teal-50 rounded-2xl text-[#009D95] shadow-inner border border-teal-100">
@@ -394,7 +394,7 @@ export default function SchedulePage() {
                       <Sun className="w-4 h-4 text-amber-500" />
                       Morning Sessions
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2.5 sm:gap-3">
                       {timeSlots.morning.map((slotObj, idx) => {
                         const isSelected = selectedSlot === slotObj.time;
                         return (
@@ -402,7 +402,7 @@ export default function SchedulePage() {
                             key={idx}
                             disabled={!slotObj.available}
                             onClick={() => handleSlotSelect(slotObj)}
-                            className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
+                            className={`px-3.5 sm:px-4.5 py-2.5 sm:py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
                               !slotObj.available
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
                                 : isSelected
@@ -425,7 +425,7 @@ export default function SchedulePage() {
                       <Sun className="w-4 h-4 text-amber-600" />
                       Afternoon Sessions
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2.5 sm:gap-3">
                       {timeSlots.afternoon.map((slotObj, idx) => {
                         const isSelected = selectedSlot === slotObj.time;
                         return (
@@ -433,7 +433,7 @@ export default function SchedulePage() {
                             key={idx}
                             disabled={!slotObj.available}
                             onClick={() => handleSlotSelect(slotObj)}
-                            className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
+                            className={`px-3.5 sm:px-4.5 py-2.5 sm:py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
                               !slotObj.available
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
                                 : isSelected
@@ -456,7 +456,7 @@ export default function SchedulePage() {
                       <Moon className="w-4 h-4 text-indigo-500" />
                       Evening Sessions
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2.5 sm:gap-3">
                       {timeSlots.evening.map((slotObj, idx) => {
                         const isSelected = selectedSlot === slotObj.time;
                         return (
@@ -464,7 +464,7 @@ export default function SchedulePage() {
                             key={idx}
                             disabled={!slotObj.available}
                             onClick={() => handleSlotSelect(slotObj)}
-                            className={`px-4.5 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
+                            className={`px-3.5 sm:px-4.5 py-2.5 sm:py-3 rounded-2xl text-xs font-bold border transition-all duration-300 transform active:scale-95 ${
                               !slotObj.available
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
                                 : isSelected
@@ -483,9 +483,9 @@ export default function SchedulePage() {
               )}
             </div>
 
-            <div className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-5 bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-inner">
-              <div className="flex items-center gap-2.5 text-xs text-slate-700 font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-[#009D95]" />
+            <div className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-5 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-inner">
+              <div className="flex items-center gap-2.5 text-xs text-slate-700 font-semibold text-center sm:text-left">
+                <CheckCircle2 className="w-4 h-4 text-[#009D95] flex-shrink-0" />
                 <span>
                   {selectedSlot ? (
                     <>
@@ -512,7 +512,7 @@ export default function SchedulePage() {
           </div>
 
           {/* Clinic Holidays (Span 4) */}
-          <div className="lg:col-span-4 bg-white backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl">
+          <div className="lg:col-span-4 bg-white backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-5 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl">
             <div>
               <div className="flex items-center gap-3.5 mb-8 pb-5 border-b border-slate-200">
                 <div className="p-3 bg-rose-50 rounded-2xl text-rose-500 shadow-inner border border-rose-100">
@@ -557,7 +557,7 @@ export default function SchedulePage() {
 
       {/* Call to Action Section */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-20">
-        <div className="relative bg-[#154845] rounded-3xl overflow-hidden py-16 sm:py-20 px-6 sm:px-12 text-center shadow-2xl">
+        <div className="relative bg-[#154845] rounded-3xl overflow-hidden py-14 sm:py-20 px-6 sm:px-12 text-center shadow-2xl">
           
           <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/5 pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-black/10 pointer-events-none" />
@@ -569,16 +569,16 @@ export default function SchedulePage() {
             <p className="text-sm sm:text-base text-teal-100/80 font-normal max-w-xl mx-auto mb-10 leading-relaxed">
               Expert cardiac care is just one consultation away. Secure your appointment with Dr. Rajesh Malhotra today.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button 
                 onClick={handleDirectBookingTrigger}
-                className="px-8 py-4 bg-white text-slate-900 rounded-2xl text-sm font-extrabold hover:bg-slate-100 transition-all duration-300 shadow-xl shadow-black/10 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 rounded-2xl text-sm font-extrabold hover:bg-slate-100 transition-all duration-300 shadow-xl shadow-black/10 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
               >
                 Book Your Appointment
               </button>
               <a 
                 href="#contact" 
-                className="px-8 py-4 bg-transparent text-white border border-white/30 rounded-2xl text-sm font-extrabold hover:bg-white/10 transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
+                className="w-full sm:w-auto px-8 py-4 bg-transparent text-white border border-white/30 rounded-2xl text-sm font-extrabold hover:bg-white/10 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 text-center"
               >
                 Contact Clinic Support
               </a>
