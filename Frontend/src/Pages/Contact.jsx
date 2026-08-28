@@ -123,7 +123,7 @@ const Contact = () => {
     setStatus("submitting");
     try {
       // POST request to backend API endpoint
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/contact`, form);
+      await axios.post(`${import.meta.env.VITE_API}/api/contact`, form);
       setStatus("success");
       setForm({ fullName: "", phoneNumber: "", emailAddress: "", subject: SUBJECTS[0], message: "" });
     } catch (error) {
