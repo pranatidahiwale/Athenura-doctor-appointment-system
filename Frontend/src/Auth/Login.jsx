@@ -1,4 +1,4 @@
- import React, { useState } from "react";
+  import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
@@ -82,9 +82,9 @@ export default function MedicaCareLogin() {
       
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        navigate("/doctor-dashboard"); 
+                navigate("/doctor-dashboard"); 
       } else {
-        alert(data.message || "Login failed");
+        alert(data.message);
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -93,31 +93,32 @@ export default function MedicaCareLogin() {
   };
 
   const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken();
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const idToken = await result.user.getIdToken();
 
-      const response = await fetch("http://localhost:5000/api/doctors/google-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
+    const response = await fetch("http://localhost:5000/api/doctors/google-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/doctor-dashboard");
-      } else {
-        alert(data.message || "Google login failed");
-      }
-    } catch (err) {
-      console.error("Google login error:", err);
-      alert("Google sign-in failed. Please try again.");
+    if (response.ok) {
+      localStorage.setItem("token", data.token);
+      navigate("/doctor-dashboard");
+    } else {
+      alert(data.message || "Google login failed");
     }
-  };
+  } catch (err) {
+    console.error("Google login error:", err);
+    alert("Google sign-in failed. Please try again.");
+  }
+};
 
   const handleAppleLogin = () => {
+    // Redirects to backend Apple OAuth route
     window.location.href = "http://localhost:5000/api/auth/apple";
   };
 
