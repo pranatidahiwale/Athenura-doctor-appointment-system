@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
-import logo1 from "../assets/logo1.png";
+
+// Hardcoded backend URL for production/testing (replace with your actual backend URL)
+const API_BASE_URL = "https://your-backend-service.onrender.com";
 
 const DotGrid = ({ className, rows = 6, cols = 6 }) => (
   <div
@@ -68,41 +70,38 @@ export default function MedicaCareLogin() {
   };
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    if (!validate()) return;
   
-  try {
-    // Replace "http://localhost:5000" with your live backend URL later if needed
-    const response = await fetch("http://localhost:5000/api/doctors/google-login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // Pass your token or payload here (e.g., Firebase ID token or Google credential)
-      body: JSON.stringify({ 
-        token: /* your token variable here */ 
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/doctors/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
-    
-    if (response.ok) {
-      console.log("Login successful:", data);
-      // Handle successful login (e.g., save token, redirect user)
-    } else {
-      console.error("Login failed:", data.message);
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/doctor-dashboard");
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Network or server error:", error);
+      alert("Unable to connect to the server. Please try again later.");
     }
-    
-  } catch (error) {
-    console.error("Network or server error:", error);
-  }
-};
+  };
 
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
-      const response = await fetch("http://localhost:5000/api/doctors/google-login", {
+      const response = await fetch(`${API_BASE_URL}/api/doctors/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
@@ -117,7 +116,6 @@ export default function MedicaCareLogin() {
         alert(data.message || "Google login failed");
       }
     } catch (err) {
-      // Gracefully handle popup cancellation or closure by the user
       if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
         console.log("Google popup was closed or cancelled by the user.");
         return;
@@ -140,10 +138,10 @@ export default function MedicaCareLogin() {
           >
             <Link to="/">
               <img
-             src="/logo1.png"
-             alt="Athenura Logo"
-             className="h-20 w-auto object-contain"
-            />
+               src="/logo1.png"
+               alt="Athenura Logo"
+               className="h-20 w-auto object-contain"
+              />
             </Link>
           </motion.div>
 
