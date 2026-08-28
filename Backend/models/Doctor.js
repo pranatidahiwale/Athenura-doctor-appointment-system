@@ -15,10 +15,11 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     required: function () { return this.authProvider === "local"; }
   },
-  medicalRegistrationNo: {
+ medicalRegistrationNo: {
     type: String,
     unique: true,
     sparse: true,
+    default: undefined, // Ensures omitted fields don't conflict with unique index constraints
     required: function () { return this.authProvider === "local"; }
   },
   password: {
